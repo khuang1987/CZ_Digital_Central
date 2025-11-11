@@ -1,0 +1,668 @@
+2025-10-16 15:21:13,824 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\维修记录\EM-20241118001.xlsx
+2025-10-16 15:21:17,221 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\维修记录\EM-20250512001.xlsx
+2025-10-16 15:21:18,423 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\维修记录\EM-20250514001.xlsx
+2025-10-16 15:21:19,401 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\维修记录\EM-20250515001.xlsx
+2025-10-16 15:21:20,746 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\维修记录\EM-20250516001.xlsx
+2025-10-16 15:21:22,330 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\维修记录\EM-20250519001.xlsx
+2025-10-16 15:21:23,868 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\维修记录\EM-20250520001.xlsx
+2025-10-16 15:21:25,029 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\维修记录\EM-20250521001.xlsx
+2025-10-16 15:21:26,306 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\维修记录\EM-20250522001.xlsx
+2025-10-16 15:21:27,550 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\维修记录\EM-20250527001.xlsx
+2025-10-16 15:21:28,899 [INFO] Written 1 rows -> C:\Users\huangk14\OneDrive - Medtronic PLC\Huangkai Files\B1_Project\250418_MDDAP_project\80-数据清洗\publish\year=2024\month=11\EM-2025_202411_20251016_152128.parquet
+2025-10-16 15:21:28,938 [INFO] Written 9 rows -> C:\Users\huangk14\OneDrive - Medtronic PLC\Huangkai Files\B1_Project\250418_MDDAP_project\80-数据清洗\publish\year=2025\month=05\EM-2025_202505_20251016_152128.parquet
+2025-10-16 15:21:28,939 [ERROR] ETL failed: cannot convert float NaN to integer
+Traceback (most recent call last):
+  File "C:\Users\huangk14\OneDrive - Medtronic PLC\Huangkai Files\B1_Project\250418_MDDAP_project\80-数据清洗\etl.py", line 271, in <module>
+    process_files(cfg)
+  File "C:\Users\huangk14\OneDrive - Medtronic PLC\Huangkai Files\B1_Project\250418_MDDAP_project\80-数据清洗\etl.py", line 255, in process_files
+    write_partitions(big, cfg)
+  File "C:\Users\huangk14\OneDrive - Medtronic PLC\Huangkai Files\B1_Project\250418_MDDAP_project\80-数据清洗\etl.py", line 195, in write_partitions
+    part_dir = os.path.join(output_dir, f"year={int(year)}", f"month={int(month):02d}")
+                                                ^^^^^^^^^
+ValueError: cannot convert float NaN to integer
+2025-10-16 15:30:05,013 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\维修记录\EM-20241118001.xlsx
+2025-10-16 15:30:05,497 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\维修记录\EM-20250512001.xlsx
+2025-10-16 15:30:05,568 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\维修记录\EM-20250514001.xlsx
+2025-10-16 15:30:05,595 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\维修记录\EM-20250515001.xlsx
+2025-10-16 15:30:05,618 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\维修记录\EM-20250516001.xlsx
+2025-10-16 15:30:05,740 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\维修记录\EM-20250519001.xlsx
+2025-10-16 15:30:05,886 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\维修记录\EM-20250520001.xlsx
+2025-10-16 15:30:06,090 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\维修记录\EM-20250521001.xlsx
+2025-10-16 15:30:06,249 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\维修记录\EM-20250522001.xlsx
+2025-10-16 15:30:06,419 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\维修记录\EM-20250527001.xlsx
+2025-10-16 15:30:06,641 [INFO] Written 43 rows -> C:\Users\huangk14\OneDrive - Medtronic PLC\Huangkai Files\B1_Project\250418_MDDAP_project\80-数据清洗\publish\year=2024\month=11\EM-202411.parquet
+2025-10-16 15:30:06,675 [INFO] Written 515 rows -> C:\Users\huangk14\OneDrive - Medtronic PLC\Huangkai Files\B1_Project\250418_MDDAP_project\80-数据清洗\publish\year=2025\month=05\EM-202505.parquet
+2025-10-16 15:30:06,689 [INFO] Done in 1.75s
+2025-10-16 15:57:06,091 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\维修记录\EM-20250528001.xlsx
+2025-10-16 15:57:09,774 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\维修记录\EM-20250529001.xlsx
+2025-10-16 15:57:11,479 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\维修记录\EM-20250530001.xlsx
+2025-10-16 15:57:13,238 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\维修记录\EM-20250603001.xlsx
+2025-10-16 15:57:13,382 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\维修记录\EM-20250604001.xlsx
+2025-10-16 15:57:14,910 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\维修记录\EM-20250605001.xlsx
+2025-10-16 15:57:16,991 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\维修记录\EM-20250605002.xlsx
+2025-10-16 15:57:17,776 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\维修记录\EM-20250606001.xlsx
+2025-10-16 15:57:19,495 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\维修记录\EM-20250609001.xlsx
+2025-10-16 15:57:20,690 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\维修记录\EM-20250610001.xlsx
+2025-10-16 15:57:21,847 [INFO] Written 337 rows -> C:\Users\huangk14\OneDrive - Medtronic PLC\Huangkai Files\B1_Project\250418_MDDAP_project\80-数据清洗\publish\year=2025\month=05\EM-202505.parquet
+2025-10-16 15:57:21,889 [INFO] Written 1005 rows -> C:\Users\huangk14\OneDrive - Medtronic PLC\Huangkai Files\B1_Project\250418_MDDAP_project\80-数据清洗\publish\year=2025\month=06\EM-202506.parquet
+2025-10-16 15:57:21,908 [INFO] Done in 15.95s
+2025-10-16 16:08:02,790 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\维修记录\EM-20251016001.xlsx
+2025-10-16 16:08:06,789 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\维修记录\EM-20251015001.xlsx
+2025-10-16 16:08:11,030 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\维修记录\EM-20251014001.xlsx
+2025-10-16 16:08:13,646 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\维修记录\EM-20251013001.xlsx
+2025-10-16 16:08:17,002 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\维修记录\EM-20251011001.xlsx
+2025-10-16 16:08:20,962 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\维修记录\EM-20251010001.xlsx
+2025-10-16 16:08:22,965 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\维修记录\EM-20251009001.xlsx
+2025-10-16 16:08:25,940 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\维修记录\EM-20250930001.xlsx
+2025-10-16 16:08:27,974 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\维修记录\EM-20250929001.xlsx
+2025-10-16 16:08:30,999 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\维修记录\EM-20250928001.xlsx
+2025-10-16 16:08:33,345 [ERROR] ETL failed: int() argument must be a string, a bytes-like object or a real number, not 'tuple'
+Traceback (most recent call last):
+  File "C:\Users\huangk14\OneDrive - Medtronic PLC\Huangkai Files\B1_Project\250418_MDDAP_project\80-数据清洗\etl.py", line 345, in <module>
+    process_files(cfg)
+  File "C:\Users\huangk14\OneDrive - Medtronic PLC\Huangkai Files\B1_Project\250418_MDDAP_project\80-数据清洗\etl.py", line 330, in process_files
+    write_partitions(big, cfg)
+  File "C:\Users\huangk14\OneDrive - Medtronic PLC\Huangkai Files\B1_Project\250418_MDDAP_project\80-数据清洗\etl.py", line 201, in write_partitions
+    year = int(year)
+           ^^^^^^^^^
+TypeError: int() argument must be a string, a bytes-like object or a real number, not 'tuple'
+2025-10-16 16:11:56,790 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\维修记录\EM-20251016001.xlsx
+2025-10-16 16:11:58,926 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\维修记录\EM-20251015001.xlsx
+2025-10-16 16:12:00,622 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\维修记录\EM-20251014001.xlsx
+2025-10-16 16:12:02,711 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\维修记录\EM-20251013001.xlsx
+2025-10-16 16:12:05,547 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\维修记录\EM-20251011001.xlsx
+2025-10-16 16:12:07,428 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\维修记录\EM-20251010001.xlsx
+2025-10-16 16:12:08,916 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\维修记录\EM-20251009001.xlsx
+2025-10-16 16:12:10,438 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\维修记录\EM-20250930001.xlsx
+2025-10-16 16:12:11,975 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\维修记录\EM-20250929001.xlsx
+2025-10-16 16:12:13,492 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\维修记录\EM-20250928001.xlsx
+2025-10-16 16:12:14,961 [INFO] Written 6539 rows -> C:\Users\huangk14\OneDrive - Medtronic PLC\Huangkai Files\B1_Project\250418_MDDAP_project\80-数据清洗\publish\year=2025\EM-2025.parquet
+2025-10-16 16:12:14,973 [INFO] Done in 18.29s
+2025-10-16 16:15:00,125 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\维修记录\EM-20250926001.xlsx
+2025-10-16 16:15:05,439 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\维修记录\EM-20250925001.xlsx
+2025-10-16 16:15:09,954 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\维修记录\EM-20250924001.xlsx
+2025-10-16 16:15:13,586 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\维修记录\EM-20250923001.xlsx
+2025-10-16 16:15:18,260 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\维修记录\EM-20250922001.xlsx
+2025-10-16 16:15:22,247 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\维修记录\EM-20250919001.xlsx
+2025-10-16 16:15:27,000 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\维修记录\EM-20250918001.xlsx
+2025-10-16 16:15:32,349 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\维修记录\EM-20250917001.xlsx
+2025-10-16 16:15:35,481 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\维修记录\EM-20250915001.xlsx
+2025-10-16 16:15:38,170 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\维修记录\EM-20250912001.xlsx
+2025-10-16 16:15:41,426 [INFO] Written 6065 rows -> c:\Users\huangk14\OneDrive - Medtronic PLC\Huangkai Files\B1_Project\250418_MDDAP_project\80-数据清洗\publish\year=2025\EM-2025.parquet
+2025-10-16 16:15:41,446 [INFO] Done in 41.43s
+2025-10-16 16:16:19,000 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\维修记录\EM-20250908001.xlsx
+2025-10-16 16:16:21,414 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\维修记录\EM-20250905001.xlsx
+2025-10-16 16:16:23,533 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\维修记录\EM-20250904001.xlsx
+2025-10-16 16:16:26,580 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\维修记录\EM-20250903001.xlsx
+2025-10-16 16:16:29,381 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\维修记录\EM-20250902001.xlsx
+2025-10-16 16:16:31,483 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\维修记录\EM-20250901001.xlsx
+2025-10-16 16:16:34,691 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\维修记录\EM-20250828001.xlsx
+2025-10-16 16:16:36,335 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\维修记录\EM-20250627001.xlsx
+2025-10-16 16:16:38,314 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\维修记录\EM-20250826001.xlsx
+2025-10-16 16:16:40,796 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\维修记录\EM-20250825001.xlsx
+2025-10-16 16:16:44,260 [INFO] Written 11260 rows -> c:\Users\huangk14\OneDrive - Medtronic PLC\Huangkai Files\B1_Project\250418_MDDAP_project\80-数据清洗\publish\year=2025\EM-2025.parquet
+2025-10-16 16:16:44,276 [INFO] Done in 26.06s
+2025-10-16 16:24:47,222 [WARNING] Failed to read manifest; starting fresh.
+2025-10-16 16:24:47,357 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\维修记录\EM-20251016001.xlsx
+2025-10-16 16:24:49,502 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\维修记录\EM-20251015001.xlsx
+2025-10-16 16:24:50,992 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\维修记录\EM-20251014001.xlsx
+2025-10-16 16:24:52,499 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\维修记录\EM-20251013001.xlsx
+2025-10-16 16:24:53,989 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\维修记录\EM-20251011001.xlsx
+2025-10-16 16:24:55,497 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\维修记录\EM-20251010001.xlsx
+2025-10-16 16:24:57,147 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\维修记录\EM-20251009001.xlsx
+2025-10-16 16:24:59,652 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\维修记录\EM-20250930001.xlsx
+2025-10-16 16:25:01,489 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\维修记录\EM-20250929001.xlsx
+2025-10-16 16:25:04,399 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\维修记录\EM-20250928001.xlsx
+2025-10-16 16:25:07,299 [INFO] Written 6539 rows -> c:\Users\huangk14\OneDrive - Medtronic PLC\Huangkai Files\B1_Project\250418_MDDAP_project\80-数据清洗\publish\year=2025\EM-2025.parquet
+2025-10-16 16:25:07,313 [INFO] Done in 20.09s
+2025-10-16 16:42:23,880 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\维修记录\EM-20250926001.xlsx
+2025-10-16 16:42:25,559 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\维修记录\EM-20250925001.xlsx
+2025-10-16 16:42:26,932 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\维修记录\EM-20250924001.xlsx
+2025-10-16 16:42:28,378 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\维修记录\EM-20250923001.xlsx
+2025-10-16 16:42:29,924 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\维修记录\EM-20250922001.xlsx
+2025-10-16 16:42:31,715 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\维修记录\EM-20250919001.xlsx
+2025-10-16 16:42:33,098 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\维修记录\EM-20250918001.xlsx
+2025-10-16 16:42:34,400 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\维修记录\EM-20250917001.xlsx
+2025-10-16 16:42:35,881 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\维修记录\EM-20250915001.xlsx
+2025-10-16 16:42:37,123 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\维修记录\EM-20250912001.xlsx
+2025-10-16 16:42:38,434 [INFO] Written 6065 rows -> c:\Users\huangk14\OneDrive - Medtronic PLC\Huangkai Files\B1_Project\250418_MDDAP_project\80-数据清洗\publish\year=2025\EM-202509.parquet
+2025-10-16 16:42:38,446 [INFO] Done in 14.65s
+2025-10-16 16:46:49,447 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\NCMR清单\NCMR-20251016080001.xlsx
+2025-10-16 16:46:50,678 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\NCMR清单\NCMR-20251015080001.xlsx
+2025-10-16 16:46:51,006 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\NCMR清单\NCMR-20251014080001.xlsx
+2025-10-16 16:46:51,238 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\NCMR清单\NCMR-20251009200001.xlsx
+2025-10-16 16:46:51,471 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\NCMR清单\NCMR-20251009080001.xlsx
+2025-10-16 16:46:51,695 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\NCMR清单\NCMR-20251008080001.xlsx
+2025-10-16 16:46:51,928 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\NCMR清单\NCMR-20251007080001.xlsx
+2025-10-16 16:46:52,308 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\NCMR清单\NCMR-20251001080001.xlsx
+2025-10-16 16:46:52,772 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\NCMR清单\NCMR-20250930080001.xlsx
+2025-10-16 16:46:53,144 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\NCMR清单\NCMR-20250929080001.xlsx
+2025-10-16 16:46:53,629 [ERROR] ETL failed: ("Expected bytes, got a 'int' object", 'Conversion failed for column 批数量 with type object')
+Traceback (most recent call last):
+  File "c:\Users\huangk14\OneDrive - Medtronic PLC\Huangkai Files\B1_Project\250418_MDDAP_project\80-数据清洗\etl.py", line 372, in <module>
+    process_files(cfg)
+  File "c:\Users\huangk14\OneDrive - Medtronic PLC\Huangkai Files\B1_Project\250418_MDDAP_project\80-数据清洗\etl.py", line 357, in process_files
+    write_partitions(big, cfg)
+  File "c:\Users\huangk14\OneDrive - Medtronic PLC\Huangkai Files\B1_Project\250418_MDDAP_project\80-数据清洗\etl.py", line 246, in write_partitions
+    combined.to_parquet(tmp_path, index=False, engine="pyarrow", compression=compression)
+  File "C:\Users\huangk14\AppData\Local\Programs\Python\Python312\Lib\site-packages\pandas\util\_decorators.py", line 333, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\huangk14\AppData\Local\Programs\Python\Python312\Lib\site-packages\pandas\core\frame.py", line 3101, in to_parquet
+    return to_parquet(
+           ^^^^^^^^^^^
+  File "C:\Users\huangk14\AppData\Local\Programs\Python\Python312\Lib\site-packages\pandas\io\parquet.py", line 480, in to_parquet
+    impl.write(
+  File "C:\Users\huangk14\AppData\Local\Programs\Python\Python312\Lib\site-packages\pandas\io\parquet.py", line 190, in write
+    table = self.api.Table.from_pandas(df, **from_pandas_kwargs)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "pyarrow\\table.pxi", line 4795, in pyarrow.lib.Table.from_pandas
+  File "C:\Users\huangk14\AppData\Local\Programs\Python\Python312\Lib\site-packages\pyarrow\pandas_compat.py", line 637, in dataframe_to_arrays
+    arrays = [convert_column(c, f)
+              ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\huangk14\AppData\Local\Programs\Python\Python312\Lib\site-packages\pyarrow\pandas_compat.py", line 625, in convert_column
+    raise e
+  File "C:\Users\huangk14\AppData\Local\Programs\Python\Python312\Lib\site-packages\pyarrow\pandas_compat.py", line 619, in convert_column
+    result = pa.array(col, type=type_, from_pandas=True, safe=safe)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "pyarrow\\array.pxi", line 365, in pyarrow.lib.array
+  File "pyarrow\\array.pxi", line 91, in pyarrow.lib._ndarray_to_array
+  File "pyarrow\\error.pxi", line 92, in pyarrow.lib.check_status
+pyarrow.lib.ArrowTypeError: ("Expected bytes, got a 'int' object", 'Conversion failed for column 批数量 with type object')
+2025-10-16 16:49:12,997 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\NCMR清单\NCMR-20251016080001.xlsx
+2025-10-16 16:49:13,453 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\NCMR清单\NCMR-20251015080001.xlsx
+2025-10-16 16:49:13,470 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\NCMR清单\NCMR-20251014080001.xlsx
+2025-10-16 16:49:13,487 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\NCMR清单\NCMR-20251009200001.xlsx
+2025-10-16 16:49:13,508 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\NCMR清单\NCMR-20251009080001.xlsx
+2025-10-16 16:49:13,532 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\NCMR清单\NCMR-20251008080001.xlsx
+2025-10-16 16:49:13,550 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\NCMR清单\NCMR-20251007080001.xlsx
+2025-10-16 16:49:13,570 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\NCMR清单\NCMR-20251001080001.xlsx
+2025-10-16 16:49:13,587 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\NCMR清单\NCMR-20250930080001.xlsx
+2025-10-16 16:49:13,604 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\NCMR清单\NCMR-20250929080001.xlsx
+2025-10-16 16:49:13,641 [ERROR] ETL failed: name 'coerce_object_columns_to_string' is not defined
+Traceback (most recent call last):
+  File "c:\Users\huangk14\OneDrive - Medtronic PLC\Huangkai Files\B1_Project\250418_MDDAP_project\80-数据清洗\etl.py", line 374, in <module>
+    process_files(cfg)
+  File "c:\Users\huangk14\OneDrive - Medtronic PLC\Huangkai Files\B1_Project\250418_MDDAP_project\80-数据清洗\etl.py", line 359, in process_files
+    write_partitions(big, cfg)
+  File "c:\Users\huangk14\OneDrive - Medtronic PLC\Huangkai Files\B1_Project\250418_MDDAP_project\80-数据清洗\etl.py", line 244, in write_partitions
+    combined = coerce_object_columns_to_string(combined)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+NameError: name 'coerce_object_columns_to_string' is not defined
+2025-10-16 16:52:56,017 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\NCMR清单\NCMR-20251016080001.xlsx
+2025-10-16 16:52:56,434 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\NCMR清单\NCMR-20251015080001.xlsx
+2025-10-16 16:52:56,454 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\NCMR清单\NCMR-20251014080001.xlsx
+2025-10-16 16:52:56,474 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\NCMR清单\NCMR-20251009200001.xlsx
+2025-10-16 16:52:56,491 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\NCMR清单\NCMR-20251009080001.xlsx
+2025-10-16 16:52:56,506 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\NCMR清单\NCMR-20251008080001.xlsx
+2025-10-16 16:52:56,523 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\NCMR清单\NCMR-20251007080001.xlsx
+2025-10-16 16:52:56,544 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\NCMR清单\NCMR-20251001080001.xlsx
+2025-10-16 16:52:56,566 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\NCMR清单\NCMR-20250930080001.xlsx
+2025-10-16 16:52:56,581 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\NCMR清单\NCMR-20250929080001.xlsx
+2025-10-16 16:52:56,602 [ERROR] ETL failed: name 'coerce_object_columns_to_string' is not defined
+Traceback (most recent call last):
+  File "c:\Users\huangk14\OneDrive - Medtronic PLC\Huangkai Files\B1_Project\250418_MDDAP_project\80-数据清洗\etl.py", line 374, in <module>
+    process_files(cfg)
+  File "c:\Users\huangk14\OneDrive - Medtronic PLC\Huangkai Files\B1_Project\250418_MDDAP_project\80-数据清洗\etl.py", line 359, in process_files
+    write_partitions(big, cfg)
+  File "c:\Users\huangk14\OneDrive - Medtronic PLC\Huangkai Files\B1_Project\250418_MDDAP_project\80-数据清洗\etl.py", line 244, in write_partitions
+    combined = coerce_object_columns_to_string(combined)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+NameError: name 'coerce_object_columns_to_string' is not defined
+2025-10-16 16:54:29,065 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\NCMR清单\NCMR-20251016080001.xlsx
+2025-10-16 16:54:29,790 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\NCMR清单\NCMR-20251015080001.xlsx
+2025-10-16 16:54:29,816 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\NCMR清单\NCMR-20251014080001.xlsx
+2025-10-16 16:54:29,836 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\NCMR清单\NCMR-20251009200001.xlsx
+2025-10-16 16:54:29,857 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\NCMR清单\NCMR-20251009080001.xlsx
+2025-10-16 16:54:29,880 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\NCMR清单\NCMR-20251008080001.xlsx
+2025-10-16 16:54:29,912 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\NCMR清单\NCMR-20251007080001.xlsx
+2025-10-16 16:54:29,932 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\NCMR清单\NCMR-20251001080001.xlsx
+2025-10-16 16:54:29,955 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\NCMR清单\NCMR-20250930080001.xlsx
+2025-10-16 16:54:29,986 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\NCMR清单\NCMR-20250929080001.xlsx
+2025-10-16 16:54:30,066 [INFO] Written 68 rows -> c:\Users\huangk14\OneDrive - Medtronic PLC\Huangkai Files\B1_Project\250418_MDDAP_project\80-数据清洗\publish\year=2025\NCMR-2025.parquet
+2025-10-16 16:54:30,075 [INFO] Done in 4.19s
+2025-10-16 16:57:56,451 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\NCMR清单\NCMR-20250928080001.xlsx
+2025-10-16 16:57:57,651 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\NCMR清单\NCMR-20250927080001.xlsx
+2025-10-16 16:57:58,014 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\NCMR清单\NCMR-20250926080001.xlsx
+2025-10-16 16:57:58,296 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\NCMR清单\NCMR-20250925080001.xlsx
+2025-10-16 16:57:58,544 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\NCMR清单\NCMR-20250924080001.xlsx
+2025-10-16 16:57:58,793 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\NCMR清单\NCMR-20250923080001.xlsx
+2025-10-16 16:57:59,038 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\NCMR清单\NCMR-20250922080001.xlsx
+2025-10-16 16:57:59,361 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\NCMR清单\NCMR-20250921080001.xlsx
+2025-10-16 16:57:59,758 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\NCMR清单\NCMR-20250920080001.xlsx
+2025-10-16 16:58:00,017 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\NCMR清单\NCMR-20250918200001.xlsx
+2025-10-16 16:58:00,580 [INFO] Written 117 rows -> c:\Users\huangk14\OneDrive - Medtronic PLC\Huangkai Files\B1_Project\250418_MDDAP_project\80-数据清洗\publish\year=2025\NCMR-2025.parquet
+2025-10-16 16:58:00,607 [INFO] Done in 5.43s
+2025-10-17 08:13:05,846 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\NCMR清单\NCMR-20251017080001.xlsx
+2025-10-17 08:13:07,317 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\NCMR清单\NCMR-20250918080001.xlsx
+2025-10-17 08:13:07,756 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\NCMR清单\NCMR-20250917080001.xlsx
+2025-10-17 08:13:08,045 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\NCMR清单\NCMR-20250916080001.xlsx
+2025-10-17 08:13:08,342 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\NCMR清单\NCMR-20250915080001.xlsx
+2025-10-17 08:13:08,655 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\NCMR清单\NCMR-20250914080001.xlsx
+2025-10-17 08:13:09,056 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\NCMR清单\NCMR-20250913080001.xlsx
+2025-10-17 08:13:09,320 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\NCMR清单\NCMR-20250912080001.xlsx
+2025-10-17 08:13:09,565 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\NCMR清单\NCMR-20250911080001.xlsx
+2025-10-17 08:13:09,837 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\NCMR清单\NCMR-20250910080001.xlsx
+2025-10-17 08:13:10,261 [INFO] Written 147 rows -> c:\Users\huangk14\OneDrive - Medtronic PLC\Huangkai Files\B1_Project\250418_MDDAP_project\80-数据清洗\publish\year=2025\NCMR-2025.parquet
+2025-10-17 08:13:10,288 [INFO] Done in 7.87s
+2025-10-17 09:08:16,165 [INFO] Processing subfolder: NCMR清单
+2025-10-17 09:08:16,166 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\NCMR清单\NCMR-20250909080001.xlsx
+2025-10-17 09:08:24,628 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\NCMR清单\NCMR-20250908080001.xlsx
+2025-10-17 09:08:24,860 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\NCMR清单\NCMR-20250906080001.xlsx
+2025-10-17 09:08:25,066 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\NCMR清单\NCMR-20250905080001.xlsx
+2025-10-17 09:08:25,296 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\NCMR清单\NCMR-20250904080001.xlsx
+2025-10-17 09:08:25,544 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\NCMR清单\NCMR-20250903080001.xlsx
+2025-10-17 09:08:25,801 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\NCMR清单\NCMR-20250902080001.xlsx
+2025-10-17 09:08:26,037 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\NCMR清单\NCMR-20250901080001.xlsx
+2025-10-17 09:08:26,274 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\NCMR清单\NCMR-20250831080001.xlsx
+2025-10-17 09:08:26,464 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\NCMR清单\NCMR-20250830080001.xlsx
+2025-10-17 09:08:26,706 [INFO] Writing 44 rows for subfolder: NCMR清单
+2025-10-17 09:08:26,794 [INFO] Written 191 rows -> C:\Users\huangk14\OneDrive - Medtronic PLC\Huangkai Files\B1_Project\250418_MDDAP_project\80-数据清洗\publish\year=2025\NCMR-2025.parquet
+2025-10-17 09:08:26,810 [INFO] Done in 13.01s
+2025-10-17 09:12:06,689 [INFO] Found 7 subfolders to process: ['NCMR清单', '不合格异常', '产品检验记录', '批次报工汇总报表', '批次流转报表', '班组合格率数据', '维修记录']
+2025-10-17 09:12:06,691 [INFO] Processing subfolder: NCMR清单 with 10 files
+2025-10-17 09:12:06,692 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\NCMR清单\NCMR-20251017080001.xlsx
+2025-10-17 09:12:07,232 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\NCMR清单\NCMR-20251016080001.xlsx
+2025-10-17 09:12:07,261 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\NCMR清单\NCMR-20251015080001.xlsx
+2025-10-17 09:12:07,282 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\NCMR清单\NCMR-20251014080001.xlsx
+2025-10-17 09:12:07,301 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\NCMR清单\NCMR-20251009200001.xlsx
+2025-10-17 09:12:07,332 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\NCMR清单\NCMR-20251009080001.xlsx
+2025-10-17 09:12:07,361 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\NCMR清单\NCMR-20251008080001.xlsx
+2025-10-17 09:12:07,391 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\NCMR清单\NCMR-20251007080001.xlsx
+2025-10-17 09:12:07,423 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\NCMR清单\NCMR-20251001080001.xlsx
+2025-10-17 09:12:07,450 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\NCMR清单\NCMR-20250930080001.xlsx
+2025-10-17 09:12:07,484 [INFO] Writing 70 rows for subfolder: NCMR清单
+2025-10-17 09:12:07,553 [INFO] Written 70 rows -> C:\Users\huangk14\OneDrive - Medtronic PLC\Huangkai Files\B1_Project\250418_MDDAP_project\80-数据清洗\publish\year=2025\NCMR-2025.parquet
+2025-10-17 09:12:07,554 [INFO] Processing subfolder: 不合格异常 with 10 files
+2025-10-17 09:12:07,554 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\不合格异常\NC-20251017080001.xlsx
+2025-10-17 09:12:11,023 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\不合格异常\NC-20251016080001.xlsx
+2025-10-17 09:12:14,565 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\不合格异常\NC-20251015080001.xlsx
+2025-10-17 09:12:17,436 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\不合格异常\NC-20251014080001.xlsx
+2025-10-17 09:12:20,186 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\不合格异常\NC-20251014200001.xlsx
+2025-10-17 09:12:21,396 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\不合格异常\NC-20251013200001.xlsx
+2025-10-17 09:12:22,861 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\不合格异常\NC-20251012200001.xlsx
+2025-10-17 09:12:24,343 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\不合格异常\NC-20251011200001.xlsx
+2025-10-17 09:12:25,577 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\不合格异常\NC-20251010200001.xlsx
+2025-10-17 09:12:26,847 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\不合格异常\NC-20251009200001.xlsx
+2025-10-17 09:12:29,103 [INFO] Writing 81191 rows for subfolder: 不合格异常
+2025-10-17 09:12:30,346 [INFO] Written 81191 rows -> C:\Users\huangk14\OneDrive - Medtronic PLC\Huangkai Files\B1_Project\250418_MDDAP_project\80-数据清洗\publish\year=2025\NC-2025.parquet
+2025-10-17 09:12:30,359 [INFO] Processing subfolder: 产品检验记录 with 3 files
+2025-10-17 09:12:30,367 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\产品检验记录\QC-20250113.xlsx
+2025-10-17 09:12:34,895 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\产品检验记录\QC-20241211.xlsx
+2025-10-17 09:12:38,200 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\产品检验记录\QC-20250112.xlsx
+2025-10-17 09:12:43,386 [INFO] Writing 40716 rows for subfolder: 产品检验记录
+2025-10-17 09:12:43,597 [INFO] Written 14036 rows -> C:\Users\huangk14\OneDrive - Medtronic PLC\Huangkai Files\B1_Project\250418_MDDAP_project\80-数据清洗\publish\year=2024\QC-2024.parquet
+2025-10-17 09:12:43,976 [INFO] Written 26680 rows -> C:\Users\huangk14\OneDrive - Medtronic PLC\Huangkai Files\B1_Project\250418_MDDAP_project\80-数据清洗\publish\year=2025\QC-2025.parquet
+2025-10-17 09:12:43,981 [INFO] Processing subfolder: 批次报工汇总报表 with 10 files
+2025-10-17 09:12:43,983 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\批次报工汇总报表\LC-20251016200001.xlsx
+2025-10-17 09:12:46,451 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\批次报工汇总报表\LC-20251015200001.xlsx
+2025-10-17 09:12:49,165 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\批次报工汇总报表\LC-20251014200001.xlsx
+2025-10-17 09:12:54,004 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\批次报工汇总报表\LC-20251014080001.xlsx
+2025-10-17 09:12:56,485 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\批次报工汇总报表\LC-20251009200001.xlsx
+2025-10-17 09:12:58,204 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\批次报工汇总报表\LC-20251008200001.xlsx
+2025-10-17 09:13:01,256 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\批次报工汇总报表\LC-20251007200001.xlsx
+2025-10-17 09:13:05,805 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\批次报工汇总报表\LC-20251007080001.xlsx
+2025-10-17 09:13:09,655 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\批次报工汇总报表\LC-20250930200001.xlsx
+2025-10-17 09:13:12,947 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\批次报工汇总报表\LC-20250929200001.xlsx
+2025-10-17 09:13:16,745 [INFO] Writing 111308 rows for subfolder: 批次报工汇总报表
+2025-10-17 09:13:18,064 [INFO] Written 111308 rows -> C:\Users\huangk14\OneDrive - Medtronic PLC\Huangkai Files\B1_Project\250418_MDDAP_project\80-数据清洗\publish\year=2025\LC-2025.parquet
+2025-10-17 09:13:18,083 [INFO] Processing subfolder: 批次流转报表 with 10 files
+2025-10-17 09:13:18,091 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\批次流转报表\WIP-20251017080001.xlsx
+2025-10-17 09:13:19,171 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\批次流转报表\WIP-20251016080001.xlsx
+2025-10-17 09:13:20,325 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\批次流转报表\WIP-20251015080001.xlsx
+2025-10-17 09:13:21,518 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\批次流转报表\WIP-20251014200001.xlsx
+2025-10-17 09:13:22,604 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\批次流转报表\WIP-20251014080001.xlsx
+2025-10-17 09:13:23,676 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\批次流转报表\WIP-20251013080001.xlsx
+2025-10-17 09:13:24,947 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\批次流转报表\WIP-20251012080001.xlsx
+2025-10-17 09:13:26,122 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\批次流转报表\WIP-20251011080001.xlsx
+2025-10-17 09:13:27,262 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\批次流转报表\WIP-20251010080001.xlsx
+2025-10-17 09:13:28,506 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\批次流转报表\WIP-20251009200001.xlsx
+2025-10-17 09:13:29,183 [INFO] Writing 13633 rows for subfolder: 批次流转报表
+2025-10-17 09:13:29,393 [INFO] Written 13633 rows -> C:\Users\huangk14\OneDrive - Medtronic PLC\Huangkai Files\B1_Project\250418_MDDAP_project\80-数据清洗\publish\year=2025\WIP-2025.parquet
+2025-10-17 09:13:29,397 [INFO] Processing subfolder: 班组合格率数据 with 10 files
+2025-10-17 09:13:29,399 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\班组合格率数据\IGPR-20251017080001.xlsx
+2025-10-17 09:13:33,253 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\班组合格率数据\IGPR-20251016080001.xlsx
+2025-10-17 09:13:35,719 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\班组合格率数据\IGPR-20251014080001.xlsx
+2025-10-17 09:13:40,994 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\班组合格率数据\IGPR-20251015080001.xlsx
+2025-10-17 09:13:43,953 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\班组合格率数据\IGPR-20251009080001.xlsx
+2025-10-17 09:13:47,142 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\班组合格率数据\IGPR-20251001080001.xlsx
+2025-10-17 09:13:50,597 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\班组合格率数据\IGPR-20251007080001.xlsx
+2025-10-17 09:13:51,318 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\班组合格率数据\IGPR-20251008080001.xlsx
+2025-10-17 09:13:52,399 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\班组合格率数据\IGPR-20250930080001.xlsx
+2025-10-17 09:13:54,273 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\班组合格率数据\IGPR-20250929080001.xlsx
+2025-10-17 09:13:55,969 [INFO] Writing 75909 rows for subfolder: 班组合格率数据
+2025-10-17 09:13:56,449 [INFO] Written 75909 rows -> C:\Users\huangk14\OneDrive - Medtronic PLC\Huangkai Files\B1_Project\250418_MDDAP_project\80-数据清洗\publish\year=2025\IGPR-2025.parquet
+2025-10-17 09:13:56,455 [INFO] Processing subfolder: 维修记录 with 10 files
+2025-10-17 09:13:56,459 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\维修记录\EM-20251017001.xlsx
+2025-10-17 09:13:58,847 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\维修记录\EM-20251016001.xlsx
+2025-10-17 09:14:01,162 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\维修记录\EM-20251015001.xlsx
+2025-10-17 09:14:04,564 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\维修记录\EM-20251014001.xlsx
+2025-10-17 09:14:06,206 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\维修记录\EM-20251013001.xlsx
+2025-10-17 09:14:07,673 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\维修记录\EM-20251011001.xlsx
+2025-10-17 09:14:09,169 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\维修记录\EM-20251010001.xlsx
+2025-10-17 09:14:11,155 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\维修记录\EM-20251009001.xlsx
+2025-10-17 09:14:13,598 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\维修记录\EM-20250930001.xlsx
+2025-10-17 09:14:15,337 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\维修记录\EM-20250929001.xlsx
+2025-10-17 09:14:16,955 [INFO] Writing 6598 rows for subfolder: 维修记录
+2025-10-17 09:14:17,125 [INFO] Written 6598 rows -> C:\Users\huangk14\OneDrive - Medtronic PLC\Huangkai Files\B1_Project\250418_MDDAP_project\80-数据清洗\publish\year=2025\EM-2025.parquet
+2025-10-17 09:14:17,139 [INFO] Done in 132.10s
+2025-10-17 09:34:11,029 [INFO] Found 6 subfolders to process: ['NCMR清单', '不合格异常', '批次报工汇总报表', '批次流转报表', '班组合格率数据', '维修记录']
+2025-10-17 09:34:11,030 [INFO] Processing subfolder: NCMR清单 with 10 files
+2025-10-17 09:34:11,031 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\NCMR清单\NCMR-20251017080001.xlsx
+2025-10-17 09:34:11,527 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\NCMR清单\NCMR-20251016080001.xlsx
+2025-10-17 09:34:11,558 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\NCMR清单\NCMR-20251015080001.xlsx
+2025-10-17 09:34:11,586 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\NCMR清单\NCMR-20251014080001.xlsx
+2025-10-17 09:34:11,617 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\NCMR清单\NCMR-20251009200001.xlsx
+2025-10-17 09:34:11,648 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\NCMR清单\NCMR-20251009080001.xlsx
+2025-10-17 09:34:11,677 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\NCMR清单\NCMR-20251008080001.xlsx
+2025-10-17 09:34:11,706 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\NCMR清单\NCMR-20251007080001.xlsx
+2025-10-17 09:34:11,728 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\NCMR清单\NCMR-20251001080001.xlsx
+2025-10-17 09:34:11,752 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\NCMR清单\NCMR-20250930080001.xlsx
+2025-10-17 09:34:11,776 [INFO] Writing 70 rows for subfolder: NCMR清单
+2025-10-17 09:34:11,837 [INFO] Written 70 rows -> C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\数据归档\year=2025\NCMR-2025.parquet
+2025-10-17 09:34:11,838 [INFO] Processing subfolder: 不合格异常 with 10 files
+2025-10-17 09:34:11,839 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\不合格异常\NC-20251017080001.xlsx
+2025-10-17 09:34:13,211 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\不合格异常\NC-20251016080001.xlsx
+2025-10-17 09:34:14,926 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\不合格异常\NC-20251015080001.xlsx
+2025-10-17 09:34:16,193 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\不合格异常\NC-20251014080001.xlsx
+2025-10-17 09:34:17,209 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\不合格异常\NC-20251014200001.xlsx
+2025-10-17 09:34:18,323 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\不合格异常\NC-20251013200001.xlsx
+2025-10-17 09:34:19,438 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\不合格异常\NC-20251012200001.xlsx
+2025-10-17 09:34:20,533 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\不合格异常\NC-20251011200001.xlsx
+2025-10-17 09:34:21,545 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\不合格异常\NC-20251010200001.xlsx
+2025-10-17 09:34:22,581 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\不合格异常\NC-20251009200001.xlsx
+2025-10-17 09:34:23,601 [INFO] Writing 81191 rows for subfolder: 不合格异常
+2025-10-17 09:34:24,637 [INFO] Written 81191 rows -> C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\数据归档\year=2025\NC-2025.parquet
+2025-10-17 09:34:24,651 [INFO] Processing subfolder: 批次报工汇总报表 with 10 files
+2025-10-17 09:34:24,657 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\批次报工汇总报表\LC-20251016200001.xlsx
+2025-10-17 09:34:27,125 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\批次报工汇总报表\LC-20251015200001.xlsx
+2025-10-17 09:34:28,877 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\批次报工汇总报表\LC-20251014200001.xlsx
+2025-10-17 09:34:30,738 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\批次报工汇总报表\LC-20251014080001.xlsx
+2025-10-17 09:34:32,776 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\批次报工汇总报表\LC-20251009200001.xlsx
+2025-10-17 09:34:34,304 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\批次报工汇总报表\LC-20251008200001.xlsx
+2025-10-17 09:34:35,800 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\批次报工汇总报表\LC-20251007200001.xlsx
+2025-10-17 09:34:37,305 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\批次报工汇总报表\LC-20251007080001.xlsx
+2025-10-17 09:34:38,806 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\批次报工汇总报表\LC-20250930200001.xlsx
+2025-10-17 09:34:40,759 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\批次报工汇总报表\LC-20250929200001.xlsx
+2025-10-17 09:34:42,707 [INFO] Writing 111308 rows for subfolder: 批次报工汇总报表
+2025-10-17 09:34:43,848 [INFO] Written 111308 rows -> C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\数据归档\year=2025\LC-2025.parquet
+2025-10-17 09:34:43,867 [INFO] Processing subfolder: 批次流转报表 with 10 files
+2025-10-17 09:34:43,874 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\批次流转报表\WIP-20251017080001.xlsx
+2025-10-17 09:34:44,173 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\批次流转报表\WIP-20251016080001.xlsx
+2025-10-17 09:34:44,440 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\批次流转报表\WIP-20251015080001.xlsx
+2025-10-17 09:34:44,774 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\批次流转报表\WIP-20251014200001.xlsx
+2025-10-17 09:34:45,134 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\批次流转报表\WIP-20251014080001.xlsx
+2025-10-17 09:34:45,401 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\批次流转报表\WIP-20251013080001.xlsx
+2025-10-17 09:34:45,681 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\批次流转报表\WIP-20251012080001.xlsx
+2025-10-17 09:34:45,961 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\批次流转报表\WIP-20251011080001.xlsx
+2025-10-17 09:34:46,226 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\批次流转报表\WIP-20251010080001.xlsx
+2025-10-17 09:34:46,504 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\批次流转报表\WIP-20251009200001.xlsx
+2025-10-17 09:34:46,805 [INFO] Writing 13633 rows for subfolder: 批次流转报表
+2025-10-17 09:34:46,987 [INFO] Written 13633 rows -> C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\数据归档\year=2025\WIP-2025.parquet
+2025-10-17 09:34:46,989 [INFO] Processing subfolder: 班组合格率数据 with 10 files
+2025-10-17 09:34:46,991 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\班组合格率数据\IGPR-20251017080001.xlsx
+2025-10-17 09:34:49,375 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\班组合格率数据\IGPR-20251016080001.xlsx
+2025-10-17 09:34:51,044 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\班组合格率数据\IGPR-20251014080001.xlsx
+2025-10-17 09:34:53,493 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\班组合格率数据\IGPR-20251015080001.xlsx
+2025-10-17 09:34:54,903 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\班组合格率数据\IGPR-20251009080001.xlsx
+2025-10-17 09:34:55,787 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\班组合格率数据\IGPR-20251001080001.xlsx
+2025-10-17 09:34:57,222 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\班组合格率数据\IGPR-20251007080001.xlsx
+2025-10-17 09:34:57,235 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\班组合格率数据\IGPR-20251008080001.xlsx
+2025-10-17 09:34:57,491 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\班组合格率数据\IGPR-20250930080001.xlsx
+2025-10-17 09:34:59,128 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\班组合格率数据\IGPR-20250929080001.xlsx
+2025-10-17 09:35:00,790 [INFO] Writing 75909 rows for subfolder: 班组合格率数据
+2025-10-17 09:35:01,320 [INFO] Written 75909 rows -> C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\数据归档\year=2025\IGPR-2025.parquet
+2025-10-17 09:35:01,326 [INFO] Processing subfolder: 维修记录 with 10 files
+2025-10-17 09:35:01,331 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\维修记录\EM-20251017001.xlsx
+2025-10-17 09:35:04,414 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\维修记录\EM-20251016001.xlsx
+2025-10-17 09:35:05,996 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\维修记录\EM-20251015001.xlsx
+2025-10-17 09:35:07,586 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\维修记录\EM-20251014001.xlsx
+2025-10-17 09:35:09,137 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\维修记录\EM-20251013001.xlsx
+2025-10-17 09:35:10,598 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\维修记录\EM-20251011001.xlsx
+2025-10-17 09:35:12,264 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\维修记录\EM-20251010001.xlsx
+2025-10-17 09:35:13,731 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\维修记录\EM-20251009001.xlsx
+2025-10-17 09:35:15,278 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\维修记录\EM-20250930001.xlsx
+2025-10-17 09:35:16,718 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\维修记录\EM-20250929001.xlsx
+2025-10-17 09:35:18,216 [INFO] Writing 6598 rows for subfolder: 维修记录
+2025-10-17 09:35:18,347 [INFO] Written 6598 rows -> C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\数据归档\year=2025\EM-2025.parquet
+2025-10-17 09:35:18,361 [INFO] Done in 69.47s
+2025-10-17 09:37:28,311 [INFO] Found 6 subfolders to process: ['NCMR清单', '不合格异常', '批次报工汇总报表', '批次流转报表', '班组合格率数据', '维修记录']
+2025-10-17 09:37:28,312 [INFO] Processing subfolder: NCMR清单 with 10 files
+2025-10-17 09:37:28,313 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\NCMR清单\NCMR-20251017080001.xlsx
+2025-10-17 09:37:28,736 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\NCMR清单\NCMR-20251016080001.xlsx
+2025-10-17 09:37:28,753 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\NCMR清单\NCMR-20251015080001.xlsx
+2025-10-17 09:37:28,776 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\NCMR清单\NCMR-20251014080001.xlsx
+2025-10-17 09:37:28,796 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\NCMR清单\NCMR-20251009200001.xlsx
+2025-10-17 09:37:28,819 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\NCMR清单\NCMR-20251009080001.xlsx
+2025-10-17 09:37:28,841 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\NCMR清单\NCMR-20251008080001.xlsx
+2025-10-17 09:37:28,863 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\NCMR清单\NCMR-20251007080001.xlsx
+2025-10-17 09:37:28,888 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\NCMR清单\NCMR-20251001080001.xlsx
+2025-10-17 09:37:28,911 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\NCMR清单\NCMR-20250930080001.xlsx
+2025-10-17 09:37:28,935 [INFO] Writing 70 rows for subfolder: NCMR清单
+2025-10-17 09:37:28,984 [INFO] Written 70 rows -> C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\90-数据归档\year=2025\NCMR-2025.parquet
+2025-10-17 09:37:28,986 [INFO] Processing subfolder: 不合格异常 with 10 files
+2025-10-17 09:37:28,987 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\不合格异常\NC-20251017080001.xlsx
+2025-10-17 09:37:30,360 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\不合格异常\NC-20251016080001.xlsx
+2025-10-17 09:37:31,777 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\不合格异常\NC-20251015080001.xlsx
+2025-10-17 09:37:32,892 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\不合格异常\NC-20251014080001.xlsx
+2025-10-17 09:37:33,973 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\不合格异常\NC-20251014200001.xlsx
+2025-10-17 09:37:35,128 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\不合格异常\NC-20251013200001.xlsx
+2025-10-17 09:37:36,429 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\不合格异常\NC-20251012200001.xlsx
+2025-10-17 09:37:37,467 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\不合格异常\NC-20251011200001.xlsx
+2025-10-17 09:37:38,533 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\不合格异常\NC-20251010200001.xlsx
+2025-10-17 09:37:39,578 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\不合格异常\NC-20251009200001.xlsx
+2025-10-17 09:37:40,601 [INFO] Writing 81191 rows for subfolder: 不合格异常
+2025-10-17 09:37:41,576 [INFO] Written 81191 rows -> C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\90-数据归档\year=2025\NC-2025.parquet
+2025-10-17 09:37:41,587 [INFO] Processing subfolder: 批次报工汇总报表 with 10 files
+2025-10-17 09:37:41,593 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\批次报工汇总报表\LC-20251016200001.xlsx
+2025-10-17 09:37:43,343 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\批次报工汇总报表\LC-20251015200001.xlsx
+2025-10-17 09:37:45,719 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\批次报工汇总报表\LC-20251014200001.xlsx
+2025-10-17 09:37:47,240 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\批次报工汇总报表\LC-20251014080001.xlsx
+2025-10-17 09:37:49,139 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\批次报工汇总报表\LC-20251009200001.xlsx
+2025-10-17 09:37:50,787 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\批次报工汇总报表\LC-20251008200001.xlsx
+2025-10-17 09:37:52,776 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\批次报工汇总报表\LC-20251007200001.xlsx
+2025-10-17 09:37:54,453 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\批次报工汇总报表\LC-20251007080001.xlsx
+2025-10-17 09:37:56,008 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\批次报工汇总报表\LC-20250930200001.xlsx
+2025-10-17 09:37:57,969 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\批次报工汇总报表\LC-20250929200001.xlsx
+2025-10-17 09:37:59,909 [INFO] Writing 111308 rows for subfolder: 批次报工汇总报表
+2025-10-17 09:38:01,439 [INFO] Written 111308 rows -> C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\90-数据归档\year=2025\LC-2025.parquet
+2025-10-17 09:38:01,461 [INFO] Processing subfolder: 批次流转报表 with 10 files
+2025-10-17 09:38:01,475 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\批次流转报表\WIP-20251017080001.xlsx
+2025-10-17 09:38:01,792 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\批次流转报表\WIP-20251016080001.xlsx
+2025-10-17 09:38:02,235 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\批次流转报表\WIP-20251015080001.xlsx
+2025-10-17 09:38:02,661 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\批次流转报表\WIP-20251014200001.xlsx
+2025-10-17 09:38:03,343 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\批次流转报表\WIP-20251014080001.xlsx
+2025-10-17 09:38:03,769 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\批次流转报表\WIP-20251013080001.xlsx
+2025-10-17 09:38:04,206 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\批次流转报表\WIP-20251012080001.xlsx
+2025-10-17 09:38:04,681 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\批次流转报表\WIP-20251011080001.xlsx
+2025-10-17 09:38:05,024 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\批次流转报表\WIP-20251010080001.xlsx
+2025-10-17 09:38:05,602 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\批次流转报表\WIP-20251009200001.xlsx
+2025-10-17 09:38:06,451 [INFO] Writing 13633 rows for subfolder: 批次流转报表
+2025-10-17 09:38:06,832 [INFO] Written 13633 rows -> C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\90-数据归档\year=2025\WIP-2025.parquet
+2025-10-17 09:38:06,836 [INFO] Processing subfolder: 班组合格率数据 with 10 files
+2025-10-17 09:38:06,838 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\班组合格率数据\IGPR-20251017080001.xlsx
+2025-10-17 09:38:08,527 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\班组合格率数据\IGPR-20251016080001.xlsx
+2025-10-17 09:38:10,201 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\班组合格率数据\IGPR-20251014080001.xlsx
+2025-10-17 09:38:12,761 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\班组合格率数据\IGPR-20251015080001.xlsx
+2025-10-17 09:38:14,265 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\班组合格率数据\IGPR-20251009080001.xlsx
+2025-10-17 09:38:15,141 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\班组合格率数据\IGPR-20251001080001.xlsx
+2025-10-17 09:38:16,645 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\班组合格率数据\IGPR-20251007080001.xlsx
+2025-10-17 09:38:16,657 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\班组合格率数据\IGPR-20251008080001.xlsx
+2025-10-17 09:38:16,946 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\班组合格率数据\IGPR-20250930080001.xlsx
+2025-10-17 09:38:18,614 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\班组合格率数据\IGPR-20250929080001.xlsx
+2025-10-17 09:38:20,249 [INFO] Writing 75909 rows for subfolder: 班组合格率数据
+2025-10-17 09:38:20,794 [INFO] Written 75909 rows -> C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\90-数据归档\year=2025\IGPR-2025.parquet
+2025-10-17 09:38:20,804 [INFO] Processing subfolder: 维修记录 with 10 files
+2025-10-17 09:38:20,809 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\维修记录\EM-20251017001.xlsx
+2025-10-17 09:38:23,474 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\维修记录\EM-20251016001.xlsx
+2025-10-17 09:38:25,186 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\维修记录\EM-20251015001.xlsx
+2025-10-17 09:38:26,745 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\维修记录\EM-20251014001.xlsx
+2025-10-17 09:38:28,218 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\维修记录\EM-20251013001.xlsx
+2025-10-17 09:38:29,621 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\维修记录\EM-20251011001.xlsx
+2025-10-17 09:38:31,191 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\维修记录\EM-20251010001.xlsx
+2025-10-17 09:38:32,665 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\维修记录\EM-20251009001.xlsx
+2025-10-17 09:38:34,140 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\维修记录\EM-20250930001.xlsx
+2025-10-17 09:38:35,675 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\维修记录\EM-20250929001.xlsx
+2025-10-17 09:38:37,329 [INFO] Writing 6598 rows for subfolder: 维修记录
+2025-10-17 09:38:37,487 [INFO] Written 6598 rows -> C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\90-数据归档\year=2025\EM-2025.parquet
+2025-10-17 09:38:37,505 [INFO] Done in 70.50s
+2025-10-17 09:41:47,882 [INFO] Found 6 subfolders to process: ['NCMR清单', '不合格异常', '批次报工汇总报表', '批次流转报表', '班组合格率数据', '维修记录']
+2025-10-17 09:41:47,883 [INFO] Processing subfolder: NCMR清单 with 10 files
+2025-10-17 09:41:47,884 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\NCMR清单\NCMR-20250929080001.xlsx
+2025-10-17 09:41:48,386 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\NCMR清单\NCMR-20250928080001.xlsx
+2025-10-17 09:41:48,411 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\NCMR清单\NCMR-20250927080001.xlsx
+2025-10-17 09:41:48,438 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\NCMR清单\NCMR-20250926080001.xlsx
+2025-10-17 09:41:48,465 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\NCMR清单\NCMR-20250925080001.xlsx
+2025-10-17 09:41:48,492 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\NCMR清单\NCMR-20250924080001.xlsx
+2025-10-17 09:41:48,517 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\NCMR清单\NCMR-20250923080001.xlsx
+2025-10-17 09:41:48,544 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\NCMR清单\NCMR-20250922080001.xlsx
+2025-10-17 09:41:48,568 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\NCMR清单\NCMR-20250921080001.xlsx
+2025-10-17 09:41:48,589 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\NCMR清单\NCMR-20250920080001.xlsx
+2025-10-17 09:41:48,616 [INFO] Writing 51 rows for subfolder: NCMR清单
+2025-10-17 09:41:48,658 [INFO] Written 51 rows -> C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\90-SFC数据归档\year=2025\NCMR-2025.parquet
+2025-10-17 09:41:48,659 [INFO] Processing subfolder: 不合格异常 with 10 files
+2025-10-17 09:41:48,660 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\不合格异常\NC-20251009080001.xlsx
+2025-10-17 09:41:51,950 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\不合格异常\NC-20251008080001.xlsx
+2025-10-17 09:41:56,109 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\不合格异常\NC-20251007080001.xlsx
+2025-10-17 09:41:58,857 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\不合格异常\NC-20251001080001.xlsx
+2025-10-17 09:42:03,344 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\不合格异常\NC-20250930080001.xlsx
+2025-10-17 09:42:06,847 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\不合格异常\NC-20250929080001.xlsx
+2025-10-17 09:42:16,599 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\不合格异常\NC-20250928080001.xlsx
+2025-10-17 09:42:19,841 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\不合格异常\NC-20250927080001.xlsx
+2025-10-17 09:42:23,492 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\不合格异常\NC-20250926080001.xlsx
+2025-10-17 09:42:26,698 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\不合格异常\NC-20250925080001.xlsx
+2025-10-17 09:42:29,193 [INFO] Writing 93814 rows for subfolder: 不合格异常
+2025-10-17 09:42:30,674 [INFO] Written 93814 rows -> C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\90-SFC数据归档\year=2025\NC-2025.parquet
+2025-10-17 09:42:30,694 [INFO] Processing subfolder: 批次报工汇总报表 with 10 files
+2025-10-17 09:42:30,703 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\批次报工汇总报表\LC-20250928200001.xlsx
+2025-10-17 09:42:34,512 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\批次报工汇总报表\LC-20250927200001.xlsx
+2025-10-17 09:42:37,875 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\批次报工汇总报表\LC-20250926200001.xlsx
+2025-10-17 09:42:43,528 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\批次报工汇总报表\LC-20250925200001.xlsx
+2025-10-17 09:42:48,215 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\批次报工汇总报表\LC-20250924200001.xlsx
+2025-10-17 09:42:53,368 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\批次报工汇总报表\LC-20250923200001.xlsx
+2025-10-17 09:42:57,310 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\批次报工汇总报表\LC-20250922200001.xlsx
+2025-10-17 09:43:01,584 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\批次报工汇总报表\LC-20250921200001.xlsx
+2025-10-17 09:43:18,103 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\批次报工汇总报表\LC-20250920200001.xlsx
+2025-10-17 09:43:23,113 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\批次报工汇总报表\LC-20250919200001.xlsx
+2025-10-17 09:43:27,144 [INFO] Writing 131399 rows for subfolder: 批次报工汇总报表
+2025-10-17 09:43:28,955 [INFO] Written 131399 rows -> C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\90-SFC数据归档\year=2025\LC-2025.parquet
+2025-10-17 09:43:28,986 [INFO] Processing subfolder: 批次流转报表 with 10 files
+2025-10-17 09:43:28,996 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\批次流转报表\WIP-20251009080001.xlsx
+2025-10-17 09:43:29,765 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\批次流转报表\WIP-20251008080001.xlsx
+2025-10-17 09:43:30,603 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\批次流转报表\WIP-20251007080001.xlsx
+2025-10-17 09:43:31,377 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\批次流转报表\WIP-20251001080001.xlsx
+2025-10-17 09:43:31,968 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\批次流转报表\WIP-20250930080001.xlsx
+2025-10-17 09:43:32,520 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\批次流转报表\WIP-20250929080001.xlsx
+2025-10-17 09:43:33,203 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\批次流转报表\WIP-20250928080001.xlsx
+2025-10-17 09:43:34,068 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\批次流转报表\WIP-20250927080001.xlsx
+2025-10-17 09:43:34,962 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\批次流转报表\WIP-20250926080001.xlsx
+2025-10-17 09:43:35,627 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\批次流转报表\WIP-20250925080001.xlsx
+2025-10-17 09:43:36,400 [INFO] Writing 13735 rows for subfolder: 批次流转报表
+2025-10-17 09:43:36,660 [INFO] Written 13735 rows -> C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\90-SFC数据归档\year=2025\WIP-2025.parquet
+2025-10-17 09:43:36,664 [INFO] Processing subfolder: 班组合格率数据 with 10 files
+2025-10-17 09:43:36,667 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\班组合格率数据\IGPR-20250927080001.xlsx
+2025-10-17 09:43:40,404 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\班组合格率数据\IGPR-20250928080001.xlsx
+2025-10-17 09:43:41,953 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\班组合格率数据\IGPR-20250926080001.xlsx
+2025-10-17 09:43:45,124 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\班组合格率数据\IGPR-20250925080001.xlsx
+2025-10-17 09:43:48,375 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\班组合格率数据\IGPR-20250924080001.xlsx
+2025-10-17 09:43:51,589 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\班组合格率数据\IGPR-20250923080001.xlsx
+2025-10-17 09:43:54,275 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\班组合格率数据\IGPR-20250920080001.xlsx
+2025-10-17 09:43:57,822 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\班组合格率数据\IGPR-20250921080001.xlsx
+2025-10-17 09:43:58,879 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\班组合格率数据\IGPR-20250922080001.xlsx
+2025-10-17 09:43:59,381 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\班组合格率数据\IGPR-20250919080001.xlsx
+2025-10-17 09:44:03,628 [INFO] Writing 82130 rows for subfolder: 班组合格率数据
+2025-10-17 09:44:04,163 [INFO] Written 82130 rows -> C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\90-SFC数据归档\year=2025\IGPR-2025.parquet
+2025-10-17 09:44:04,175 [INFO] Processing subfolder: 维修记录 with 10 files
+2025-10-17 09:44:04,179 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\维修记录\EM-20250928001.xlsx
+2025-10-17 09:44:06,633 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\维修记录\EM-20250926001.xlsx
+2025-10-17 09:44:09,249 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\维修记录\EM-20250925001.xlsx
+2025-10-17 09:44:11,512 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\维修记录\EM-20250924001.xlsx
+2025-10-17 09:44:13,566 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\维修记录\EM-20250923001.xlsx
+2025-10-17 09:44:15,347 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\维修记录\EM-20250922001.xlsx
+2025-10-17 09:44:17,284 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\维修记录\EM-20250919001.xlsx
+2025-10-17 09:44:19,257 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\维修记录\EM-20250918001.xlsx
+2025-10-17 09:44:21,017 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\维修记录\EM-20250917001.xlsx
+2025-10-17 09:44:22,698 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\维修记录\EM-20250915001.xlsx
+2025-10-17 09:44:24,779 [INFO] Writing 6108 rows for subfolder: 维修记录
+2025-10-17 09:44:24,958 [INFO] Written 6108 rows -> C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\90-SFC数据归档\year=2025\EM-2025.parquet
+2025-10-17 09:44:24,974 [INFO] Done in 158.72s
+2025-10-17 09:45:39,096 [INFO] Found 6 subfolders to process: ['NCMR清单', '不合格异常', '批次报工汇总报表', '批次流转报表', '班组合格率数据', '维修记录']
+2025-10-17 09:45:39,098 [INFO] Processing subfolder: NCMR清单 with 10 files
+2025-10-17 09:45:39,099 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\NCMR清单\NCMR-20250918200001.xlsx
+2025-10-17 09:45:39,457 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\NCMR清单\NCMR-20250918080001.xlsx
+2025-10-17 09:45:39,474 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\NCMR清单\NCMR-20250917080001.xlsx
+2025-10-17 09:45:39,495 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\NCMR清单\NCMR-20250916080001.xlsx
+2025-10-17 09:45:39,513 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\NCMR清单\NCMR-20250915080001.xlsx
+2025-10-17 09:45:39,531 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\NCMR清单\NCMR-20250914080001.xlsx
+2025-10-17 09:45:39,550 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\NCMR清单\NCMR-20250913080001.xlsx
+2025-10-17 09:45:39,570 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\NCMR清单\NCMR-20250912080001.xlsx
+2025-10-17 09:45:39,588 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\NCMR清单\NCMR-20250911080001.xlsx
+2025-10-17 09:45:39,604 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\NCMR清单\NCMR-20250910080001.xlsx
+2025-10-17 09:45:39,623 [INFO] Writing 26 rows for subfolder: NCMR清单
+2025-10-17 09:45:39,664 [INFO] Written 77 rows -> C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\90-SFC数据归档\year=2025\NCMR-2025.parquet
+2025-10-17 09:45:39,666 [INFO] Processing subfolder: 不合格异常 with 10 files
+2025-10-17 09:45:39,668 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\不合格异常\NC-20250924080001.xlsx
+2025-10-17 09:45:42,563 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\不合格异常\NC-20250923080001.xlsx
+2025-10-17 09:45:46,192 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\不合格异常\NC-20250922080001.xlsx
+2025-10-17 09:45:48,042 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\不合格异常\NC-20250921080001.xlsx
+2025-10-17 09:45:52,026 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\不合格异常\NC-20250920080001.xlsx
+2025-10-17 09:45:54,122 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\不合格异常\NC-20250919080001.xlsx
+2025-10-17 09:45:57,180 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\不合格异常\NC-20250918080001.xlsx
+2025-10-17 09:46:01,752 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\不合格异常\NC-20250917080001.xlsx
+2025-10-17 09:46:08,610 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\不合格异常\NC-20250916080001.xlsx
+2025-10-17 09:46:12,434 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\不合格异常\NC-20250915080001.xlsx
+2025-10-17 09:46:15,463 [INFO] Writing 92939 rows for subfolder: 不合格异常
+2025-10-17 09:46:20,463 [INFO] Written 186753 rows -> C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\90-SFC数据归档\year=2025\NC-2025.parquet
+2025-10-17 09:46:20,539 [INFO] Processing subfolder: 批次报工汇总报表 with 10 files
+2025-10-17 09:46:20,547 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\批次报工汇总报表\LC-20250918200001.xlsx
+2025-10-17 09:46:24,798 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\批次报工汇总报表\LC-20250917200001.xlsx
+2025-10-17 09:46:30,852 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\批次报工汇总报表\LC-20250916200001.xlsx
+2025-10-17 09:46:36,637 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\批次报工汇总报表\LC-20250915200001.xlsx
+2025-10-17 09:46:50,953 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\批次报工汇总报表\LC-20250914200001.xlsx
+2025-10-17 09:46:57,829 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\批次报工汇总报表\LC-20250913200001.xlsx
+2025-10-17 09:47:06,175 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\批次报工汇总报表\LC-20250912200001.xlsx
+2025-10-17 09:47:13,529 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\批次报工汇总报表\LC-20250911200001.xlsx
+2025-10-17 09:47:19,334 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\批次报工汇总报表\LC-20250910200001.xlsx
+2025-10-17 09:47:24,226 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\批次报工汇总报表\LC-20250909200001.xlsx
+2025-10-17 09:47:28,664 [INFO] Writing 137119 rows for subfolder: 批次报工汇总报表
+2025-10-17 09:47:35,972 [INFO] Written 268518 rows -> C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\90-SFC数据归档\year=2025\LC-2025.parquet
+2025-10-17 09:47:36,106 [INFO] Processing subfolder: 批次流转报表 with 10 files
+2025-10-17 09:47:36,121 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\批次流转报表\WIP-20250924080001.xlsx
+2025-10-17 09:47:37,599 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\批次流转报表\WIP-20250923080001.xlsx
+2025-10-17 09:47:39,010 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\批次流转报表\WIP-20250922080001.xlsx
+2025-10-17 09:47:40,559 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\批次流转报表\WIP-20250921080001.xlsx
+2025-10-17 09:47:41,944 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\批次流转报表\WIP-20250920080001.xlsx
+2025-10-17 09:47:43,897 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\批次流转报表\WIP-20250919080001.xlsx
+2025-10-17 09:47:45,310 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\批次流转报表\WIP-20250918080001.xlsx
+2025-10-17 09:47:47,095 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\批次流转报表\WIP-20250917080001.xlsx
+2025-10-17 09:47:48,547 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\批次流转报表\WIP-20250916080001.xlsx
+2025-10-17 09:47:50,622 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\批次流转报表\WIP-20250915080001.xlsx
+2025-10-17 09:47:52,663 [INFO] Writing 13611 rows for subfolder: 批次流转报表
+2025-10-17 09:47:53,481 [INFO] Written 27346 rows -> C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\90-SFC数据归档\year=2025\WIP-2025.parquet
+2025-10-17 09:47:53,498 [INFO] Processing subfolder: 班组合格率数据 with 10 files
+2025-10-17 09:47:53,501 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\班组合格率数据\IGPR-20250918080001.xlsx
+2025-10-17 09:48:00,422 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\班组合格率数据\IGPR-20250917080001.xlsx
+2025-10-17 09:48:07,216 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\班组合格率数据\IGPR-20250916080001.xlsx
+2025-10-17 09:48:12,491 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\班组合格率数据\IGPR-20250913080001.xlsx
+2025-10-17 09:48:17,895 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\班组合格率数据\IGPR-20250914080001.xlsx
+2025-10-17 09:48:18,947 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\班组合格率数据\IGPR-20250915080001.xlsx
+2025-10-17 09:48:20,519 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\班组合格率数据\IGPR-20250912080001.xlsx
+2025-10-17 09:48:25,579 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\班组合格率数据\IGPR-20250911080001.xlsx
+2025-10-17 09:48:29,889 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\班组合格率数据\IGPR-20250910080001.xlsx
+2025-10-17 09:48:34,850 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\班组合格率数据\IGPR-20250908080001.xlsx
+2025-10-17 09:48:35,364 [INFO] Writing 76744 rows for subfolder: 班组合格率数据
+2025-10-17 09:48:38,094 [INFO] Written 158874 rows -> C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\90-SFC数据归档\year=2025\IGPR-2025.parquet
+2025-10-17 09:48:38,156 [INFO] Processing subfolder: 维修记录 with 10 files
+2025-10-17 09:48:38,165 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\维修记录\EM-20250912001.xlsx
+2025-10-17 09:48:41,930 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\维修记录\EM-20250908001.xlsx
+2025-10-17 09:48:44,848 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\维修记录\EM-20250905001.xlsx
+2025-10-17 09:48:47,641 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\维修记录\EM-20250904001.xlsx
+2025-10-17 09:48:51,321 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\维修记录\EM-20250903001.xlsx
+2025-10-17 09:48:53,423 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\维修记录\EM-20250902001.xlsx
+2025-10-17 09:48:54,793 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\维修记录\EM-20250901001.xlsx
+2025-10-17 09:48:56,244 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\维修记录\EM-20250828001.xlsx
+2025-10-17 09:48:57,876 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\维修记录\EM-20250627001.xlsx
+2025-10-17 09:48:59,289 [INFO] Processing: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\维修记录\EM-20250826001.xlsx
+2025-10-17 09:49:01,001 [INFO] Writing 5297 rows for subfolder: 维修记录
+2025-10-17 09:49:01,381 [INFO] Written 11405 rows -> C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\90-SFC数据归档\year=2025\EM-2025.parquet
+2025-10-17 09:49:01,405 [INFO] Done in 204.29s

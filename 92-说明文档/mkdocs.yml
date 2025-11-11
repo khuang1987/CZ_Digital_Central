@@ -1,0 +1,171 @@
+# MkDocs 配置文件 - 数据平台电子说明书
+site_name: CZ Ops 数字化数据平台 - 电子说明书
+site_description: CZ Ops 数字化数据平台的数据字段定义、计算方法、数据来源及使用指南
+site_author: Medtronic CZ Ops Team
+
+# 主题配置
+theme:
+  name: material
+  language: zh
+  palette:
+    # 亮色模式
+    - scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-7
+        name: 切换到深色模式
+    # 深色模式
+    - scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-4
+        name: 切换到亮色模式
+  features:
+    - navigation.instant      # 即时加载
+    - navigation.tracking     # 锚点跟踪
+    - navigation.tabs         # 顶部导航标签
+    - navigation.tabs.sticky  # 顶部标签固定
+    - navigation.sections     # 导航分组
+    - navigation.expand       # 默认展开导航
+    - navigation.indexes      # 章节索引页
+    - navigation.top          # 返回顶部按钮
+    - toc.follow              # 目录跟随
+    - search.suggest          # 搜索建议
+    - search.highlight        # 搜索高亮
+    - search.share            # 搜索分享
+    - content.code.copy       # 代码复制按钮
+    - content.code.annotate   # 代码注释
+  icon:
+    repo: fontawesome/brands/github
+
+# 额外配置
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/
+      name: GitHub
+
+# Markdown 扩展
+markdown_extensions:
+  - abbr
+  - admonition
+  - attr_list
+  - def_list
+  - footnotes
+  - meta
+  - md_in_html
+  - toc:
+      permalink: true
+      toc_depth: 4
+  - pymdownx.arithmatex:
+      generic: true
+  - pymdownx.betterem:
+      smart_enable: all
+  - pymdownx.caret
+  - pymdownx.details
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.keys
+  - pymdownx.magiclink:
+      repo_url_shorthand: true
+      user: squidfunk
+      repo: mkdocs-material
+  - pymdownx.mark
+  - pymdownx.smartsymbols
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.tilde
+  - tables
+
+# 导航结构
+nav:
+  - 首页: index.md
+  
+  - KPI 指标体系:
+    - KPI 概述: kpi/index.md
+    - 供应链 KPI:
+      - 供应链 KPI 概述: kpi/supply-chain.md
+      - SA - 计划达成率:
+        - SA 概述: sa/index.md
+        - 计算方法与定义: sa/calculation-definition.md
+        - 字段说明: sa/field-specification.md
+        - 数据源说明: sa/data-sources.md
+        - 计算示例: sa/examples.md
+    - 生产部门 KPI:
+      - 生产 KPI 概述: kpi/production.md
+    - 质量部门 KPI:
+      - 质量 KPI 概述: kpi/quality.md
+    - 持续改进 KPI:
+      - 持续改进 KPI 概述: kpi/ci.md
+  
+  - 数据处理 ETL:
+    - ETL 概述: etl/index.md
+    - ETL 流程说明: etl/etl-process.md
+    - SA 数据清洗: etl/etl-sa.md
+    - SFC 数据清洗: etl/etl-sfc.md
+    - 标准时间处理: etl/standard-time.md
+    - 配置说明: etl/configuration.md
+  
+  - Power Query 代码:
+    - PQ 概述: pq/index.md
+    - MES 报工记录: pq/mes-records.md
+    - SFC 报工记录: pq/sfc-records.md
+    - 标准时间查询: pq/standard-time.md
+    - 增量刷新方案: pq/incremental-refresh.md
+  
+  - 使用指南:
+    - 快速开始: guide/quick-start.md
+    - 数据更新流程: guide/data-update.md
+    - 常见问题 FAQ: guide/faq.md
+    - 故障排查: guide/troubleshooting.md
+  
+  - 项目管理:
+    - DMAIC 阶段:
+      - 定义阶段（Define）: project/01_Define_定义阶段/index.md
+      - 测量阶段（Measure）: project/02_Measure_测量阶段/index.md
+      - 分析阶段（Analyze）: project/03_Analyze_分析阶段/index.md
+      - 改进阶段（Improve）: project/04_Improve_改进阶段/index.md
+      - 控制阶段（Control）: project/05_Control_控制阶段/index.md
+    - 项目进展总览: project/progress/index.md
+    - 会议纪要: project/meetings/index.md
+  
+  - 参考信息:
+    - 文件命名规范: reference/naming-convention.md
+    - 字典表说明: reference/dictionary.md
+  
+  - 更新日志: changelog/index.md
+
+# 插件配置
+plugins:
+  - search:
+      lang:
+        - zh
+        - en
+  - git-revision-date-localized:
+      enable_creation_date: true
+      type: datetime
+      fallback_to_build_date: true  # 如果没有git仓库，使用构建日期
+
+# 额外的 JavaScript 和 CSS
+extra_javascript:
+  - https://polyfill.io/v3/polyfill.min.js?features=es6
+  - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
+
+extra_css:
+  - stylesheets/extra.css
+

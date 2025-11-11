@@ -1,0 +1,155 @@
+# SA指标数据清洗配置文件
+
+# 数据源路径配置
+# 注意：请填写SharePoint同步到本地的文件路径
+source:
+  # MES数据路径（必需）
+  mes_path: "C:\\Users\\huangk14\\OneDrive - Medtronic PLC\\CZ Production - 文档\\General\\POWER BI 数据源 V2\\30-MES导出数据\\Product Output -CZM -FY26.xlsx"
+  
+  # 合并后的标准时间表路径（可选）
+  # 支持通配符，例如：publish/SAP_Routing_*.parquet
+  # 如果为空或使用通配符，自动查找publish目录下最新的SAP_Routing_*.parquet文件
+  # 文件名格式：SAP_Routing_yyyymmdd.parquet
+  standard_time_path: "C:\\Users\\huangk14\\OneDrive - Medtronic PLC\\CZ Production - 文档\\General\\POWER BI 数据源 V2\\30-MES导出数据\\publish\\SAP_Routing_*.parquet"
+  
+  # SFC处理后数据文件路径（用于合并Checkin_SFC字段）
+  sfc_latest_file: "C:\\Users\\huangk14\\OneDrive - Medtronic PLC\\CZ Production - 文档\\General\\POWER BI 数据源 V2\\30-MES导出数据\\publish\\SFC_处理后数据_latest.parquet"
+  
+  # 日历工作日表路径（用于判断工作日和节假日）
+  calendar_file: "C:\\Users\\huangk14\\OneDrive - Medtronic PLC\\CZ Production - 文档\\General\\POWER BI 数据源 V2\\30-MES导出数据\\publish\\日历工作日表.csv"
+  
+  # 每日工作时间（小时），用于DueTime计算
+  # 设置为24.0表示工作日24小时连续生产，非工作日不生产
+  daily_working_hours: 24.0
+ 
+# MES数据字段映射
+# 将Excel原始列名映射到标准列名
+mes_mapping:
+  # 基础标识字段
+  "Material_Name": "BatchNumber"
+  "Product_Name": "CFN"
+  "LogicalFlowPath": "Group"
+  "ERPOperation": "Operation"
+  "Step_Name": "Operation description"
+  "ProductionOrder": "ProductionOrder"
+  "Area_Name": "ProductionArea"
+  "Resource Description": "ResourceDescription"
+  "ERPProdSupervisor": "VSM"
+  
+  # 时间字段
+  "DateEnteredStep": "EnterStepTime"
+  "First_TrackIn_Date": "TrackInTime"
+  "TrackOutDate": "TrackOutTime"
+  
+  # 数量字段
+  "Step_In_PrimaryQuantity": "StepInQuantity"
+  "TrackOut_PrimaryQuantity": "TrackOutQuantity"
+  
+  # 注意：Resource字段保留原名称，用于提取machine字段
+
+# MES数据类型定义
+mes_types:
+  # 时间字段
+  TrackOutTime: datetime
+  EnterStepTime: datetime
+  TrackInTime: datetime
+  StartTime: datetime
+  PreviousBatchEndTime: datetime
+  DueTime: datetime
+  Checkin_SFC: datetime
+  
+  # 日期字段
+  TrackOutDate: date
+  Date created: date
+  
+  # 数值字段
+  StepInQuantity: int
+  TrackOutQuantity: int
+  Operation: string
+  
+  # 文本字段
+  BatchNumber: string
+  CFN: string
+  Group: string
+  ResourceCode: string
+  # 数值字段（整数）
+  ProductionOrder: int
+  ResourceDescription: string
+  ProductionArea: string
+  Operation description: string
+  VSM: string
+
+# 输出配置
+output:
+  # 输出目录（保存到SharePoint同步文件夹）
+  base_dir: "C:\\Users\\huangk14\\OneDrive - Medtronic PLC\\CZ Production - 文档\\General\\POWER BI 数据源 V2\\30-MES导出数据\\publish"
+  
+  # 输出格式
+  format: "parquet"
+  
+  # Parquet压缩配置
+  parquet:
+    compression: "snappy"  # 可选: snappy, gzip, brotli, zstd
+
+# 日志配置
+logging:
+  level: "INFO"  # DEBUG, INFO, WARNING, ERROR
+  file: "logs/etl_sa.log"
+
+# 去重配置
+deduplicate:
+  # 是否启用去重
+  enabled: false  # 设置为true以启用去重
+  
+  # 用于判断重复的关键字段（列表）
+  # 当多个文件中有相同关键字段组合的记录时，只保留最新的
+  key_fields:
+    - "BatchNumber"
+    - "Operation"
+    - "machine"
+  
+  # 用于判断"最新"的排序字段
+  sort_field: "TrackOutTime"  # 通常使用报工时间
+  
+  # 排序方向：false表示降序（保留最大值/最新值），true表示升序（保留最小值/最早值）
+  sort_ascending: false
+
+# 测试配置
+test:
+  # 是否启用测试模式（仅读取部分数据）
+  enabled: true  # 设置为true启用测试模式，false读取全部数据
+  
+  # 测试模式下读取的最大行数
+  max_rows: 50000  # 仅读取前N行数据用于测试
+
+# 增量处理配置
+incremental:
+  # 是否启用增量处理
+  enabled: true  # 设置为true启用增量处理
+  
+  # 历史数据文件路径（用于增量合并）
+  history_file: "C:\\Users\\huangk14\\OneDrive - Medtronic PLC\\CZ Production - 文档\\General\\POWER BI 数据源 V2\\30-MES导出数据\\publish\\MES_处理后数据_latest.parquet"
+  
+  # 状态文件路径（记录已处理的记录）
+  state_file: "C:\\Users\\huangk14\\OneDrive - Medtronic PLC\\CZ Production - 文档\\General\\POWER BI 数据源 V2\\30-MES导出数据\\publish\\etl_state.json"
+  
+  # 用于生成唯一记录标识的字段（复合键）
+  # 这些字段组合起来应该能唯一标识一条记录
+  unique_key_fields:
+    - "BatchNumber"
+    - "Operation"
+    - "machine"
+    - "TrackOutTime"
+  
+  # 时间窗口（天）：只处理TrackOutTime在此时间窗口内的数据
+  # 设置为0或null表示不限制时间窗口
+  time_window_days: null  # 例如：30 表示只处理最近30天的数据
+  
+  # 全量刷新阈值（天）：如果距离上次处理时间超过此值，执行全量刷新
+  # 设置为0或null表示不限制
+  full_refresh_threshold_days: 90  # 90天未刷新则全量处理
+
+# 运行时配置
+runtime:
+  # 处理失败时的行为
+  on_error: "continue"  # continue 或 stop

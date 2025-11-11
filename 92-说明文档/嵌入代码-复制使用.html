@@ -1,0 +1,122 @@
+<!-- 
+  CZ Ops 数字化数据平台说明书 - SharePoint 嵌入代码
+  
+  使用说明：
+  1. 复制下面的完整代码
+  2. 在 SharePoint 页面中添加"嵌入" Web 部件
+  3. 粘贴此代码
+  4. 替换 src 中的 URL 为您的实际文件路径
+  
+  创建时间：2025-11-10
+-->
+
+<iframe 
+  src="https://medtronic.sharepoint.com/sites/您的站点名称/Shared%20Documents/数字化平台说明书/index.html" 
+  width="100%" 
+  height="1000px" 
+  frameborder="0"
+  style="
+    border: 0; 
+    margin: 0; 
+    padding: 0; 
+    display: block;
+    background-color: #ffffff;
+  "
+  title="CZ Ops 数字化数据平台说明书"
+  allowfullscreen>
+  <p>您的浏览器不支持 iframe。请<a href="https://medtronic.sharepoint.com/sites/您的站点名称/Shared%20Documents/数字化平台说明书/index.html">直接访问文档</a>。</p>
+</iframe>
+
+
+<!-- 
+  ========================================
+  需要替换的部分：
+  ========================================
+  
+  1. "您的站点名称" → 替换为实际的 SharePoint 站点名称
+     例如：CZOps, Manufacturing, Operations 等
+  
+  2. "Shared%20Documents" → 如果是中文文档库名称，需要 URL 编码
+     例如：文档 → %E6%96%87%E6%A1%A3
+  
+  3. "数字化平台说明书" → 您在文档库中创建的文件夹名称
+  
+  ========================================
+  获取正确 URL 的方法：
+  ========================================
+  
+  1. 在 SharePoint 文档库中找到 index.html
+  2. 右键 → "在浏览器中打开"
+  3. 复制地址栏的完整 URL
+  4. 将该 URL 粘贴到 src="" 的引号中
+  
+  正确的 URL 格式示例：
+  https://medtronic.sharepoint.com/sites/CZOps/Shared%20Documents/数字化平台说明书/index.html
+  
+  ========================================
+  可调整的参数：
+  ========================================
+  
+  height="1000px"  → 可以调整为 900px, 1200px, 或 100vh（全屏高度）
+  width="100%"     → 建议保持 100%
+  
+  ========================================
+  高级选项（如果需要）：
+  ========================================
+-->
+
+<!-- 选项 1：固定高度（推荐） -->
+<!-- height="1000px" -->
+
+<!-- 选项 2：响应式高度 -->
+<!-- height="100vh" -->
+
+<!-- 选项 3：自动计算高度（需要 JavaScript，可能需要管理员权限） -->
+<!-- 
+<script>
+  function resizeIframe(iframe) {
+    iframe.height = iframe.contentWindow.document.documentElement.scrollHeight + "px";
+  }
+</script>
+<iframe 
+  src="您的URL" 
+  width="100%" 
+  height="1000px"
+  frameborder="0"
+  onload="resizeIframe(this)"
+  style="border: 0;">
+</iframe>
+-->
+
+
+<!-- 
+  ========================================
+  故障排查：
+  ========================================
+  
+  问题1：显示"无法显示此内容"
+  解决：确保使用的是直接访问 URL，不是预览 URL（不要有 :u:/r/ ）
+  
+  问题2：页面显示但样式错乱
+  解决：检查 assets 文件夹是否完整上传到 SharePoint
+  
+  问题3：无法滚动
+  解决：调整 height 参数，或检查 CSS 冲突
+  
+  问题4：显示空白
+  解决：
+  - 检查 URL 是否正确
+  - 检查是否有访问权限
+  - 按 F12 查看控制台错误
+  
+  ========================================
+  测试步骤：
+  ========================================
+  
+  1. 先单独在浏览器中打开 iframe 的 src URL
+  2. 确认可以正常访问
+  3. 再将代码添加到 SharePoint 页面
+  4. 发布页面并测试
+  
+-->
+

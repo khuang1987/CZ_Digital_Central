@@ -1,0 +1,60 @@
+let
+    源 = SharePoint.Files("https://medtronicapac.sharepoint.com/sites/ChangzhouOpsProduction", [ApiVersion = 15]),
+    筛选的KH数据文件夹 = Table.SelectRows(源, each Text.Contains([Folder Path], "POWER BI 数据源 KH/")),
+    筛选的行2 = Table.SelectRows(筛选的KH数据文件夹, each Text.StartsWith([Name], "工时统计-")),
+    筛选的行3 = Table.SelectRows(筛选的行2, each true),
+    已添加自定义 = Table.AddColumn(筛选的行3, "自定义", each Excel.Workbook([Content],true)),
+    #"展开的“自定义”" = Table.ExpandTableColumn(已添加自定义, "自定义", {"Name", "Data", "Item", "Kind", "Hidden"}, {"Name.1", "Data", "Item", "Kind", "Hidden"}),
+    筛选的行1 = Table.SelectRows(#"展开的“自定义”", each ([Kind] = "Sheet")),
+    删除的列 = Table.RemoveColumns(筛选的行1,{"Name","Name.1","Content", "Extension", "Date accessed", "Date modified", "Date created", "Attributes", "Folder Path", "Item", "Kind", "Hidden"}),
+    #"展开的“Data”" = Table.ExpandTableColumn(删除的列, "Data", {"订单", "物料描述", "物料编号", "确认", "活动", "工序数量 (MEINH)", "确认的产量 (GMEIN)", "工作中心", "工序", "单元", "类别", "实际吸收工时", "单位/作业 (=ILE03)", "过帐日期", "产线"}, {"订单", "物料描述", "物料编号", "确认", "活动", "工序数量 (MEINH)", "确认的产量 (GMEIN)", "工作中心", "工序", "单元", "类别", "实际吸收工时", "单位/作业 (=ILE03)", "过帐日期", "产线"}),
+    #"Changed Type" = Table.TransformColumnTypes(#"展开的“Data”",{{"过帐日期", type date}, {"实际吸收工时", type number}}),
+    #"Added Custom" = Table.AddColumn(#"Changed Type", "生产区域", each "9997"&"/"),
+    #"Removed Other Columns" = Table.SelectColumns(#"Added Custom",{"订单", "物料编号", "活动", "工作中心", "工序", "实际吸收工时", "过帐日期","生产区域"}),
+    #"Renamed Columns" = Table.RenameColumns(#"Removed Other Columns",{{"活动", "工序号"}}),
+    
+    // 转换为与B2/B3兼容的字段结构
+    转换字段 = Table.RenameColumns(#"Renamed Columns", {
+        {"订单", "Order"},
+        {"物料编号", "Material"},
+        {"工作中心", "Work Center"},
+        {"工序号", "Operation"},
+        {"工序", "Operation Description"},
+        {"实际吸收工时", "Earned Labor Time"},
+        {"过帐日期", "Posting date"},
+        {"生产区域", "Production Scheduler"}
+    }),
+    
+    // 添加Plant列
+    添加Plant = Table.AddColumn(转换字段, "Plant", each "9997", type text),
+    
+    // 补充B2/B3需要的缺失字段
+    补充字段1 = Table.AddColumn(添加Plant, "Work Center Name", each null, type text),
+    补充字段2 = Table.AddColumn(补充字段1, "Cost Center", each null, type text),
+    补充字段3 = Table.AddColumn(补充字段2, "Cost Center Name", each null, type text),
+    补充字段4 = Table.AddColumn(补充字段3, "Material Name", each null, type text),
+    补充字段5 = Table.AddColumn(补充字段4, "Material type", each null, type text),
+    补充字段6 = Table.AddColumn(补充字段5, "MRP Controller", each null, type text),
+    补充字段7 = Table.AddColumn(补充字段6, "MRP Discription_1", each null, type text),
+    补充字段8 = Table.AddColumn(补充字段7, "MRP_Discription_2", each null, type text),
+    补充字段9 = Table.AddColumn(补充字段8, "Order type", each null, type text),
+    补充字段10 = Table.AddColumn(补充字段9, "Order type_2", each null, type text),
+    补充字段12 = Table.AddColumn(补充字段11, "Earned Labor Unit", each "H", type text),
+    补充字段13 = Table.AddColumn(补充字段12, "Actual Quantity", each null, type nullable number),
+    补充字段14 = Table.AddColumn(补充字段13, "Actual Scrap Qty", each null, type nullable number),
+    补充字段15 = Table.AddColumn(补充字段14, "Target Quantity", each null, type nullable number),
+    
+    // 重排序列以匹配B2/B3的顺序
+    重新排序 = Table.ReorderColumns(补充字段15, {
+        "Plant", "Work Center", "Work Center Name", "Cost Center", "Cost Center Name", 
+        "Material", "Material Name", "Material type", "MRP Controller", 
+        "MRP Discription_1", "Production Scheduler", "MRP_Discription_2", 
+        "Order", "Order type", "Order type_2", "Operation", "Operation Description", 
+        "Posting date", "Machine Time", "Earned Labor Time", "Earned Labor Unit", 
+        "Actual Quantity", "Actual Scrap Qty", "Target Quantity"
+    }),
+    
+    #"Sorted Rows" = Table.Sort(重新排序,{{"Earned Labor Time", Order.Descending}}),
+    #"Filtered Rows" = Table.SelectRows(#"Sorted Rows", each not Text.StartsWith([Work Center], "OSP-"))
+in
+    #"Filtered Rows"

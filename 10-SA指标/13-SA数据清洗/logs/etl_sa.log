@@ -1,0 +1,1110 @@
+2025-11-05 10:58:58,122 - ERROR - 未找到匹配的MES文件: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\30-MES\Product Output*.xlsx
+2025-11-05 10:58:58,124 - WARNING - 处理后的数据为空
+2025-11-05 11:08:26,162 - INFO - 读取MES数据: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\30-MES导出数据\Product Output -CZM -FY26.xlsx
+2025-11-05 11:11:17,098 - ERROR - ETL失败: 'ResourceCode'
+Traceback (most recent call last):
+  File "C:\Users\huangk14\AppData\Local\Programs\Python\Python312\Lib\site-packages\pandas\core\indexes\base.py", line 3805, in get_loc
+    return self._engine.get_loc(casted_key)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "index.pyx", line 167, in pandas._libs.index.IndexEngine.get_loc
+  File "index.pyx", line 196, in pandas._libs.index.IndexEngine.get_loc
+  File "pandas\\_libs\\hashtable_class_helper.pxi", line 7081, in pandas._libs.hashtable.PyObjectHashTable.get_item
+  File "pandas\\_libs\\hashtable_class_helper.pxi", line 7089, in pandas._libs.hashtable.PyObjectHashTable.get_item
+KeyError: 'ResourceCode'
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "c:\Users\huangk14\OneDrive - Medtronic PLC\Huangkai Files\B1_Project\250418_MDDAP_project\10-SA指标\13-SA数据清洗\etl_sa.py", line 595, in <module>
+    result_df = process_all_data(cfg)
+                ^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\huangk14\OneDrive - Medtronic PLC\Huangkai Files\B1_Project\250418_MDDAP_project\10-SA指标\13-SA数据清洗\etl_sa.py", line 560, in process_all_data
+    result = calculate_metrics(result)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\huangk14\OneDrive - Medtronic PLC\Huangkai Files\B1_Project\250418_MDDAP_project\10-SA指标\13-SA数据清洗\etl_sa.py", line 313, in calculate_metrics
+    result["Machine(#)"] = result["ResourceCode"].apply(extract_machine_number)
+                           ~~~~~~^^^^^^^^^^^^^^^^
+  File "C:\Users\huangk14\AppData\Local\Programs\Python\Python312\Lib\site-packages\pandas\core\frame.py", line 4090, in __getitem__
+    indexer = self.columns.get_loc(key)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\huangk14\AppData\Local\Programs\Python\Python312\Lib\site-packages\pandas\core\indexes\base.py", line 3812, in get_loc
+    raise KeyError(key) from err
+KeyError: 'ResourceCode'
+2025-11-05 12:05:11,586 - INFO - 测试模式已启用，将仅读取前 100 行数据
+2025-11-05 12:05:11,587 - INFO - 读取MES数据: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\30-MES导出数据\Product Output -CZM -FY26.xlsx
+2025-11-05 12:05:20,514 - INFO - 测试模式：仅读取前 100 行数据
+2025-11-05 12:05:20,515 - INFO - Excel原始列名: ['ERPCode', 'Material_Name', 'LogicalFlowPath', 'DateEnteredStep', 'Product_Name', 'Product_Description', 'DrawingProductNumber_Value', 'ERPProdSupervisor', 'ERPMRPController', 'Resource', 'Resource Description', 'ResourceType', 'Area_Name', 'Last_TrackIn_Service', 'ProductionOrder', 'ProductionOrderVersion', 'ERPOperation', 'Step_Name', 'PrimaryUnits', 'SecondaryUnits', 'Step_In_PrimaryQuantity', 'Step_In_Date', 'First_TrackIn_Date ', 'First_TrackIn_PrimaryQuantity', 'First_TrackIn_User', 'Last_TrackIn_Date', 'Last_TrackIn_User', 'Last_TrackIn_PrimaryQuantity', 'Last_TrackIn_SecondaryQuantity', 'TrackOutDate', 'TrackOut_PrimaryQuantity', 'TrackOut_User', 'Last_Transaction_PrimaryQuantity', 'Last_Transaction_Date', 'Material_State', 'Step_Duration_Minute', 'Ordertype']
+2025-11-05 12:05:20,515 - WARNING - 未配置字段映射，将使用Excel原始列名
+2025-11-05 12:05:20,515 - INFO - 映射后列名: ['ERPCode', 'Material_Name', 'LogicalFlowPath', 'DateEnteredStep', 'Product_Name', 'Product_Description', 'DrawingProductNumber_Value', 'ERPProdSupervisor', 'ERPMRPController', 'Resource', 'Resource Description', 'ResourceType', 'Area_Name', 'Last_TrackIn_Service', 'ProductionOrder', 'ProductionOrderVersion', 'ERPOperation', 'Step_Name', 'PrimaryUnits', 'SecondaryUnits', 'Step_In_PrimaryQuantity', 'Step_In_Date', 'First_TrackIn_Date ', 'First_TrackIn_PrimaryQuantity', 'First_TrackIn_User', 'Last_TrackIn_Date', 'Last_TrackIn_User', 'Last_TrackIn_PrimaryQuantity', 'Last_TrackIn_SecondaryQuantity', 'TrackOutDate', 'TrackOut_PrimaryQuantity', 'TrackOut_User', 'Last_Transaction_PrimaryQuantity', 'Last_Transaction_Date', 'Material_State', 'Step_Duration_Minute', 'Ordertype']
+2025-11-05 12:05:20,645 - WARNING - ResourceCode字段不存在，无法计算Machine(#)，请检查字段映射配置
+2025-11-05 12:05:20,697 - INFO - 已保存Parquet文件: publish\MES_处理后数据_20251105.parquet, 行数: 100
+2025-11-05 12:05:20,697 - INFO - 处理完成，耗时: 9.11秒
+2025-11-05 14:02:46,822 - INFO - 测试模式已启用，将仅读取前 100 行数据
+2025-11-05 14:02:46,823 - INFO - 读取MES数据: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\30-MES导出数据\Product Output -CZM -FY26.xlsx
+2025-11-05 14:02:46,825 - ERROR - 读取Excel文件失败: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\30-MES导出数据\Product Output -CZM -FY26.xlsx, 错误: [Errno 13] Permission denied: 'C:\\Users\\huangk14\\OneDrive - Medtronic PLC\\CZ Production - 文档\\General\\POWER BI 数据源 V2\\30-MES导出数据\\Product Output -CZM -FY26.xlsx'
+2025-11-05 14:02:46,825 - ERROR - ETL失败: [Errno 13] Permission denied: 'C:\\Users\\huangk14\\OneDrive - Medtronic PLC\\CZ Production - 文档\\General\\POWER BI 数据源 V2\\30-MES导出数据\\Product Output -CZM -FY26.xlsx'
+Traceback (most recent call last):
+  File "c:\Users\huangk14\OneDrive - Medtronic PLC\Huangkai Files\B1_Project\250418_MDDAP_project\10-SA指标\13-SA数据清洗\etl_sa.py", line 682, in <module>
+    result_df = process_all_data(cfg)
+                ^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\huangk14\OneDrive - Medtronic PLC\Huangkai Files\B1_Project\250418_MDDAP_project\10-SA指标\13-SA数据清洗\etl_sa.py", line 624, in process_all_data
+    mes_df = read_sharepoint_excel(mes_path, max_rows=max_rows)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\huangk14\OneDrive - Medtronic PLC\Huangkai Files\B1_Project\250418_MDDAP_project\10-SA指标\13-SA数据清洗\etl_sa.py", line 61, in read_sharepoint_excel
+    df = pd.read_excel(file_path, engine='openpyxl', sheet_name=0, nrows=max_rows)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\huangk14\OneDrive - Medtronic PLC\Huangkai Files\B1_Project\250418_MDDAP_project\.venv\Lib\site-packages\pandas\io\excel\_base.py", line 495, in read_excel
+    io = ExcelFile(
+         ^^^^^^^^^^
+  File "C:\Users\huangk14\OneDrive - Medtronic PLC\Huangkai Files\B1_Project\250418_MDDAP_project\.venv\Lib\site-packages\pandas\io\excel\_base.py", line 1567, in __init__
+    self._reader = self._engines[engine](
+                   ^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\huangk14\OneDrive - Medtronic PLC\Huangkai Files\B1_Project\250418_MDDAP_project\.venv\Lib\site-packages\pandas\io\excel\_openpyxl.py", line 553, in __init__
+    super().__init__(
+  File "C:\Users\huangk14\OneDrive - Medtronic PLC\Huangkai Files\B1_Project\250418_MDDAP_project\.venv\Lib\site-packages\pandas\io\excel\_base.py", line 563, in __init__
+    self.handles = get_handle(
+                   ^^^^^^^^^^^
+  File "C:\Users\huangk14\OneDrive - Medtronic PLC\Huangkai Files\B1_Project\250418_MDDAP_project\.venv\Lib\site-packages\pandas\io\common.py", line 882, in get_handle
+    handle = open(handle, ioargs.mode)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+PermissionError: [Errno 13] Permission denied: 'C:\\Users\\huangk14\\OneDrive - Medtronic PLC\\CZ Production - 文档\\General\\POWER BI 数据源 V2\\30-MES导出数据\\Product Output -CZM -FY26.xlsx'
+2025-11-05 14:03:15,024 - INFO - 测试模式已启用，将仅读取前 100 行数据
+2025-11-05 14:03:15,026 - INFO - 读取MES数据: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\30-MES导出数据\Product Output -CZM -FY26.xlsx
+2025-11-05 14:03:25,785 - INFO - 测试模式：仅读取前 100 行数据
+2025-11-05 14:03:25,786 - INFO - Excel原始列名: ['ERPCode', 'Material_Name', 'LogicalFlowPath', 'DateEnteredStep', 'Product_Name', 'Product_Description', 'DrawingProductNumber_Value', 'ERPProdSupervisor', 'ERPMRPController', 'Resource', 'Resource Description', 'ResourceType', 'Area_Name', 'Last_TrackIn_Service', 'ProductionOrder', 'ProductionOrderVersion', 'ERPOperation', 'Step_Name', 'PrimaryUnits', 'SecondaryUnits', 'Step_In_PrimaryQuantity', 'Step_In_Date', 'First_TrackIn_Date ', 'First_TrackIn_PrimaryQuantity', 'First_TrackIn_User', 'Last_TrackIn_Date', 'Last_TrackIn_User', 'Last_TrackIn_PrimaryQuantity', 'Last_TrackIn_SecondaryQuantity', 'TrackOutDate', 'TrackOut_PrimaryQuantity', 'TrackOut_User', 'Last_Transaction_PrimaryQuantity', 'Last_Transaction_Date', 'Material_State', 'Step_Duration_Minute', 'Ordertype']
+2025-11-05 14:03:25,786 - WARNING - 未配置字段映射，将使用Excel原始列名
+2025-11-05 14:03:25,787 - INFO - 映射后列名: ['ERPCode', 'Material_Name', 'LogicalFlowPath', 'DateEnteredStep', 'Product_Name', 'Product_Description', 'DrawingProductNumber_Value', 'ERPProdSupervisor', 'ERPMRPController', 'Resource', 'Resource Description', 'ResourceType', 'Area_Name', 'Last_TrackIn_Service', 'ProductionOrder', 'ProductionOrderVersion', 'ERPOperation', 'Step_Name', 'PrimaryUnits', 'SecondaryUnits', 'Step_In_PrimaryQuantity', 'Step_In_Date', 'First_TrackIn_Date ', 'First_TrackIn_PrimaryQuantity', 'First_TrackIn_User', 'Last_TrackIn_Date', 'Last_TrackIn_User', 'Last_TrackIn_PrimaryQuantity', 'Last_TrackIn_SecondaryQuantity', 'TrackOutDate', 'TrackOut_PrimaryQuantity', 'TrackOut_User', 'Last_Transaction_PrimaryQuantity', 'Last_Transaction_Date', 'Material_State', 'Step_Duration_Minute', 'Ordertype']
+2025-11-05 14:03:25,823 - WARNING - ResourceCode字段不存在，无法计算Machine(#)，请检查字段映射配置
+2025-11-05 14:03:25,868 - INFO - 已保存Parquet文件: publish\MES_处理后数据_20251105.parquet, 行数: 100
+2025-11-05 14:03:25,868 - INFO - 处理完成，耗时: 10.84秒
+2025-11-05 14:14:12,414 - INFO - 测试模式已启用，将仅读取前 100 行数据
+2025-11-05 14:14:12,415 - INFO - 读取MES数据: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\30-MES导出数据\Product Output -CZM -FY26.xlsx
+2025-11-05 14:14:22,401 - INFO - 测试模式：仅读取前 100 行数据
+2025-11-05 14:14:22,402 - INFO - Excel原始列名: ['ERPCode', 'Material_Name', 'LogicalFlowPath', 'DateEnteredStep', 'Product_Name', 'Product_Description', 'DrawingProductNumber_Value', 'ERPProdSupervisor', 'ERPMRPController', 'Resource', 'Resource Description', 'ResourceType', 'Area_Name', 'Last_TrackIn_Service', 'ProductionOrder', 'ProductionOrderVersion', 'ERPOperation', 'Step_Name', 'PrimaryUnits', 'SecondaryUnits', 'Step_In_PrimaryQuantity', 'Step_In_Date', 'First_TrackIn_Date ', 'First_TrackIn_PrimaryQuantity', 'First_TrackIn_User', 'Last_TrackIn_Date', 'Last_TrackIn_User', 'Last_TrackIn_PrimaryQuantity', 'Last_TrackIn_SecondaryQuantity', 'TrackOutDate', 'TrackOut_PrimaryQuantity', 'TrackOut_User', 'Last_Transaction_PrimaryQuantity', 'Last_Transaction_Date', 'Material_State', 'Step_Duration_Minute', 'Ordertype']
+2025-11-05 14:14:22,404 - WARNING - 未配置字段映射，将使用Excel原始列名
+2025-11-05 14:14:22,405 - INFO - 映射后列名: ['ERPCode', 'Material_Name', 'LogicalFlowPath', 'DateEnteredStep', 'Product_Name', 'Product_Description', 'DrawingProductNumber_Value', 'ERPProdSupervisor', 'ERPMRPController', 'Resource', 'Resource Description', 'ResourceType', 'Area_Name', 'Last_TrackIn_Service', 'ProductionOrder', 'ProductionOrderVersion', 'ERPOperation', 'Step_Name', 'PrimaryUnits', 'SecondaryUnits', 'Step_In_PrimaryQuantity', 'Step_In_Date', 'First_TrackIn_Date ', 'First_TrackIn_PrimaryQuantity', 'First_TrackIn_User', 'Last_TrackIn_Date', 'Last_TrackIn_User', 'Last_TrackIn_PrimaryQuantity', 'Last_TrackIn_SecondaryQuantity', 'TrackOutDate', 'TrackOut_PrimaryQuantity', 'TrackOut_User', 'Last_Transaction_PrimaryQuantity', 'Last_Transaction_Date', 'Material_State', 'Step_Duration_Minute', 'Ordertype']
+2025-11-05 14:14:22,411 - INFO - 已从Resource字段提取资源代码，创建machine和ResourceCode字段
+2025-11-05 14:14:22,415 - ERROR - ETL失败: 'TrackOutTime'
+Traceback (most recent call last):
+  File "c:\Users\huangk14\OneDrive - Medtronic PLC\Huangkai Files\B1_Project\250418_MDDAP_project\10-SA指标\13-SA数据清洗\etl_sa.py", line 733, in <module>
+    result_df = process_all_data(cfg)
+                ^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\huangk14\OneDrive - Medtronic PLC\Huangkai Files\B1_Project\250418_MDDAP_project\10-SA指标\13-SA数据清洗\etl_sa.py", line 677, in process_all_data
+    mes_df = process_mes_data(mes_df, cfg)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\huangk14\OneDrive - Medtronic PLC\Huangkai Files\B1_Project\250418_MDDAP_project\10-SA指标\13-SA数据清洗\etl_sa.py", line 150, in process_mes_data
+    result = calculate_trackin_time_and_setup(result)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\huangk14\OneDrive - Medtronic PLC\Huangkai Files\B1_Project\250418_MDDAP_project\10-SA指标\13-SA数据清洗\etl_sa.py", line 245, in calculate_trackin_time_and_setup
+    group_sorted = group.sort_values("TrackOutTime", na_position='last').reset_index(drop=True)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\huangk14\OneDrive - Medtronic PLC\Huangkai Files\B1_Project\250418_MDDAP_project\.venv\Lib\site-packages\pandas\core\frame.py", line 7211, in sort_values
+    k = self._get_label_or_level_values(by[0], axis=axis)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\huangk14\OneDrive - Medtronic PLC\Huangkai Files\B1_Project\250418_MDDAP_project\.venv\Lib\site-packages\pandas\core\generic.py", line 1914, in _get_label_or_level_values
+    raise KeyError(key)
+KeyError: 'TrackOutTime'
+2025-11-05 14:18:00,507 - INFO - 测试模式已启用，将仅读取前 100 行数据
+2025-11-05 14:18:00,509 - INFO - 读取MES数据: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\30-MES导出数据\Product Output -CZM -FY26.xlsx
+2025-11-05 14:18:09,628 - INFO - 测试模式：仅读取前 100 行数据
+2025-11-05 14:18:09,629 - INFO - Excel原始列名: ['ERPCode', 'Material_Name', 'LogicalFlowPath', 'DateEnteredStep', 'Product_Name', 'Product_Description', 'DrawingProductNumber_Value', 'ERPProdSupervisor', 'ERPMRPController', 'Resource', 'Resource Description', 'ResourceType', 'Area_Name', 'Last_TrackIn_Service', 'ProductionOrder', 'ProductionOrderVersion', 'ERPOperation', 'Step_Name', 'PrimaryUnits', 'SecondaryUnits', 'Step_In_PrimaryQuantity', 'Step_In_Date', 'First_TrackIn_Date ', 'First_TrackIn_PrimaryQuantity', 'First_TrackIn_User', 'Last_TrackIn_Date', 'Last_TrackIn_User', 'Last_TrackIn_PrimaryQuantity', 'Last_TrackIn_SecondaryQuantity', 'TrackOutDate', 'TrackOut_PrimaryQuantity', 'TrackOut_User', 'Last_Transaction_PrimaryQuantity', 'Last_Transaction_Date', 'Material_State', 'Step_Duration_Minute', 'Ordertype']
+2025-11-05 14:18:09,630 - WARNING - 未配置字段映射，将使用Excel原始列名
+2025-11-05 14:18:09,630 - INFO - 映射后列名: ['ERPCode', 'Material_Name', 'LogicalFlowPath', 'DateEnteredStep', 'Product_Name', 'Product_Description', 'DrawingProductNumber_Value', 'ERPProdSupervisor', 'ERPMRPController', 'Resource', 'Resource Description', 'ResourceType', 'Area_Name', 'Last_TrackIn_Service', 'ProductionOrder', 'ProductionOrderVersion', 'ERPOperation', 'Step_Name', 'PrimaryUnits', 'SecondaryUnits', 'Step_In_PrimaryQuantity', 'Step_In_Date', 'First_TrackIn_Date ', 'First_TrackIn_PrimaryQuantity', 'First_TrackIn_User', 'Last_TrackIn_Date', 'Last_TrackIn_User', 'Last_TrackIn_PrimaryQuantity', 'Last_TrackIn_SecondaryQuantity', 'TrackOutDate', 'TrackOut_PrimaryQuantity', 'TrackOut_User', 'Last_Transaction_PrimaryQuantity', 'Last_Transaction_Date', 'Material_State', 'Step_Duration_Minute', 'Ordertype']
+2025-11-05 14:18:09,633 - INFO - 已从TrackOutDate创建TrackOutTime字段
+2025-11-05 14:18:09,634 - INFO - 已从Resource字段提取资源代码，创建machine字段
+2025-11-05 14:18:09,642 - ERROR - ETL失败: 'CFN'
+Traceback (most recent call last):
+  File "C:\Users\huangk14\OneDrive - Medtronic PLC\Huangkai Files\B1_Project\250418_MDDAP_project\.venv\Lib\site-packages\pandas\core\indexes\base.py", line 3812, in get_loc
+    return self._engine.get_loc(casted_key)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "pandas/_libs/index.pyx", line 167, in pandas._libs.index.IndexEngine.get_loc
+  File "pandas/_libs/index.pyx", line 196, in pandas._libs.index.IndexEngine.get_loc
+  File "pandas/_libs/hashtable_class_helper.pxi", line 7088, in pandas._libs.hashtable.PyObjectHashTable.get_item
+  File "pandas/_libs/hashtable_class_helper.pxi", line 7096, in pandas._libs.hashtable.PyObjectHashTable.get_item
+KeyError: 'CFN'
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "c:\Users\huangk14\OneDrive - Medtronic PLC\Huangkai Files\B1_Project\250418_MDDAP_project\10-SA指标\13-SA数据清洗\etl_sa.py", line 748, in <module>
+    result_df = process_all_data(cfg)
+                ^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\huangk14\OneDrive - Medtronic PLC\Huangkai Files\B1_Project\250418_MDDAP_project\10-SA指标\13-SA数据清洗\etl_sa.py", line 692, in process_all_data
+    mes_df = process_mes_data(mes_df, cfg)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\huangk14\OneDrive - Medtronic PLC\Huangkai Files\B1_Project\250418_MDDAP_project\10-SA指标\13-SA数据清洗\etl_sa.py", line 156, in process_mes_data
+    result = calculate_trackin_time_and_setup(result)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\huangk14\OneDrive - Medtronic PLC\Huangkai Files\B1_Project\250418_MDDAP_project\10-SA指标\13-SA数据清洗\etl_sa.py", line 267, in calculate_trackin_time_and_setup
+    group_sorted['_prev_cfn'] = group_sorted['CFN'].shift(1)
+                                ~~~~~~~~~~~~^^^^^^^
+  File "C:\Users\huangk14\OneDrive - Medtronic PLC\Huangkai Files\B1_Project\250418_MDDAP_project\.venv\Lib\site-packages\pandas\core\frame.py", line 4113, in __getitem__
+    indexer = self.columns.get_loc(key)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\huangk14\OneDrive - Medtronic PLC\Huangkai Files\B1_Project\250418_MDDAP_project\.venv\Lib\site-packages\pandas\core\indexes\base.py", line 3819, in get_loc
+    raise KeyError(key) from err
+KeyError: 'CFN'
+2025-11-05 14:32:47,867 - INFO - 测试模式已启用，将仅读取前 100 行数据
+2025-11-05 14:32:47,868 - INFO - 读取MES数据: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\30-MES导出数据\Product Output -CZM -FY26.xlsx
+2025-11-05 14:32:56,112 - INFO - 测试模式：仅读取前 100 行数据
+2025-11-05 14:32:56,113 - INFO - Excel原始列名: ['ERPCode', 'Material_Name', 'LogicalFlowPath', 'DateEnteredStep', 'Product_Name', 'Product_Description', 'DrawingProductNumber_Value', 'ERPProdSupervisor', 'ERPMRPController', 'Resource', 'Resource Description', 'ResourceType', 'Area_Name', 'Last_TrackIn_Service', 'ProductionOrder', 'ProductionOrderVersion', 'ERPOperation', 'Step_Name', 'PrimaryUnits', 'SecondaryUnits', 'Step_In_PrimaryQuantity', 'Step_In_Date', 'First_TrackIn_Date ', 'First_TrackIn_PrimaryQuantity', 'First_TrackIn_User', 'Last_TrackIn_Date', 'Last_TrackIn_User', 'Last_TrackIn_PrimaryQuantity', 'Last_TrackIn_SecondaryQuantity', 'TrackOutDate', 'TrackOut_PrimaryQuantity', 'TrackOut_User', 'Last_Transaction_PrimaryQuantity', 'Last_Transaction_Date', 'Material_State', 'Step_Duration_Minute', 'Ordertype']
+2025-11-05 14:32:56,113 - WARNING - 未配置字段映射，将使用Excel原始列名
+2025-11-05 14:32:56,114 - INFO - 映射后列名: ['ERPCode', 'Material_Name', 'LogicalFlowPath', 'DateEnteredStep', 'Product_Name', 'Product_Description', 'DrawingProductNumber_Value', 'ERPProdSupervisor', 'ERPMRPController', 'Resource', 'Resource Description', 'ResourceType', 'Area_Name', 'Last_TrackIn_Service', 'ProductionOrder', 'ProductionOrderVersion', 'ERPOperation', 'Step_Name', 'PrimaryUnits', 'SecondaryUnits', 'Step_In_PrimaryQuantity', 'Step_In_Date', 'First_TrackIn_Date ', 'First_TrackIn_PrimaryQuantity', 'First_TrackIn_User', 'Last_TrackIn_Date', 'Last_TrackIn_User', 'Last_TrackIn_PrimaryQuantity', 'Last_TrackIn_SecondaryQuantity', 'TrackOutDate', 'TrackOut_PrimaryQuantity', 'TrackOut_User', 'Last_Transaction_PrimaryQuantity', 'Last_Transaction_Date', 'Material_State', 'Step_Duration_Minute', 'Ordertype']
+2025-11-05 14:32:56,117 - INFO - 已从TrackOutDate创建TrackOutTime字段
+2025-11-05 14:32:56,118 - INFO - 已从Resource字段提取资源代码，创建machine字段
+2025-11-05 14:32:56,121 - ERROR - ETL失败: 'CFN'
+Traceback (most recent call last):
+  File "C:\Users\huangk14\OneDrive - Medtronic PLC\Huangkai Files\B1_Project\250418_MDDAP_project\.venv\Lib\site-packages\pandas\core\indexes\base.py", line 3812, in get_loc
+    return self._engine.get_loc(casted_key)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "pandas/_libs/index.pyx", line 167, in pandas._libs.index.IndexEngine.get_loc
+  File "pandas/_libs/index.pyx", line 196, in pandas._libs.index.IndexEngine.get_loc
+  File "pandas/_libs/hashtable_class_helper.pxi", line 7088, in pandas._libs.hashtable.PyObjectHashTable.get_item
+  File "pandas/_libs/hashtable_class_helper.pxi", line 7096, in pandas._libs.hashtable.PyObjectHashTable.get_item
+KeyError: 'CFN'
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "c:\Users\huangk14\OneDrive - Medtronic PLC\Huangkai Files\B1_Project\250418_MDDAP_project\10-SA指标\13-SA数据清洗\etl_sa.py", line 748, in <module>
+    result_df = process_all_data(cfg)
+                ^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\huangk14\OneDrive - Medtronic PLC\Huangkai Files\B1_Project\250418_MDDAP_project\10-SA指标\13-SA数据清洗\etl_sa.py", line 692, in process_all_data
+    mes_df = process_mes_data(mes_df, cfg)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\huangk14\OneDrive - Medtronic PLC\Huangkai Files\B1_Project\250418_MDDAP_project\10-SA指标\13-SA数据清洗\etl_sa.py", line 156, in process_mes_data
+    result = calculate_trackin_time_and_setup(result)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\huangk14\OneDrive - Medtronic PLC\Huangkai Files\B1_Project\250418_MDDAP_project\10-SA指标\13-SA数据清洗\etl_sa.py", line 267, in calculate_trackin_time_and_setup
+    group_sorted['_prev_cfn'] = group_sorted['CFN'].shift(1)
+                                ~~~~~~~~~~~~^^^^^^^
+  File "C:\Users\huangk14\OneDrive - Medtronic PLC\Huangkai Files\B1_Project\250418_MDDAP_project\.venv\Lib\site-packages\pandas\core\frame.py", line 4113, in __getitem__
+    indexer = self.columns.get_loc(key)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\huangk14\OneDrive - Medtronic PLC\Huangkai Files\B1_Project\250418_MDDAP_project\.venv\Lib\site-packages\pandas\core\indexes\base.py", line 3819, in get_loc
+    raise KeyError(key) from err
+KeyError: 'CFN'
+2025-11-05 14:39:33,075 - INFO - 测试模式已启用，将仅读取前 100 行数据
+2025-11-05 14:39:33,078 - INFO - 读取MES数据: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\30-MES导出数据\Product Output -CZM -FY26.xlsx
+2025-11-05 14:39:43,593 - INFO - 测试模式：仅读取前 100 行数据
+2025-11-05 14:39:43,594 - INFO - Excel原始列名: ['ERPCode', 'Material_Name', 'LogicalFlowPath', 'DateEnteredStep', 'Product_Name', 'Product_Description', 'DrawingProductNumber_Value', 'ERPProdSupervisor', 'ERPMRPController', 'Resource', 'Resource Description', 'ResourceType', 'Area_Name', 'Last_TrackIn_Service', 'ProductionOrder', 'ProductionOrderVersion', 'ERPOperation', 'Step_Name', 'PrimaryUnits', 'SecondaryUnits', 'Step_In_PrimaryQuantity', 'Step_In_Date', 'First_TrackIn_Date ', 'First_TrackIn_PrimaryQuantity', 'First_TrackIn_User', 'Last_TrackIn_Date', 'Last_TrackIn_User', 'Last_TrackIn_PrimaryQuantity', 'Last_TrackIn_SecondaryQuantity', 'TrackOutDate', 'TrackOut_PrimaryQuantity', 'TrackOut_User', 'Last_Transaction_PrimaryQuantity', 'Last_Transaction_Date', 'Material_State', 'Step_Duration_Minute', 'Ordertype']
+2025-11-05 14:39:43,596 - INFO - 字段映射完成: {'Material_Name': 'BatchNumber', 'Product_Name': 'CFN', 'LogicalFlowPath': 'Group', 'ERPOperation': 'Operation', 'Step_Name': 'Operation description', 'ProductionOrder': 'ProductionOrder', 'Area_Name': 'ProductionArea', 'Resource Description': 'ResourceDescription', 'ERPProdSupervisor': 'VSM', 'DateEnteredStep': 'EnterStepTime', 'First_TrackIn_Date': 'TrackInTime', 'TrackOutDate': 'TrackOutTime', 'Step_In_PrimaryQuantity': 'StepInQuantity', 'TrackOut_PrimaryQuantity': 'TrackOutQuantity'}
+2025-11-05 14:39:43,596 - INFO - 映射后列名: ['ERPCode', 'BatchNumber', 'Group', 'EnterStepTime', 'CFN', 'Product_Description', 'DrawingProductNumber_Value', 'VSM', 'ERPMRPController', 'Resource', 'ResourceDescription', 'ResourceType', 'ProductionArea', 'Last_TrackIn_Service', 'ProductionOrder', 'ProductionOrderVersion', 'Operation', 'Operation description', 'PrimaryUnits', 'SecondaryUnits', 'StepInQuantity', 'Step_In_Date', 'First_TrackIn_Date ', 'First_TrackIn_PrimaryQuantity', 'First_TrackIn_User', 'Last_TrackIn_Date', 'Last_TrackIn_User', 'Last_TrackIn_PrimaryQuantity', 'Last_TrackIn_SecondaryQuantity', 'TrackOutTime', 'TrackOutQuantity', 'TrackOut_User', 'Last_Transaction_PrimaryQuantity', 'Last_Transaction_Date', 'Material_State', 'Step_Duration_Minute', 'Ordertype']
+2025-11-05 14:39:43,605 - INFO - 已从Resource字段提取资源代码，创建machine字段
+2025-11-05 14:39:43,988 - INFO - 已保存Parquet文件: publish\MES_处理后数据_20251105.parquet, 行数: 95
+2025-11-05 14:39:43,988 - INFO - 处理完成，耗时: 10.91秒
+2025-11-05 14:51:51,374 - INFO - 测试模式已启用，将仅读取前 100 行数据
+2025-11-05 14:51:51,376 - INFO - 读取MES数据: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\30-MES导出数据\Product Output -CZM -FY26.xlsx
+2025-11-05 14:51:59,329 - INFO - 测试模式：仅读取前 100 行数据
+2025-11-05 14:51:59,330 - INFO - Excel原始列名: ['ERPCode', 'Material_Name', 'LogicalFlowPath', 'DateEnteredStep', 'Product_Name', 'Product_Description', 'DrawingProductNumber_Value', 'ERPProdSupervisor', 'ERPMRPController', 'Resource', 'Resource Description', 'ResourceType', 'Area_Name', 'Last_TrackIn_Service', 'ProductionOrder', 'ProductionOrderVersion', 'ERPOperation', 'Step_Name', 'PrimaryUnits', 'SecondaryUnits', 'Step_In_PrimaryQuantity', 'Step_In_Date', 'First_TrackIn_Date ', 'First_TrackIn_PrimaryQuantity', 'First_TrackIn_User', 'Last_TrackIn_Date', 'Last_TrackIn_User', 'Last_TrackIn_PrimaryQuantity', 'Last_TrackIn_SecondaryQuantity', 'TrackOutDate', 'TrackOut_PrimaryQuantity', 'TrackOut_User', 'Last_Transaction_PrimaryQuantity', 'Last_Transaction_Date', 'Material_State', 'Step_Duration_Minute', 'Ordertype']
+2025-11-05 14:51:59,333 - INFO - 字段映射完成: {'Material_Name': 'BatchNumber', 'Product_Name': 'CFN', 'LogicalFlowPath': 'Group', 'ERPOperation': 'Operation', 'Step_Name': 'Operation description', 'ProductionOrder': 'ProductionOrder', 'Area_Name': 'ProductionArea', 'Resource Description': 'ResourceDescription', 'ERPProdSupervisor': 'VSM', 'DateEnteredStep': 'EnterStepTime', 'First_TrackIn_Date': 'TrackInTime', 'TrackOutDate': 'TrackOutTime', 'Step_In_PrimaryQuantity': 'StepInQuantity', 'TrackOut_PrimaryQuantity': 'TrackOutQuantity'}
+2025-11-05 14:51:59,334 - INFO - 映射后列名: ['ERPCode', 'BatchNumber', 'Group', 'EnterStepTime', 'CFN', 'Product_Description', 'DrawingProductNumber_Value', 'VSM', 'ERPMRPController', 'Resource', 'ResourceDescription', 'ResourceType', 'ProductionArea', 'Last_TrackIn_Service', 'ProductionOrder', 'ProductionOrderVersion', 'Operation', 'Operation description', 'PrimaryUnits', 'SecondaryUnits', 'StepInQuantity', 'Step_In_Date', 'First_TrackIn_Date ', 'First_TrackIn_PrimaryQuantity', 'First_TrackIn_User', 'Last_TrackIn_Date', 'Last_TrackIn_User', 'Last_TrackIn_PrimaryQuantity', 'Last_TrackIn_SecondaryQuantity', 'TrackOutTime', 'TrackOutQuantity', 'TrackOut_User', 'Last_Transaction_PrimaryQuantity', 'Last_Transaction_Date', 'Material_State', 'Step_Duration_Minute', 'Ordertype']
+2025-11-05 14:51:59,348 - INFO - 已从Resource字段提取资源代码，创建machine字段
+2025-11-05 14:51:59,642 - INFO - 已保存Parquet文件: c:\Users\huangk14\OneDrive - Medtronic PLC\Huangkai Files\B1_Project\250418_MDDAP_project\10-SA指标\13-SA数据清洗\publish\MES_处理后数据_20251105.parquet, 行数: 95
+2025-11-05 14:51:59,642 - INFO - 处理完成，耗时: 8.27秒
+2025-11-05 14:55:49,735 - INFO - 测试模式已启用，将仅读取前 100 行数据
+2025-11-05 14:55:49,737 - INFO - 读取MES数据: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\30-MES导出数据\Product Output -CZM -FY26.xlsx
+2025-11-05 14:56:03,070 - INFO - 测试模式：仅读取前 100 行数据
+2025-11-05 14:56:03,073 - INFO - 未找到上次处理时间，执行全量刷新
+2025-11-05 14:56:03,074 - INFO - 执行全量刷新：清除状态文件
+2025-11-05 14:56:03,076 - INFO - Excel原始列名: ['ERPCode', 'Material_Name', 'LogicalFlowPath', 'DateEnteredStep', 'Product_Name', 'Product_Description', 'DrawingProductNumber_Value', 'ERPProdSupervisor', 'ERPMRPController', 'Resource', 'Resource Description', 'ResourceType', 'Area_Name', 'Last_TrackIn_Service', 'ProductionOrder', 'ProductionOrderVersion', 'ERPOperation', 'Step_Name', 'PrimaryUnits', 'SecondaryUnits', 'Step_In_PrimaryQuantity', 'Step_In_Date', 'First_TrackIn_Date ', 'First_TrackIn_PrimaryQuantity', 'First_TrackIn_User', 'Last_TrackIn_Date', 'Last_TrackIn_User', 'Last_TrackIn_PrimaryQuantity', 'Last_TrackIn_SecondaryQuantity', 'TrackOutDate', 'TrackOut_PrimaryQuantity', 'TrackOut_User', 'Last_Transaction_PrimaryQuantity', 'Last_Transaction_Date', 'Material_State', 'Step_Duration_Minute', 'Ordertype']
+2025-11-05 14:56:03,080 - INFO - 字段映射完成: {'Material_Name': 'BatchNumber', 'Product_Name': 'CFN', 'LogicalFlowPath': 'Group', 'ERPOperation': 'Operation', 'Step_Name': 'Operation description', 'ProductionOrder': 'ProductionOrder', 'Area_Name': 'ProductionArea', 'Resource Description': 'ResourceDescription', 'ERPProdSupervisor': 'VSM', 'DateEnteredStep': 'EnterStepTime', 'First_TrackIn_Date': 'TrackInTime', 'TrackOutDate': 'TrackOutTime', 'Step_In_PrimaryQuantity': 'StepInQuantity', 'TrackOut_PrimaryQuantity': 'TrackOutQuantity'}
+2025-11-05 14:56:03,081 - INFO - 映射后列名: ['ERPCode', 'BatchNumber', 'Group', 'EnterStepTime', 'CFN', 'Product_Description', 'DrawingProductNumber_Value', 'VSM', 'ERPMRPController', 'Resource', 'ResourceDescription', 'ResourceType', 'ProductionArea', 'Last_TrackIn_Service', 'ProductionOrder', 'ProductionOrderVersion', 'Operation', 'Operation description', 'PrimaryUnits', 'SecondaryUnits', 'StepInQuantity', 'Step_In_Date', 'First_TrackIn_Date ', 'First_TrackIn_PrimaryQuantity', 'First_TrackIn_User', 'Last_TrackIn_Date', 'Last_TrackIn_User', 'Last_TrackIn_PrimaryQuantity', 'Last_TrackIn_SecondaryQuantity', 'TrackOutTime', 'TrackOutQuantity', 'TrackOut_User', 'Last_Transaction_PrimaryQuantity', 'Last_Transaction_Date', 'Material_State', 'Step_Duration_Minute', 'Ordertype']
+2025-11-05 14:56:03,113 - INFO - 已从Resource字段提取资源代码，创建machine字段
+2025-11-05 14:56:03,830 - INFO - 历史数据文件不存在，直接使用新数据
+2025-11-05 14:56:03,939 - INFO - 已保存Parquet文件: c:\Users\huangk14\OneDrive - Medtronic PLC\Huangkai Files\B1_Project\250418_MDDAP_project\10-SA指标\13-SA数据清洗\publish/MES_处理后数据_latest.parquet, 行数: 95
+2025-11-05 14:56:03,962 - INFO - 状态更新完成：已处理记录 95 条，本次新增 95 条
+2025-11-05 14:56:03,963 - INFO - 增量处理：已保存到latest文件并更新状态
+2025-11-05 14:56:04,029 - INFO - 已保存Parquet文件: c:\Users\huangk14\OneDrive - Medtronic PLC\Huangkai Files\B1_Project\250418_MDDAP_project\10-SA指标\13-SA数据清洗\publish\MES_处理后数据_20251105.parquet, 行数: 95
+2025-11-05 14:56:04,031 - INFO - 处理完成，耗时: 14.30秒
+2025-11-05 14:56:47,681 - INFO - 测试模式已启用，将仅读取前 100 行数据
+2025-11-05 14:56:47,683 - INFO - 读取MES数据: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\30-MES导出数据\Product Output -CZM -FY26.xlsx
+2025-11-05 14:56:56,257 - INFO - 测试模式：仅读取前 100 行数据
+2025-11-05 14:56:56,261 - INFO - 执行增量处理：过滤新数据
+2025-11-05 14:56:56,263 - WARNING - 增量处理所需字段不存在: ['BatchNumber', 'Operation', 'machine', 'TrackOutTime']，返回全部数据
+2025-11-05 14:56:56,263 - INFO - Excel原始列名: ['ERPCode', 'Material_Name', 'LogicalFlowPath', 'DateEnteredStep', 'Product_Name', 'Product_Description', 'DrawingProductNumber_Value', 'ERPProdSupervisor', 'ERPMRPController', 'Resource', 'Resource Description', 'ResourceType', 'Area_Name', 'Last_TrackIn_Service', 'ProductionOrder', 'ProductionOrderVersion', 'ERPOperation', 'Step_Name', 'PrimaryUnits', 'SecondaryUnits', 'Step_In_PrimaryQuantity', 'Step_In_Date', 'First_TrackIn_Date ', 'First_TrackIn_PrimaryQuantity', 'First_TrackIn_User', 'Last_TrackIn_Date', 'Last_TrackIn_User', 'Last_TrackIn_PrimaryQuantity', 'Last_TrackIn_SecondaryQuantity', 'TrackOutDate', 'TrackOut_PrimaryQuantity', 'TrackOut_User', 'Last_Transaction_PrimaryQuantity', 'Last_Transaction_Date', 'Material_State', 'Step_Duration_Minute', 'Ordertype']
+2025-11-05 14:56:56,264 - INFO - 字段映射完成: {'Material_Name': 'BatchNumber', 'Product_Name': 'CFN', 'LogicalFlowPath': 'Group', 'ERPOperation': 'Operation', 'Step_Name': 'Operation description', 'ProductionOrder': 'ProductionOrder', 'Area_Name': 'ProductionArea', 'Resource Description': 'ResourceDescription', 'ERPProdSupervisor': 'VSM', 'DateEnteredStep': 'EnterStepTime', 'First_TrackIn_Date': 'TrackInTime', 'TrackOutDate': 'TrackOutTime', 'Step_In_PrimaryQuantity': 'StepInQuantity', 'TrackOut_PrimaryQuantity': 'TrackOutQuantity'}
+2025-11-05 14:56:56,265 - INFO - 映射后列名: ['ERPCode', 'BatchNumber', 'Group', 'EnterStepTime', 'CFN', 'Product_Description', 'DrawingProductNumber_Value', 'VSM', 'ERPMRPController', 'Resource', 'ResourceDescription', 'ResourceType', 'ProductionArea', 'Last_TrackIn_Service', 'ProductionOrder', 'ProductionOrderVersion', 'Operation', 'Operation description', 'PrimaryUnits', 'SecondaryUnits', 'StepInQuantity', 'Step_In_Date', 'First_TrackIn_Date ', 'First_TrackIn_PrimaryQuantity', 'First_TrackIn_User', 'Last_TrackIn_Date', 'Last_TrackIn_User', 'Last_TrackIn_PrimaryQuantity', 'Last_TrackIn_SecondaryQuantity', 'TrackOutTime', 'TrackOutQuantity', 'TrackOut_User', 'Last_Transaction_PrimaryQuantity', 'Last_Transaction_Date', 'Material_State', 'Step_Duration_Minute', 'Ordertype']
+2025-11-05 14:56:56,271 - INFO - 已从Resource字段提取资源代码，创建machine字段
+2025-11-05 14:56:56,992 - INFO - 加载历史数据: 95 行
+2025-11-05 14:56:56,997 - INFO - 数据合并完成：历史 95 行 + 新增 95 行 = 合并后 95 行
+2025-11-05 14:56:57,045 - INFO - 已保存Parquet文件: c:\Users\huangk14\OneDrive - Medtronic PLC\Huangkai Files\B1_Project\250418_MDDAP_project\10-SA指标\13-SA数据清洗\publish/MES_处理后数据_latest.parquet, 行数: 95
+2025-11-05 14:56:57,055 - INFO - 状态更新完成：已处理记录 95 条，本次新增 95 条
+2025-11-05 14:56:57,060 - INFO - 增量处理：已保存到latest文件并更新状态
+2025-11-05 14:56:57,124 - INFO - 已保存Parquet文件: c:\Users\huangk14\OneDrive - Medtronic PLC\Huangkai Files\B1_Project\250418_MDDAP_project\10-SA指标\13-SA数据清洗\publish\MES_处理后数据_20251105.parquet, 行数: 95
+2025-11-05 14:56:57,127 - INFO - 处理完成，耗时: 9.45秒
+2025-11-05 14:58:15,562 - INFO - 测试模式已启用，将仅读取前 100 行数据
+2025-11-05 14:58:15,564 - INFO - 读取MES数据: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\30-MES导出数据\Product Output -CZM -FY26.xlsx
+2025-11-05 14:58:23,553 - INFO - 测试模式：仅读取前 100 行数据
+2025-11-05 14:58:23,556 - INFO - 执行增量处理：过滤新数据
+2025-11-05 14:58:23,557 - WARNING - 增量处理所需字段不存在: ['BatchNumber', 'Operation', 'machine', 'TrackOutTime']，返回全部数据
+2025-11-05 14:58:23,558 - INFO - Excel原始列名: ['ERPCode', 'Material_Name', 'LogicalFlowPath', 'DateEnteredStep', 'Product_Name', 'Product_Description', 'DrawingProductNumber_Value', 'ERPProdSupervisor', 'ERPMRPController', 'Resource', 'Resource Description', 'ResourceType', 'Area_Name', 'Last_TrackIn_Service', 'ProductionOrder', 'ProductionOrderVersion', 'ERPOperation', 'Step_Name', 'PrimaryUnits', 'SecondaryUnits', 'Step_In_PrimaryQuantity', 'Step_In_Date', 'First_TrackIn_Date ', 'First_TrackIn_PrimaryQuantity', 'First_TrackIn_User', 'Last_TrackIn_Date', 'Last_TrackIn_User', 'Last_TrackIn_PrimaryQuantity', 'Last_TrackIn_SecondaryQuantity', 'TrackOutDate', 'TrackOut_PrimaryQuantity', 'TrackOut_User', 'Last_Transaction_PrimaryQuantity', 'Last_Transaction_Date', 'Material_State', 'Step_Duration_Minute', 'Ordertype']
+2025-11-05 14:58:23,559 - INFO - 字段映射完成: {'Material_Name': 'BatchNumber', 'Product_Name': 'CFN', 'LogicalFlowPath': 'Group', 'ERPOperation': 'Operation', 'Step_Name': 'Operation description', 'ProductionOrder': 'ProductionOrder', 'Area_Name': 'ProductionArea', 'Resource Description': 'ResourceDescription', 'ERPProdSupervisor': 'VSM', 'DateEnteredStep': 'EnterStepTime', 'First_TrackIn_Date': 'TrackInTime', 'TrackOutDate': 'TrackOutTime', 'Step_In_PrimaryQuantity': 'StepInQuantity', 'TrackOut_PrimaryQuantity': 'TrackOutQuantity'}
+2025-11-05 14:58:23,559 - INFO - 映射后列名: ['ERPCode', 'BatchNumber', 'Group', 'EnterStepTime', 'CFN', 'Product_Description', 'DrawingProductNumber_Value', 'VSM', 'ERPMRPController', 'Resource', 'ResourceDescription', 'ResourceType', 'ProductionArea', 'Last_TrackIn_Service', 'ProductionOrder', 'ProductionOrderVersion', 'Operation', 'Operation description', 'PrimaryUnits', 'SecondaryUnits', 'StepInQuantity', 'Step_In_Date', 'First_TrackIn_Date ', 'First_TrackIn_PrimaryQuantity', 'First_TrackIn_User', 'Last_TrackIn_Date', 'Last_TrackIn_User', 'Last_TrackIn_PrimaryQuantity', 'Last_TrackIn_SecondaryQuantity', 'TrackOutTime', 'TrackOutQuantity', 'TrackOut_User', 'Last_Transaction_PrimaryQuantity', 'Last_Transaction_Date', 'Material_State', 'Step_Duration_Minute', 'Ordertype']
+2025-11-05 14:58:23,565 - INFO - 已从Resource字段提取资源代码，创建machine字段
+2025-11-05 14:58:24,149 - INFO - 加载历史数据: 95 行
+2025-11-05 14:58:24,154 - INFO - 数据合并完成：历史 95 行 + 新增 95 行 = 合并后 95 行
+2025-11-05 14:58:24,175 - INFO - 已保存Parquet文件: c:\Users\huangk14\OneDrive - Medtronic PLC\Huangkai Files\B1_Project\250418_MDDAP_project\10-SA指标\13-SA数据清洗\publish/MES_处理后数据_latest.parquet, 行数: 95
+2025-11-05 14:58:24,182 - INFO - 状态更新完成：已处理记录 95 条，本次新增 95 条
+2025-11-05 14:58:24,183 - INFO - 增量处理：已保存到latest文件并更新状态
+2025-11-05 14:58:24,200 - INFO - 已保存Parquet文件: c:\Users\huangk14\OneDrive - Medtronic PLC\Huangkai Files\B1_Project\250418_MDDAP_project\10-SA指标\13-SA数据清洗\publish\MES_处理后数据_20251105.parquet, 行数: 95
+2025-11-05 14:58:24,200 - INFO - 处理完成，耗时: 8.64秒
+2025-11-05 15:06:40,506 - INFO - 测试模式已启用，将仅读取前 100 行数据
+2025-11-05 15:06:40,507 - INFO - 读取MES数据: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\30-MES导出数据\Product Output -CZM -FY26.xlsx
+2025-11-05 15:06:50,403 - INFO - 测试模式：仅读取前 100 行数据
+2025-11-05 15:06:50,404 - INFO - Excel原始列名: ['ERPCode', 'Material_Name', 'LogicalFlowPath', 'DateEnteredStep', 'Product_Name', 'Product_Description', 'DrawingProductNumber_Value', 'ERPProdSupervisor', 'ERPMRPController', 'Resource', 'Resource Description', 'ResourceType', 'Area_Name', 'Last_TrackIn_Service', 'ProductionOrder', 'ProductionOrderVersion', 'ERPOperation', 'Step_Name', 'PrimaryUnits', 'SecondaryUnits', 'Step_In_PrimaryQuantity', 'Step_In_Date', 'First_TrackIn_Date ', 'First_TrackIn_PrimaryQuantity', 'First_TrackIn_User', 'Last_TrackIn_Date', 'Last_TrackIn_User', 'Last_TrackIn_PrimaryQuantity', 'Last_TrackIn_SecondaryQuantity', 'TrackOutDate', 'TrackOut_PrimaryQuantity', 'TrackOut_User', 'Last_Transaction_PrimaryQuantity', 'Last_Transaction_Date', 'Material_State', 'Step_Duration_Minute', 'Ordertype']
+2025-11-05 15:06:50,405 - INFO - 字段映射完成: {'Material_Name': 'BatchNumber', 'Product_Name': 'CFN', 'LogicalFlowPath': 'Group', 'ERPOperation': 'Operation', 'Step_Name': 'Operation description', 'ProductionOrder': 'ProductionOrder', 'Area_Name': 'ProductionArea', 'Resource Description': 'ResourceDescription', 'ERPProdSupervisor': 'VSM', 'DateEnteredStep': 'EnterStepTime', 'First_TrackIn_Date': 'TrackInTime', 'TrackOutDate': 'TrackOutTime', 'Step_In_PrimaryQuantity': 'StepInQuantity', 'TrackOut_PrimaryQuantity': 'TrackOutQuantity'}
+2025-11-05 15:06:50,405 - INFO - 映射后列名: ['ERPCode', 'BatchNumber', 'Group', 'EnterStepTime', 'CFN', 'Product_Description', 'DrawingProductNumber_Value', 'VSM', 'ERPMRPController', 'Resource', 'ResourceDescription', 'ResourceType', 'ProductionArea', 'Last_TrackIn_Service', 'ProductionOrder', 'ProductionOrderVersion', 'Operation', 'Operation description', 'PrimaryUnits', 'SecondaryUnits', 'StepInQuantity', 'Step_In_Date', 'First_TrackIn_Date ', 'First_TrackIn_PrimaryQuantity', 'First_TrackIn_User', 'Last_TrackIn_Date', 'Last_TrackIn_User', 'Last_TrackIn_PrimaryQuantity', 'Last_TrackIn_SecondaryQuantity', 'TrackOutTime', 'TrackOutQuantity', 'TrackOut_User', 'Last_Transaction_PrimaryQuantity', 'Last_Transaction_Date', 'Material_State', 'Step_Duration_Minute', 'Ordertype']
+2025-11-05 15:06:50,414 - INFO - 已从Resource字段提取资源代码，创建machine字段
+2025-11-05 15:06:50,693 - INFO - 执行增量处理：过滤新数据
+2025-11-05 15:06:50,699 - INFO - 增量过滤：总数据 95 行，已处理 95 行，新数据 0 行
+2025-11-05 15:06:50,699 - INFO - 没有新数据需要处理
+2025-11-05 15:06:51,155 - INFO - 已保存Parquet文件: c:\Users\huangk14\OneDrive - Medtronic PLC\Huangkai Files\B1_Project\250418_MDDAP_project\10-SA指标\13-SA数据清洗\publish/MES_处理后数据_latest.parquet, 行数: 95
+2025-11-05 15:06:51,163 - INFO - 状态更新完成：已处理记录 95 条，本次新增 95 条
+2025-11-05 15:06:51,163 - INFO - 增量处理：已保存到latest文件并更新状态
+2025-11-05 15:06:51,181 - INFO - 已保存Parquet文件: c:\Users\huangk14\OneDrive - Medtronic PLC\Huangkai Files\B1_Project\250418_MDDAP_project\10-SA指标\13-SA数据清洗\publish\MES_处理后数据_20251105.parquet, 行数: 95
+2025-11-05 15:06:51,182 - INFO - 处理完成，耗时: 10.68秒
+2025-11-05 15:08:05,620 - INFO - 测试模式已启用，将仅读取前 10000 行数据
+2025-11-05 15:08:05,622 - INFO - 读取MES数据: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\30-MES导出数据\Product Output -CZM -FY26.xlsx
+2025-11-05 15:08:22,954 - INFO - 测试模式：仅读取前 10000 行数据
+2025-11-05 15:08:22,956 - INFO - Excel原始列名: ['ERPCode', 'Material_Name', 'LogicalFlowPath', 'DateEnteredStep', 'Product_Name', 'Product_Description', 'DrawingProductNumber_Value', 'ERPProdSupervisor', 'ERPMRPController', 'Resource', 'Resource Description', 'ResourceType', 'Area_Name', 'Last_TrackIn_Service', 'ProductionOrder', 'ProductionOrderVersion', 'ERPOperation', 'Step_Name', 'PrimaryUnits', 'SecondaryUnits', 'Step_In_PrimaryQuantity', 'Step_In_Date', 'First_TrackIn_Date ', 'First_TrackIn_PrimaryQuantity', 'First_TrackIn_User', 'Last_TrackIn_Date', 'Last_TrackIn_User', 'Last_TrackIn_PrimaryQuantity', 'Last_TrackIn_SecondaryQuantity', 'TrackOutDate', 'TrackOut_PrimaryQuantity', 'TrackOut_User', 'Last_Transaction_PrimaryQuantity', 'Last_Transaction_Date', 'Material_State', 'Step_Duration_Minute', 'Ordertype']
+2025-11-05 15:08:22,959 - INFO - 字段映射完成: {'Material_Name': 'BatchNumber', 'Product_Name': 'CFN', 'LogicalFlowPath': 'Group', 'ERPOperation': 'Operation', 'Step_Name': 'Operation description', 'ProductionOrder': 'ProductionOrder', 'Area_Name': 'ProductionArea', 'Resource Description': 'ResourceDescription', 'ERPProdSupervisor': 'VSM', 'DateEnteredStep': 'EnterStepTime', 'First_TrackIn_Date': 'TrackInTime', 'TrackOutDate': 'TrackOutTime', 'Step_In_PrimaryQuantity': 'StepInQuantity', 'TrackOut_PrimaryQuantity': 'TrackOutQuantity'}
+2025-11-05 15:08:22,960 - INFO - 映射后列名: ['ERPCode', 'BatchNumber', 'Group', 'EnterStepTime', 'CFN', 'Product_Description', 'DrawingProductNumber_Value', 'VSM', 'ERPMRPController', 'Resource', 'ResourceDescription', 'ResourceType', 'ProductionArea', 'Last_TrackIn_Service', 'ProductionOrder', 'ProductionOrderVersion', 'Operation', 'Operation description', 'PrimaryUnits', 'SecondaryUnits', 'StepInQuantity', 'Step_In_Date', 'First_TrackIn_Date ', 'First_TrackIn_PrimaryQuantity', 'First_TrackIn_User', 'Last_TrackIn_Date', 'Last_TrackIn_User', 'Last_TrackIn_PrimaryQuantity', 'Last_TrackIn_SecondaryQuantity', 'TrackOutTime', 'TrackOutQuantity', 'TrackOut_User', 'Last_Transaction_PrimaryQuantity', 'Last_Transaction_Date', 'Material_State', 'Step_Duration_Minute', 'Ordertype']
+2025-11-05 15:08:23,040 - INFO - 已从Resource字段提取资源代码，创建machine字段
+2025-11-05 15:08:24,220 - INFO - 执行增量处理：过滤新数据
+2025-11-05 15:08:24,404 - INFO - 增量过滤：总数据 9608 行，已处理 95 行，新数据 9513 行
+2025-11-05 15:08:26,059 - INFO - 加载历史数据: 95 行
+2025-11-05 15:08:26,104 - INFO - 数据合并完成：历史 95 行 + 新增 9513 行 = 合并后 9608 行
+2025-11-05 15:08:26,209 - INFO - 已保存Parquet文件: c:\Users\huangk14\OneDrive - Medtronic PLC\Huangkai Files\B1_Project\250418_MDDAP_project\10-SA指标\13-SA数据清洗\publish/MES_处理后数据_latest.parquet, 行数: 9608
+2025-11-05 15:08:26,495 - INFO - 状态更新完成：已处理记录 9608 条，本次新增 9608 条
+2025-11-05 15:08:26,496 - INFO - 增量处理：已保存到latest文件并更新状态
+2025-11-05 15:08:26,674 - INFO - 已保存Parquet文件: c:\Users\huangk14\OneDrive - Medtronic PLC\Huangkai Files\B1_Project\250418_MDDAP_project\10-SA指标\13-SA数据清洗\publish\MES_处理后数据_20251105.parquet, 行数: 9608
+2025-11-05 15:08:26,675 - INFO - 处理完成，耗时: 21.06秒
+2025-11-05 15:42:28,264 - INFO - 测试模式已启用，将仅读取前 10000 行数据
+2025-11-05 15:42:28,266 - INFO - 读取MES数据: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\30-MES导出数据\Product Output -CZM -FY26.xlsx
+2025-11-05 15:42:41,914 - INFO - 测试模式：仅读取前 10000 行数据
+2025-11-05 15:42:41,915 - INFO - Excel原始列名: ['ERPCode', 'Material_Name', 'LogicalFlowPath', 'DateEnteredStep', 'Product_Name', 'Product_Description', 'DrawingProductNumber_Value', 'ERPProdSupervisor', 'ERPMRPController', 'Resource', 'Resource Description', 'ResourceType', 'Area_Name', 'Last_TrackIn_Service', 'ProductionOrder', 'ProductionOrderVersion', 'ERPOperation', 'Step_Name', 'PrimaryUnits', 'SecondaryUnits', 'Step_In_PrimaryQuantity', 'Step_In_Date', 'First_TrackIn_Date ', 'First_TrackIn_PrimaryQuantity', 'First_TrackIn_User', 'Last_TrackIn_Date', 'Last_TrackIn_User', 'Last_TrackIn_PrimaryQuantity', 'Last_TrackIn_SecondaryQuantity', 'TrackOutDate', 'TrackOut_PrimaryQuantity', 'TrackOut_User', 'Last_Transaction_PrimaryQuantity', 'Last_Transaction_Date', 'Material_State', 'Step_Duration_Minute', 'Ordertype']
+2025-11-05 15:42:41,919 - INFO - 字段映射完成: {'Material_Name': 'BatchNumber', 'Product_Name': 'CFN', 'LogicalFlowPath': 'Group', 'ERPOperation': 'Operation', 'Step_Name': 'Operation description', 'ProductionOrder': 'ProductionOrder', 'Area_Name': 'ProductionArea', 'Resource Description': 'ResourceDescription', 'ERPProdSupervisor': 'VSM', 'DateEnteredStep': 'EnterStepTime', 'First_TrackIn_Date': 'TrackInTime', 'TrackOutDate': 'TrackOutTime', 'Step_In_PrimaryQuantity': 'StepInQuantity', 'TrackOut_PrimaryQuantity': 'TrackOutQuantity'}
+2025-11-05 15:42:41,919 - INFO - 映射后列名: ['ERPCode', 'BatchNumber', 'Group', 'EnterStepTime', 'CFN', 'Product_Description', 'DrawingProductNumber_Value', 'VSM', 'ERPMRPController', 'Resource', 'ResourceDescription', 'ResourceType', 'ProductionArea', 'Last_TrackIn_Service', 'ProductionOrder', 'ProductionOrderVersion', 'Operation', 'Operation description', 'PrimaryUnits', 'SecondaryUnits', 'StepInQuantity', 'Step_In_Date', 'First_TrackIn_Date ', 'First_TrackIn_PrimaryQuantity', 'First_TrackIn_User', 'Last_TrackIn_Date', 'Last_TrackIn_User', 'Last_TrackIn_PrimaryQuantity', 'Last_TrackIn_SecondaryQuantity', 'TrackOutTime', 'TrackOutQuantity', 'TrackOut_User', 'Last_Transaction_PrimaryQuantity', 'Last_Transaction_Date', 'Material_State', 'Step_Duration_Minute', 'Ordertype']
+2025-11-05 15:42:42,000 - INFO - 已从Resource字段提取资源代码，创建machine字段
+2025-11-05 15:42:43,065 - INFO - 执行增量处理：过滤新数据
+2025-11-05 15:42:43,282 - INFO - 增量过滤：总数据 9608 行，已处理 9608 行，新数据 0 行
+2025-11-05 15:42:43,285 - INFO - 没有新数据需要处理
+2025-11-05 15:42:43,931 - INFO - 已保存Parquet文件: c:\Users\huangk14\OneDrive - Medtronic PLC\Huangkai Files\B1_Project\250418_MDDAP_project\10-SA指标\13-SA数据清洗\publish/MES_处理后数据_latest.parquet, 行数: 9608
+2025-11-05 15:42:44,146 - INFO - 状态更新完成：已处理记录 9608 条，本次新增 9608 条
+2025-11-05 15:42:44,147 - INFO - 增量处理：已保存到latest文件并更新状态
+2025-11-05 15:42:44,262 - INFO - 已保存Parquet文件: c:\Users\huangk14\OneDrive - Medtronic PLC\Huangkai Files\B1_Project\250418_MDDAP_project\10-SA指标\13-SA数据清洗\publish\MES_处理后数据_20251105.parquet, 行数: 9608
+2025-11-05 15:42:44,263 - INFO - 处理完成，耗时: 16.00秒
+2025-11-05 15:49:39,149 - INFO - 测试模式已启用，将仅读取前 10000 行数据
+2025-11-05 15:49:39,150 - INFO - 读取MES数据: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\30-MES导出数据\Product Output -CZM -FY26.xlsx
+2025-11-05 15:49:51,753 - INFO - 测试模式：仅读取前 10000 行数据
+2025-11-05 15:49:51,756 - INFO - Excel原始列名: ['ERPCode', 'Material_Name', 'LogicalFlowPath', 'DateEnteredStep', 'Product_Name', 'Product_Description', 'DrawingProductNumber_Value', 'ERPProdSupervisor', 'ERPMRPController', 'Resource', 'Resource Description', 'ResourceType', 'Area_Name', 'Last_TrackIn_Service', 'ProductionOrder', 'ProductionOrderVersion', 'ERPOperation', 'Step_Name', 'PrimaryUnits', 'SecondaryUnits', 'Step_In_PrimaryQuantity', 'Step_In_Date', 'First_TrackIn_Date ', 'First_TrackIn_PrimaryQuantity', 'First_TrackIn_User', 'Last_TrackIn_Date', 'Last_TrackIn_User', 'Last_TrackIn_PrimaryQuantity', 'Last_TrackIn_SecondaryQuantity', 'TrackOutDate', 'TrackOut_PrimaryQuantity', 'TrackOut_User', 'Last_Transaction_PrimaryQuantity', 'Last_Transaction_Date', 'Material_State', 'Step_Duration_Minute', 'Ordertype']
+2025-11-05 15:49:51,761 - INFO - 字段映射完成: {'Material_Name': 'BatchNumber', 'Product_Name': 'CFN', 'LogicalFlowPath': 'Group', 'ERPOperation': 'Operation', 'Step_Name': 'Operation description', 'ProductionOrder': 'ProductionOrder', 'Area_Name': 'ProductionArea', 'Resource Description': 'ResourceDescription', 'ERPProdSupervisor': 'VSM', 'DateEnteredStep': 'EnterStepTime', 'First_TrackIn_Date': 'TrackInTime', 'TrackOutDate': 'TrackOutTime', 'Step_In_PrimaryQuantity': 'StepInQuantity', 'TrackOut_PrimaryQuantity': 'TrackOutQuantity'}
+2025-11-05 15:49:51,762 - INFO - 映射后列名: ['ERPCode', 'BatchNumber', 'Group', 'EnterStepTime', 'CFN', 'Product_Description', 'DrawingProductNumber_Value', 'VSM', 'ERPMRPController', 'Resource', 'ResourceDescription', 'ResourceType', 'ProductionArea', 'Last_TrackIn_Service', 'ProductionOrder', 'ProductionOrderVersion', 'Operation', 'Operation description', 'PrimaryUnits', 'SecondaryUnits', 'StepInQuantity', 'Step_In_Date', 'First_TrackIn_Date ', 'First_TrackIn_PrimaryQuantity', 'First_TrackIn_User', 'Last_TrackIn_Date', 'Last_TrackIn_User', 'Last_TrackIn_PrimaryQuantity', 'Last_TrackIn_SecondaryQuantity', 'TrackOutTime', 'TrackOutQuantity', 'TrackOut_User', 'Last_Transaction_PrimaryQuantity', 'Last_Transaction_Date', 'Material_State', 'Step_Duration_Minute', 'Ordertype']
+2025-11-05 15:49:51,839 - INFO - 已从Resource字段提取资源代码，创建machine字段
+2025-11-05 15:49:52,907 - INFO - 执行增量处理：过滤新数据
+2025-11-05 15:49:53,125 - INFO - 增量过滤：总数据 9608 行，已处理 9608 行，新数据 0 行
+2025-11-05 15:49:53,130 - INFO - 没有新数据需要处理，跳过后续处理
+2025-11-05 15:49:53,132 - WARNING - 处理后的数据为空，跳过保存
+2025-11-05 15:52:56,701 - INFO - 测试模式已启用，将仅读取前 10000 行数据
+2025-11-05 15:52:56,704 - INFO - 读取MES数据: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\30-MES导出数据\Product Output -CZM -FY26.xlsx
+2025-11-05 15:53:10,441 - INFO - 测试模式：仅读取前 10000 行数据
+2025-11-05 15:53:10,443 - INFO - Excel原始列名: ['ERPCode', 'Material_Name', 'LogicalFlowPath', 'DateEnteredStep', 'Product_Name', 'Product_Description', 'DrawingProductNumber_Value', 'ERPProdSupervisor', 'ERPMRPController', 'Resource', 'Resource Description', 'ResourceType', 'Area_Name', 'Last_TrackIn_Service', 'ProductionOrder', 'ProductionOrderVersion', 'ERPOperation', 'Step_Name', 'PrimaryUnits', 'SecondaryUnits', 'Step_In_PrimaryQuantity', 'Step_In_Date', 'First_TrackIn_Date ', 'First_TrackIn_PrimaryQuantity', 'First_TrackIn_User', 'Last_TrackIn_Date', 'Last_TrackIn_User', 'Last_TrackIn_PrimaryQuantity', 'Last_TrackIn_SecondaryQuantity', 'TrackOutDate', 'TrackOut_PrimaryQuantity', 'TrackOut_User', 'Last_Transaction_PrimaryQuantity', 'Last_Transaction_Date', 'Material_State', 'Step_Duration_Minute', 'Ordertype']
+2025-11-05 15:53:10,446 - INFO - 字段映射完成: {'Material_Name': 'BatchNumber', 'Product_Name': 'CFN', 'LogicalFlowPath': 'Group', 'ERPOperation': 'Operation', 'Step_Name': 'Operation description', 'ProductionOrder': 'ProductionOrder', 'Area_Name': 'ProductionArea', 'Resource Description': 'ResourceDescription', 'ERPProdSupervisor': 'VSM', 'DateEnteredStep': 'EnterStepTime', 'First_TrackIn_Date': 'TrackInTime', 'TrackOutDate': 'TrackOutTime', 'Step_In_PrimaryQuantity': 'StepInQuantity', 'TrackOut_PrimaryQuantity': 'TrackOutQuantity'}
+2025-11-05 15:53:10,446 - INFO - 映射后列名: ['ERPCode', 'BatchNumber', 'Group', 'EnterStepTime', 'CFN', 'Product_Description', 'DrawingProductNumber_Value', 'VSM', 'ERPMRPController', 'Resource', 'ResourceDescription', 'ResourceType', 'ProductionArea', 'Last_TrackIn_Service', 'ProductionOrder', 'ProductionOrderVersion', 'Operation', 'Operation description', 'PrimaryUnits', 'SecondaryUnits', 'StepInQuantity', 'Step_In_Date', 'First_TrackIn_Date ', 'First_TrackIn_PrimaryQuantity', 'First_TrackIn_User', 'Last_TrackIn_Date', 'Last_TrackIn_User', 'Last_TrackIn_PrimaryQuantity', 'Last_TrackIn_SecondaryQuantity', 'TrackOutTime', 'TrackOutQuantity', 'TrackOut_User', 'Last_Transaction_PrimaryQuantity', 'Last_Transaction_Date', 'Material_State', 'Step_Duration_Minute', 'Ordertype']
+2025-11-05 15:53:10,596 - INFO - 已从Resource字段提取资源代码，创建machine字段
+2025-11-05 15:53:12,337 - INFO - 执行增量处理：过滤新数据
+2025-11-05 15:53:12,530 - INFO - 增量过滤：总数据 9608 行，已处理 9608 行，新数据 0 行
+2025-11-05 15:53:12,531 - INFO - 没有新数据需要处理，跳过后续处理
+2025-11-05 15:53:12,538 - WARNING - 处理后的数据为空，跳过保存
+2025-11-05 20:42:05,876 - INFO - 测试模式已启用，将仅读取前 10000 行数据
+2025-11-05 20:42:05,879 - INFO - 读取MES数据: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\30-MES导出数据\Product Output -CZM -FY26.xlsx
+2025-11-05 20:42:26,503 - INFO - 测试模式：仅读取前 10000 行数据
+2025-11-05 20:42:26,506 - INFO - Excel原始列名: ['ERPCode', 'Material_Name', 'LogicalFlowPath', 'DateEnteredStep', 'Product_Name', 'Product_Description', 'DrawingProductNumber_Value', 'ERPProdSupervisor', 'ERPMRPController', 'Resource', 'Resource Description', 'ResourceType', 'Area_Name', 'Last_TrackIn_Service', 'ProductionOrder', 'ProductionOrderVersion', 'ERPOperation', 'Step_Name', 'PrimaryUnits', 'SecondaryUnits', 'Step_In_PrimaryQuantity', 'Step_In_Date', 'First_TrackIn_Date ', 'First_TrackIn_PrimaryQuantity', 'First_TrackIn_User', 'Last_TrackIn_Date', 'Last_TrackIn_User', 'Last_TrackIn_PrimaryQuantity', 'Last_TrackIn_SecondaryQuantity', 'TrackOutDate', 'TrackOut_PrimaryQuantity', 'TrackOut_User', 'Last_Transaction_PrimaryQuantity', 'Last_Transaction_Date', 'Material_State', 'Step_Duration_Minute', 'Ordertype']
+2025-11-05 20:42:26,512 - INFO - 字段映射完成: {'Material_Name': 'BatchNumber', 'Product_Name': 'CFN', 'LogicalFlowPath': 'Group', 'ERPOperation': 'Operation', 'Step_Name': 'Operation description', 'ProductionOrder': 'ProductionOrder', 'Area_Name': 'ProductionArea', 'Resource Description': 'ResourceDescription', 'ERPProdSupervisor': 'VSM', 'DateEnteredStep': 'EnterStepTime', 'First_TrackIn_Date': 'TrackInTime', 'TrackOutDate': 'TrackOutTime', 'Step_In_PrimaryQuantity': 'StepInQuantity', 'TrackOut_PrimaryQuantity': 'TrackOutQuantity'}
+2025-11-05 20:42:26,514 - INFO - 映射后列名: ['ERPCode', 'BatchNumber', 'Group', 'EnterStepTime', 'CFN', 'Product_Description', 'DrawingProductNumber_Value', 'VSM', 'ERPMRPController', 'Resource', 'ResourceDescription', 'ResourceType', 'ProductionArea', 'Last_TrackIn_Service', 'ProductionOrder', 'ProductionOrderVersion', 'Operation', 'Operation description', 'PrimaryUnits', 'SecondaryUnits', 'StepInQuantity', 'Step_In_Date', 'First_TrackIn_Date ', 'First_TrackIn_PrimaryQuantity', 'First_TrackIn_User', 'Last_TrackIn_Date', 'Last_TrackIn_User', 'Last_TrackIn_PrimaryQuantity', 'Last_TrackIn_SecondaryQuantity', 'TrackOutTime', 'TrackOutQuantity', 'TrackOut_User', 'Last_Transaction_PrimaryQuantity', 'Last_Transaction_Date', 'Material_State', 'Step_Duration_Minute', 'Ordertype']
+2025-11-05 20:42:26,773 - INFO - 已从Resource字段提取资源代码，创建machine字段
+2025-11-05 20:42:28,633 - INFO - 执行增量处理：过滤新数据
+2025-11-05 20:42:28,848 - INFO - 增量过滤：总数据 9608 行，已处理 9608 行，新数据 0 行
+2025-11-05 20:42:28,849 - INFO - MES数据没有新数据，但将继续处理SFC数据
+2025-11-05 20:42:28,941 - INFO - 测试模式：只处理最近 10 个SFC文件（共找到 463 个）
+2025-11-05 20:42:28,942 - INFO - 找到 10 个SFC文件（将处理）
+2025-11-05 20:42:28,943 - INFO - 读取SFC文件: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\批次报工汇总报表\LC-20251104200001.xlsx
+2025-11-05 20:42:38,835 - INFO - 测试模式：仅读取前 10000 行数据
+2025-11-05 20:42:38,838 - INFO - 读取SFC文件: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\批次报工汇总报表\LC-20251103200001.xlsx
+2025-11-05 20:42:48,920 - INFO - 测试模式：仅读取前 10000 行数据
+2025-11-05 20:42:48,921 - INFO - 读取SFC文件: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\批次报工汇总报表\LC-20251102200001.xlsx
+2025-11-05 20:43:00,443 - INFO - 测试模式：仅读取前 10000 行数据
+2025-11-05 20:43:00,444 - INFO - 读取SFC文件: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\批次报工汇总报表\LC-20251101200001.xlsx
+2025-11-05 20:43:11,161 - INFO - 测试模式：仅读取前 10000 行数据
+2025-11-05 20:43:11,162 - INFO - 读取SFC文件: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\批次报工汇总报表\LC-20251031200001.xlsx
+2025-11-05 20:43:22,484 - INFO - 测试模式：仅读取前 10000 行数据
+2025-11-05 20:43:22,485 - INFO - 读取SFC文件: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\批次报工汇总报表\LC-20251030200001.xlsx
+2025-11-05 20:43:35,624 - INFO - 测试模式：仅读取前 10000 行数据
+2025-11-05 20:43:35,624 - INFO - 读取SFC文件: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\批次报工汇总报表\LC-20251029200001.xlsx
+2025-11-05 20:43:47,142 - INFO - 测试模式：仅读取前 10000 行数据
+2025-11-05 20:43:47,143 - INFO - 读取SFC文件: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\批次报工汇总报表\LC-20251028200001.xlsx
+2025-11-05 20:43:58,815 - INFO - 测试模式：仅读取前 10000 行数据
+2025-11-05 20:43:58,815 - INFO - 读取SFC文件: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\批次报工汇总报表\LC-20251027200001.xlsx
+2025-11-05 20:44:09,295 - INFO - 测试模式：仅读取前 9988 行数据
+2025-11-05 20:44:09,295 - INFO - 读取SFC文件: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\70-SFC导出数据\批次报工汇总报表\LC-20251026200001.xlsx
+2025-11-05 20:44:22,736 - INFO - 测试模式：仅读取前 9888 行数据
+2025-11-05 20:44:22,780 - INFO - 合并后SFC原始数据行数: 99876
+2025-11-05 20:44:22,879 - INFO - SFC原始列名: ['产品类型', '产品号', '批次', '工序号', '工序名称', '工序状态', '机台号', '报工人', '报工时间', 'Check In', 'Check In 时间', '上道工序报工时间', '合格数量', '报废数量', '合格率', 'NC单号', '备注']
+2025-11-05 20:44:22,941 - INFO - SFC字段映射完成: {'产品号': 'CFN', '批次': 'BatchNumber', '工序号': 'Operation', '工序名称': 'Operation description', 'Check In 时间': 'CheckInTime', '机台号': 'ResourceCode', '报工时间': 'TrackOutTime', '产品类型': 'ProductType', '报工人': 'TrackOut_User', '合格数量': 'TrackOutQuantity', '报废数量': 'ScrapQuantity'}
+2025-11-05 20:44:22,953 - INFO - SFC映射后列名: ['ProductType', 'CFN', 'BatchNumber', 'Operation', 'Operation description', '工序状态', 'ResourceCode', 'TrackOut_User', 'TrackOutTime', 'Check In', 'CheckInTime', '上道工序报工时间', 'TrackOutQuantity', 'ScrapQuantity', '合格率', 'NC单号', '备注']
+2025-11-05 20:44:25,601 - INFO - 已从ResourceCode提取资源代码，创建machine字段
+2025-11-05 20:44:26,940 - INFO - SFC数据去重：从 99876 行减少到 13875 行（基于字段: ['BatchNumber', 'Operation', 'Checkin_SFC']）
+2025-11-05 20:44:26,965 - WARNING - 新数据为空，尝试加载历史数据
+2025-11-05 20:44:28,558 - INFO - 已保存Parquet文件: c:\Users\huangk14\OneDrive - Medtronic PLC\Huangkai Files\B1_Project\250418_MDDAP_project\10-SA指标\13-SA数据清洗\publish/MES_处理后数据_latest.parquet, 行数: 9608
+2025-11-05 20:44:29,274 - INFO - 状态更新完成：已处理记录 9608 条，本次新增 9608 条
+2025-11-05 20:44:29,275 - INFO - 增量处理：已保存到latest文件并更新状态
+2025-11-05 20:44:29,580 - INFO - 已保存Parquet文件: c:\Users\huangk14\OneDrive - Medtronic PLC\Huangkai Files\B1_Project\250418_MDDAP_project\10-SA指标\13-SA数据清洗\publish\MES_处理后数据_20251105.parquet, 行数: 9608
+2025-11-05 20:44:29,582 - INFO - MES数据已保存: c:\Users\huangk14\OneDrive - Medtronic PLC\Huangkai Files\B1_Project\250418_MDDAP_project\10-SA指标\13-SA数据清洗\publish\MES_处理后数据_20251105.parquet
+2025-11-05 20:44:29,786 - INFO - 已保存Parquet文件: c:\Users\huangk14\OneDrive - Medtronic PLC\Huangkai Files\B1_Project\250418_MDDAP_project\10-SA指标\13-SA数据清洗\publish\SFC_处理后数据_latest.parquet, 行数: 13875
+2025-11-05 20:44:29,945 - INFO - 已保存Parquet文件: c:\Users\huangk14\OneDrive - Medtronic PLC\Huangkai Files\B1_Project\250418_MDDAP_project\10-SA指标\13-SA数据清洗\publish\SFC_处理后数据_20251105.parquet, 行数: 13875
+2025-11-05 20:44:29,946 - INFO - SFC数据已保存: c:\Users\huangk14\OneDrive - Medtronic PLC\Huangkai Files\B1_Project\250418_MDDAP_project\10-SA指标\13-SA数据清洗\publish\SFC_处理后数据_20251105.parquet
+2025-11-05 20:44:29,947 - INFO - 处理完成，耗时: 144.07秒
+2025-11-06 08:28:18,659 - INFO - 测试模式已启用，将仅读取前 10000 行数据
+2025-11-06 08:28:18,662 - INFO - 读取MES数据: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\30-MES导出数据\Product Output -CZM -FY26.xlsx
+2025-11-06 08:28:51,383 - INFO - 测试模式：仅读取前 10000 行数据
+2025-11-06 08:28:51,387 - INFO - Excel原始列名: ['ERPCode', 'Material_Name', 'LogicalFlowPath', 'DateEnteredStep', 'Product_Name', 'Product_Description', 'DrawingProductNumber_Value', 'ERPProdSupervisor', 'ERPMRPController', 'Resource', 'Resource Description', 'ResourceType', 'Area_Name', 'Last_TrackIn_Service', 'ProductionOrder', 'ProductionOrderVersion', 'ERPOperation', 'Step_Name', 'PrimaryUnits', 'SecondaryUnits', 'Step_In_PrimaryQuantity', 'Step_In_Date', 'First_TrackIn_Date ', 'First_TrackIn_PrimaryQuantity', 'First_TrackIn_User', 'Last_TrackIn_Date', 'Last_TrackIn_User', 'Last_TrackIn_PrimaryQuantity', 'Last_TrackIn_SecondaryQuantity', 'TrackOutDate', 'TrackOut_PrimaryQuantity', 'TrackOut_User', 'Last_Transaction_PrimaryQuantity', 'Last_Transaction_Date', 'Material_State', 'Step_Duration_Minute', 'Ordertype']
+2025-11-06 08:28:51,393 - INFO - 字段映射完成: {'Material_Name': 'BatchNumber', 'Product_Name': 'CFN', 'LogicalFlowPath': 'Group', 'ERPOperation': 'Operation', 'Step_Name': 'Operation description', 'ProductionOrder': 'ProductionOrder', 'Area_Name': 'ProductionArea', 'Resource Description': 'ResourceDescription', 'ERPProdSupervisor': 'VSM', 'DateEnteredStep': 'EnterStepTime', 'First_TrackIn_Date': 'TrackInTime', 'TrackOutDate': 'TrackOutTime', 'Step_In_PrimaryQuantity': 'StepInQuantity', 'TrackOut_PrimaryQuantity': 'TrackOutQuantity'}
+2025-11-06 08:28:51,394 - INFO - 映射后列名: ['ERPCode', 'BatchNumber', 'Group', 'EnterStepTime', 'CFN', 'Product_Description', 'DrawingProductNumber_Value', 'VSM', 'ERPMRPController', 'Resource', 'ResourceDescription', 'ResourceType', 'ProductionArea', 'Last_TrackIn_Service', 'ProductionOrder', 'ProductionOrderVersion', 'Operation', 'Operation description', 'PrimaryUnits', 'SecondaryUnits', 'StepInQuantity', 'Step_In_Date', 'First_TrackIn_Date ', 'First_TrackIn_PrimaryQuantity', 'First_TrackIn_User', 'Last_TrackIn_Date', 'Last_TrackIn_User', 'Last_TrackIn_PrimaryQuantity', 'Last_TrackIn_SecondaryQuantity', 'TrackOutTime', 'TrackOutQuantity', 'TrackOut_User', 'Last_Transaction_PrimaryQuantity', 'Last_Transaction_Date', 'Material_State', 'Step_Duration_Minute', 'Ordertype']
+2025-11-06 08:28:51,571 - INFO - 已从Resource字段提取资源代码，创建machine字段
+2025-11-06 08:28:54,108 - INFO - 未找到上次处理时间，执行全量刷新
+2025-11-06 08:28:54,109 - INFO - 执行全量刷新：清除状态文件
+2025-11-06 08:28:54,629 - INFO - 读取SFC数据: 14359 行
+2025-11-06 08:28:54,650 - INFO - 合并SFC数据完成: 9607 行，匹配到Checkin_SFC: 9 行
+2025-11-06 08:28:57,739 - INFO - 历史数据文件不存在，直接使用新数据
+2025-11-06 08:28:57,971 - INFO - 已保存Parquet文件: C:\Users\huangk14\OneDrive - Medtronic PLC\Huangkai Files\B1_Project\250418_MDDAP_project\10-SA指标\13-SA数据清洗\publish/MES_处理后数据_latest.parquet, 行数: 9607
+2025-11-06 08:28:58,511 - INFO - 状态更新完成：已处理记录 9607 条，本次新增 9607 条
+2025-11-06 08:28:58,513 - INFO - 增量处理：已保存到latest文件并更新状态
+2025-11-06 08:28:58,514 - INFO - 处理完成，耗时: 39.85秒
+2025-11-06 13:31:29,921 - INFO - 测试模式已启用，将仅读取前 10000 行数据
+2025-11-06 13:31:29,924 - INFO - 读取MES数据: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\30-MES导出数据\Product Output -CZM -FY26.xlsx
+2025-11-06 13:31:45,583 - INFO - 测试模式：仅读取前 10000 行数据
+2025-11-06 13:31:45,686 - INFO - 已从Resource字段提取资源代码，创建machine字段
+2025-11-06 13:31:47,527 - INFO - 未找到上次处理时间，执行全量刷新
+2025-11-06 13:31:47,528 - INFO - 执行全量刷新：清除状态文件
+2025-11-06 13:31:48,069 - INFO - 读取SFC数据: 14359 行
+2025-11-06 13:31:48,081 - INFO - 合并SFC数据完成: 9607 行，匹配到Checkin_SFC: 9 行
+2025-11-06 13:31:48,085 - INFO - 使用通配符查找到最新的标准时间表: SAP_Routing_20251106.parquet
+2025-11-06 13:31:48,108 - INFO - 读取合并后的标准时间表: 38293 行
+2025-11-06 13:31:48,113 - ERROR - ETL失败: You are trying to merge on object and int64 columns for key 'Group'. If you wish to proceed you should use pd.concat
+Traceback (most recent call last):
+  File "c:\Users\huangk14\OneDrive - Medtronic PLC\Huangkai Files\B1_Project\250418_MDDAP_project\10-SA指标\13-SA数据清洗\etl_sa.py", line 1239, in <module>
+    mes_result_df = process_all_data(cfg)
+                    ^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\huangk14\OneDrive - Medtronic PLC\Huangkai Files\B1_Project\250418_MDDAP_project\10-SA指标\13-SA数据清洗\etl_sa.py", line 960, in process_all_data
+    result = merge_standard_time(result, cfg)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\huangk14\OneDrive - Medtronic PLC\Huangkai Files\B1_Project\250418_MDDAP_project\10-SA指标\13-SA数据清洗\etl_sa.py", line 446, in merge_standard_time
+    result = mes_df.merge(
+             ^^^^^^^^^^^^^
+  File "c:\Users\huangk14\OneDrive - Medtronic PLC\Huangkai Files\B1_Project\250418_MDDAP_project\.venv\Lib\site-packages\pandas\core\frame.py", line 10859, in merge
+    return merge(
+           ^^^^^^
+  File "c:\Users\huangk14\OneDrive - Medtronic PLC\Huangkai Files\B1_Project\250418_MDDAP_project\.venv\Lib\site-packages\pandas\core\reshape\merge.py", line 170, in merge
+    op = _MergeOperation(
+         ^^^^^^^^^^^^^^^^
+  File "c:\Users\huangk14\OneDrive - Medtronic PLC\Huangkai Files\B1_Project\250418_MDDAP_project\.venv\Lib\site-packages\pandas\core\reshape\merge.py", line 807, in __init__
+    self._maybe_coerce_merge_keys()
+  File "c:\Users\huangk14\OneDrive - Medtronic PLC\Huangkai Files\B1_Project\250418_MDDAP_project\.venv\Lib\site-packages\pandas\core\reshape\merge.py", line 1509, in _maybe_coerce_merge_keys
+    raise ValueError(msg)
+ValueError: You are trying to merge on object and int64 columns for key 'Group'. If you wish to proceed you should use pd.concat
+2025-11-06 13:35:40,434 - INFO - 测试模式已启用，将仅读取前 10000 行数据
+2025-11-06 13:35:40,437 - INFO - 读取MES数据: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\30-MES导出数据\Product Output -CZM -FY26.xlsx
+2025-11-06 13:35:54,950 - INFO - 测试模式：仅读取前 10000 行数据
+2025-11-06 13:35:55,082 - INFO - 已从Resource字段提取资源代码，创建machine字段
+2025-11-06 13:35:57,106 - INFO - 未找到上次处理时间，执行全量刷新
+2025-11-06 13:35:57,107 - INFO - 执行全量刷新：清除状态文件
+2025-11-06 13:35:57,568 - INFO - 读取SFC数据: 14359 行
+2025-11-06 13:35:57,590 - INFO - 合并SFC数据完成: 9607 行，匹配到Checkin_SFC: 9 行
+2025-11-06 13:35:57,593 - INFO - 使用通配符查找到最新的标准时间表: SAP_Routing_20251106.parquet
+2025-11-06 13:35:57,617 - INFO - 读取合并后的标准时间表: 38293 行
+2025-11-06 13:35:57,671 - INFO - 合并标准时间数据完成: 9607 行
+2025-11-06 13:35:57,673 - INFO - 匹配到OEE: 9607 行
+2025-11-06 13:36:00,958 - INFO - 历史数据文件不存在，直接使用新数据
+2025-11-06 13:36:01,469 - INFO - 已保存Parquet文件: c:\Users\huangk14\OneDrive - Medtronic PLC\Huangkai Files\B1_Project\250418_MDDAP_project\10-SA指标\13-SA数据清洗\publish/MES_处理后数据_latest.parquet, 行数: 9607
+2025-11-06 13:36:03,266 - INFO - 状态更新完成：已处理记录 9607 条，本次新增 9607 条
+2025-11-06 13:36:03,267 - INFO - 增量处理：已保存到latest文件并更新状态
+2025-11-06 13:36:03,268 - INFO - 处理完成，耗时: 22.83秒
+2025-11-06 16:34:30,524 - INFO - 测试模式已启用，将仅读取前 10000 行数据
+2025-11-06 16:34:30,526 - INFO - 读取MES数据: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\30-MES导出数据\Product Output -CZM -FY26.xlsx
+2025-11-06 16:34:44,922 - INFO - 测试模式：仅读取前 10000 行数据
+2025-11-06 16:34:45,026 - INFO - 已从Resource字段提取资源代码，创建machine字段
+2025-11-06 16:34:46,822 - INFO - 未找到上次处理时间，执行全量刷新
+2025-11-06 16:34:46,824 - INFO - 执行全量刷新：清除状态文件
+2025-11-06 16:34:47,394 - INFO - 读取SFC数据: 14489 行
+2025-11-06 16:34:47,405 - INFO - 合并SFC数据完成: 9607 行，匹配到Checkin_SFC: 9 行
+2025-11-06 16:34:47,409 - INFO - 使用通配符查找到最新的标准时间表: SAP_Routing_20251106.parquet
+2025-11-06 16:34:47,444 - INFO - 读取合并后的标准时间表: 38293 行
+2025-11-06 16:34:47,492 - INFO - 合并标准时间数据完成: 9607 行
+2025-11-06 16:34:47,495 - INFO - 匹配到OEE: 9607 行
+2025-11-06 16:34:49,258 - INFO - 历史数据文件不存在，直接使用新数据
+2025-11-06 16:34:49,413 - INFO - 已保存Parquet文件: c:\Users\huangk14\OneDrive - Medtronic PLC\Huangkai Files\B1_Project\250418_MDDAP_project\10-SA指标\13-SA数据清洗\publish/MES_处理后数据_latest.parquet, 行数: 9607
+2025-11-06 16:34:49,656 - INFO - 状态更新完成：已处理记录 9607 条，本次新增 9607 条
+2025-11-06 16:34:49,657 - INFO - 增量处理：已保存到latest文件并更新状态
+2025-11-06 16:34:49,657 - INFO - 处理完成，耗时: 19.13秒
+2025-11-07 09:32:01,819 - INFO - 测试模式已启用，将仅读取前 10000 行数据
+2025-11-07 09:32:01,824 - INFO - 读取MES数据: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\30-MES导出数据\Product Output -CZM -FY26.xlsx
+2025-11-07 09:33:30,971 - INFO - 测试模式：仅读取前 10000 行数据
+2025-11-07 09:33:31,215 - INFO - 已从Resource字段提取资源代码，创建machine字段
+2025-11-07 09:33:35,476 - INFO - 未找到上次处理时间，执行全量刷新
+2025-11-07 09:33:35,477 - INFO - 执行全量刷新：清除状态文件
+2025-11-07 09:33:36,079 - INFO - 读取SFC数据: 14717 行
+2025-11-07 09:33:36,100 - INFO - 合并SFC数据完成: 9606 行，匹配到Checkin_SFC: 9 行
+2025-11-07 09:33:36,108 - INFO - 使用通配符查找到最新的标准时间表: SAP_Routing_20251107.parquet
+2025-11-07 09:33:36,149 - INFO - 读取合并后的标准时间表: 38293 行
+2025-11-07 09:33:36,215 - INFO - 合并标准时间数据完成: 9606 行
+2025-11-07 09:33:36,218 - INFO - 匹配到OEE: 9606 行
+2025-11-07 09:33:39,188 - INFO - 历史数据文件不存在，直接使用新数据
+2025-11-07 09:33:39,535 - INFO - 已保存Parquet文件: c:\Users\huangk14\OneDrive - Medtronic PLC\Huangkai Files\B1_Project\250418_MDDAP_project\10-SA指标\13-SA数据清洗\publish/MES_处理后数据_latest.parquet, 行数: 9606
+2025-11-07 09:33:39,994 - INFO - 状态更新完成：已处理记录 9606 条，本次新增 9606 条
+2025-11-07 09:33:39,994 - INFO - 增量处理：已保存到latest文件并更新状态
+2025-11-07 09:33:39,995 - INFO - 处理完成，耗时: 98.18秒
+2025-11-07 09:38:57,383 - INFO - 测试模式已启用，将仅读取前 10000 行数据
+2025-11-07 09:38:57,384 - INFO - 读取MES数据: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\30-MES导出数据\Product Output -CZM -FY26.xlsx
+2025-11-07 09:39:23,692 - INFO - 测试模式：仅读取前 10000 行数据
+2025-11-07 09:39:23,839 - INFO - 已从Group字段提取数字部分
+2025-11-07 09:39:23,856 - INFO - 已从Resource字段提取资源代码，创建machine字段
+2025-11-07 09:39:25,910 - INFO - 未找到上次处理时间，执行全量刷新
+2025-11-07 09:39:25,911 - INFO - 执行全量刷新：清除状态文件
+2025-11-07 09:39:26,451 - INFO - 读取SFC数据: 14717 行
+2025-11-07 09:39:26,463 - INFO - 合并SFC数据完成: 9606 行，匹配到Checkin_SFC: 9 行
+2025-11-07 09:39:26,467 - INFO - 使用通配符查找到最新的标准时间表: SAP_Routing_20251107.parquet
+2025-11-07 09:39:26,495 - INFO - 读取合并后的标准时间表: 38293 行
+2025-11-07 09:39:26,546 - INFO - 合并标准时间数据完成: 9606 行
+2025-11-07 09:39:26,548 - INFO - 匹配到OEE: 9606 行
+2025-11-07 09:39:28,922 - INFO - 历史数据文件不存在，直接使用新数据
+2025-11-07 09:39:29,171 - INFO - 已保存Parquet文件: c:\Users\huangk14\OneDrive - Medtronic PLC\Huangkai Files\B1_Project\250418_MDDAP_project\10-SA指标\13-SA数据清洗\publish/MES_处理后数据_latest.parquet, 行数: 9606
+2025-11-07 09:39:29,607 - INFO - 状态更新完成：已处理记录 9606 条，本次新增 9606 条
+2025-11-07 09:39:29,609 - INFO - 增量处理：已保存到latest文件并更新状态
+2025-11-07 09:39:29,610 - INFO - 处理完成，耗时: 32.23秒
+2025-11-07 09:50:33,678 - INFO - 测试模式已启用，将仅读取前 10000 行数据
+2025-11-07 09:50:33,680 - INFO - 读取MES数据: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\30-MES导出数据\Product Output -CZM -FY26.xlsx
+2025-11-07 09:50:47,090 - INFO - 测试模式：仅读取前 10000 行数据
+2025-11-07 09:50:47,179 - INFO - 已从Group字段提取数字部分
+2025-11-07 09:50:47,191 - INFO - 已从Resource字段提取资源代码，创建machine字段
+2025-11-07 09:50:49,031 - INFO - 执行增量处理：过滤新数据
+2025-11-07 09:50:49,228 - INFO - 增量过滤：总数据 9606 行，已处理 9606 行，新数据 0 行
+2025-11-07 09:50:49,229 - INFO - MES数据没有新数据，跳过后续处理
+2025-11-07 09:50:49,233 - WARNING - MES处理后的数据为空，跳过保存
+2025-11-07 09:51:26,255 - INFO - 测试模式已启用，将仅读取前 10000 行数据
+2025-11-07 09:51:26,256 - INFO - 读取MES数据: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\30-MES导出数据\Product Output -CZM -FY26.xlsx
+2025-11-07 09:51:40,506 - INFO - 测试模式：仅读取前 10000 行数据
+2025-11-07 09:51:40,603 - INFO - 已从Group字段提取数字部分
+2025-11-07 09:51:40,616 - INFO - 已从Resource字段提取资源代码，创建machine字段
+2025-11-07 09:51:42,489 - INFO - 未找到上次处理时间，执行全量刷新
+2025-11-07 09:51:42,489 - INFO - 执行全量刷新：清除状态文件
+2025-11-07 09:51:42,935 - INFO - 读取SFC数据: 14717 行
+2025-11-07 09:51:42,947 - INFO - 合并SFC数据完成: 9606 行，匹配到Checkin_SFC: 9 行
+2025-11-07 09:51:42,951 - INFO - 使用通配符查找到最新的标准时间表: SAP_Routing_20251107.parquet
+2025-11-07 09:51:42,975 - INFO - 读取合并后的标准时间表: 38293 行
+2025-11-07 09:51:43,034 - INFO - 合并标准时间数据完成: 9606 行
+2025-11-07 09:51:43,036 - INFO - 匹配到OEE: 9606 行
+2025-11-07 09:51:45,111 - INFO - MES数据字段筛选完成：保留 29 个字段
+2025-11-07 09:51:45,112 - INFO - 历史数据文件不存在，直接使用新数据
+2025-11-07 09:51:45,223 - INFO - 已保存Parquet文件: c:\Users\huangk14\OneDrive - Medtronic PLC\Huangkai Files\B1_Project\250418_MDDAP_project\10-SA指标\13-SA数据清洗\publish/MES_处理后数据_latest.parquet, 行数: 9606
+2025-11-07 09:51:45,446 - INFO - 状态更新完成：已处理记录 9606 条，本次新增 9606 条
+2025-11-07 09:51:45,447 - INFO - 增量处理：已保存到latest文件并更新状态
+2025-11-07 09:51:45,447 - INFO - 处理完成，耗时: 19.19秒
+2025-11-07 10:19:09,813 - INFO - 测试模式已启用，将仅读取前 10000 行数据
+2025-11-07 10:19:09,816 - INFO - 读取MES数据: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\30-MES导出数据\Product Output -CZM -FY26.xlsx
+2025-11-07 10:19:35,060 - INFO - 测试模式：仅读取前 10000 行数据
+2025-11-07 10:19:35,284 - INFO - 已从Group字段提取数字部分
+2025-11-07 10:19:35,313 - INFO - 已从Resource字段提取资源代码，创建machine字段
+2025-11-07 10:19:38,427 - INFO - 未找到上次处理时间，执行全量刷新
+2025-11-07 10:19:38,429 - INFO - 执行全量刷新：清除状态文件
+2025-11-07 10:19:39,341 - INFO - 读取SFC数据: 14717 行
+2025-11-07 10:19:39,388 - INFO - 合并SFC数据完成: 9616 行，匹配到Checkin_SFC: 1441 行
+2025-11-07 10:19:39,398 - INFO - 使用通配符查找到最新的标准时间表: SAP_Routing_20251107.parquet
+2025-11-07 10:19:39,478 - INFO - 读取合并后的标准时间表: 38293 行
+2025-11-07 10:19:39,643 - INFO - 合并标准时间数据完成: 9616 行
+2025-11-07 10:19:39,645 - INFO - 匹配到OEE: 9616 行
+2025-11-07 10:19:42,395 - INFO - MES数据字段筛选完成：保留 29 个字段
+2025-11-07 10:19:42,396 - INFO - 历史数据文件不存在，直接使用新数据
+2025-11-07 10:19:42,645 - INFO - 已保存Parquet文件: c:\Users\huangk14\OneDrive - Medtronic PLC\Huangkai Files\B1_Project\250418_MDDAP_project\10-SA指标\13-SA数据清洗\publish/MES_处理后数据_latest.parquet, 行数: 9616
+2025-11-07 10:19:43,096 - INFO - 状态更新完成：已处理记录 9606 条，本次新增 9606 条
+2025-11-07 10:19:43,097 - INFO - 增量处理：已保存到latest文件并更新状态
+2025-11-07 10:19:43,100 - INFO - 处理完成，耗时: 33.29秒
+2025-11-07 10:51:46,032 - INFO - 测试模式已启用，将仅读取前 10000 行数据
+2025-11-07 10:51:46,036 - INFO - 读取MES数据: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\30-MES导出数据\Product Output -CZM -FY26.xlsx
+2025-11-07 10:52:20,276 - INFO - 测试模式：仅读取前 10000 行数据
+2025-11-07 10:52:20,593 - INFO - 已从Group字段提取数字部分
+2025-11-07 10:52:20,666 - INFO - 已从Resource字段提取资源代码，创建machine字段
+2025-11-07 10:52:26,027 - INFO - 未找到上次处理时间，执行全量刷新
+2025-11-07 10:52:26,029 - INFO - 执行全量刷新：清除状态文件
+2025-11-07 10:52:26,845 - INFO - 读取SFC数据: 14717 行
+2025-11-07 10:52:26,898 - INFO - 合并SFC数据完成: 9616 行，匹配到Checkin_SFC: 1441 行
+2025-11-07 10:52:26,910 - INFO - 使用通配符查找到最新的标准时间表: SAP_Routing_20251107.parquet
+2025-11-07 10:52:26,964 - INFO - 读取合并后的标准时间表: 38293 行
+2025-11-07 10:52:27,123 - INFO - 合并标准时间数据完成: 9616 行
+2025-11-07 10:52:27,130 - INFO - 匹配到EH_machine(s): 3303 行
+2025-11-07 10:52:27,132 - INFO - 匹配到EH_labor(s): 3303 行
+2025-11-07 10:52:27,135 - INFO - 匹配到OEE: 9616 行
+2025-11-07 10:52:30,486 - INFO - MES数据字段筛选完成：保留 30 个字段
+2025-11-07 10:52:30,488 - INFO - 历史数据文件不存在，直接使用新数据
+2025-11-07 10:52:30,807 - INFO - 已保存Parquet文件: c:\Users\huangk14\OneDrive - Medtronic PLC\Huangkai Files\B1_Project\250418_MDDAP_project\10-SA指标\13-SA数据清洗\publish/MES_处理后数据_latest.parquet, 行数: 9616
+2025-11-07 10:52:31,210 - INFO - 状态更新完成：已处理记录 9606 条，本次新增 9606 条
+2025-11-07 10:52:31,211 - INFO - 增量处理：已保存到latest文件并更新状态
+2025-11-07 10:52:31,211 - INFO - 处理完成，耗时: 45.18秒
+2025-11-07 11:14:29,174 - INFO - 测试模式已启用，将仅读取前 10000 行数据
+2025-11-07 11:14:29,177 - INFO - 读取MES数据: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\30-MES导出数据\Product Output -CZM -FY26.xlsx
+2025-11-07 11:14:50,988 - INFO - 测试模式：仅读取前 10000 行数据
+2025-11-07 11:14:51,152 - INFO - 已从Group字段提取数字部分
+2025-11-07 11:14:51,170 - INFO - 已从Resource字段提取资源代码，创建machine字段
+2025-11-07 11:14:53,742 - INFO - 未找到上次处理时间，执行全量刷新
+2025-11-07 11:14:53,743 - INFO - 执行全量刷新：清除状态文件
+2025-11-07 11:14:54,493 - INFO - 读取SFC数据: 14717 行
+2025-11-07 11:14:54,530 - INFO - 合并SFC数据完成: 9616 行，匹配到Checkin_SFC: 1441 行
+2025-11-07 11:14:54,539 - INFO - 使用通配符查找到最新的标准时间表: SAP_Routing_20251107.parquet
+2025-11-07 11:14:54,603 - INFO - 读取合并后的标准时间表: 38293 行
+2025-11-07 11:14:54,761 - INFO - 第一步CFN匹配后，还有 6313 条记录未匹配，尝试使用Material Number匹配
+2025-11-07 11:14:54,771 - INFO - MES数据没有Material Number字段，使用CFN作为Material Number进行匹配
+2025-11-07 11:14:54,884 - INFO - 第二步Material Number匹配成功: 6314 条记录
+2025-11-07 11:14:54,888 - INFO - 合并标准时间数据完成: 9616 行，总匹配成功: 7385 行
+2025-11-07 11:14:54,890 - INFO - 匹配到EH_machine(s): 7385 行
+2025-11-07 11:14:54,891 - INFO - 匹配到EH_labor(s): 7385 行
+2025-11-07 11:14:54,892 - INFO - 匹配到OEE: 9616 行
+2025-11-07 11:14:57,425 - INFO - MES数据字段筛选完成：保留 30 个字段
+2025-11-07 11:14:57,427 - INFO - 历史数据文件不存在，直接使用新数据
+2025-11-07 11:14:57,576 - INFO - 已保存Parquet文件: c:\Users\huangk14\OneDrive - Medtronic PLC\Huangkai Files\B1_Project\250418_MDDAP_project\10-SA指标\13-SA数据清洗\publish/MES_处理后数据_latest.parquet, 行数: 9616
+2025-11-07 11:14:57,849 - INFO - 状态更新完成：已处理记录 9606 条，本次新增 9606 条
+2025-11-07 11:14:57,850 - INFO - 增量处理：已保存到latest文件并更新状态
+2025-11-07 11:14:57,851 - INFO - 处理完成，耗时: 28.68秒
+2025-11-07 12:00:32,328 - INFO - 测试模式已启用，将仅读取前 10000 行数据
+2025-11-07 12:00:32,331 - INFO - 读取MES数据: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\30-MES导出数据\Product Output -CZM -FY26.xlsx
+2025-11-07 12:00:44,557 - INFO - 测试模式：仅读取前 10000 行数据
+2025-11-07 12:00:44,642 - INFO - 已从Group字段提取数字部分
+2025-11-07 12:00:44,654 - INFO - 已从Resource字段提取资源代码，创建machine字段
+2025-11-07 12:00:46,266 - INFO - 未找到上次处理时间，执行全量刷新
+2025-11-07 12:00:46,266 - INFO - 执行全量刷新：清除状态文件
+2025-11-07 12:00:46,898 - INFO - 读取SFC数据: 14717 行
+2025-11-07 12:00:46,915 - INFO - 合并SFC数据完成: 9616 行，匹配到Checkin_SFC: 1441 行
+2025-11-07 12:00:46,921 - INFO - 使用通配符查找到最新的标准时间表: SAP_Routing_20251107.parquet
+2025-11-07 12:00:46,975 - INFO - 读取合并后的标准时间表: 38293 行
+2025-11-07 12:00:47,021 - ERROR - ETL失败: The column label 'CFN' is not unique.
+Traceback (most recent call last):
+  File "c:\Users\huangk14\OneDrive - Medtronic PLC\Huangkai Files\B1_Project\250418_MDDAP_project\10-SA指标\13-SA数据清洗\etl_sa.py", line 1512, in <module>
+    mes_result_df = process_all_data(cfg)
+                    ^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\huangk14\OneDrive - Medtronic PLC\Huangkai Files\B1_Project\250418_MDDAP_project\10-SA指标\13-SA数据清洗\etl_sa.py", line 1209, in process_all_data
+    result = merge_standard_time(result, cfg)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\huangk14\OneDrive - Medtronic PLC\Huangkai Files\B1_Project\250418_MDDAP_project\10-SA指标\13-SA数据清洗\etl_sa.py", line 509, in merge_standard_time
+    result = mes_df.merge(
+             ^^^^^^^^^^^^^
+  File "c:\Users\huangk14\OneDrive - Medtronic PLC\Huangkai Files\B1_Project\250418_MDDAP_project\.venv\Lib\site-packages\pandas\core\frame.py", line 10859, in merge
+    return merge(
+           ^^^^^^
+  File "c:\Users\huangk14\OneDrive - Medtronic PLC\Huangkai Files\B1_Project\250418_MDDAP_project\.venv\Lib\site-packages\pandas\core\reshape\merge.py", line 170, in merge
+    op = _MergeOperation(
+         ^^^^^^^^^^^^^^^^
+  File "c:\Users\huangk14\OneDrive - Medtronic PLC\Huangkai Files\B1_Project\250418_MDDAP_project\.venv\Lib\site-packages\pandas\core\reshape\merge.py", line 794, in __init__
+    ) = self._get_merge_keys()
+        ^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\huangk14\OneDrive - Medtronic PLC\Huangkai Files\B1_Project\250418_MDDAP_project\.venv\Lib\site-packages\pandas\core\reshape\merge.py", line 1298, in _get_merge_keys
+    right_keys.append(right._get_label_or_level_values(rk))
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\huangk14\OneDrive - Medtronic PLC\Huangkai Files\B1_Project\250418_MDDAP_project\.venv\Lib\site-packages\pandas\core\generic.py", line 1928, in _get_label_or_level_values
+    raise ValueError(
+ValueError: The column label 'CFN' is not unique.
+2025-11-07 12:02:04,157 - INFO - 测试模式已启用，将仅读取前 10000 行数据
+2025-11-07 12:02:04,158 - INFO - 读取MES数据: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\30-MES导出数据\Product Output -CZM -FY26.xlsx
+2025-11-07 12:02:14,568 - INFO - 测试模式：仅读取前 10000 行数据
+2025-11-07 12:02:14,652 - INFO - 已从Group字段提取数字部分
+2025-11-07 12:02:14,664 - INFO - 已从Resource字段提取资源代码，创建machine字段
+2025-11-07 12:02:15,898 - INFO - 未找到上次处理时间，执行全量刷新
+2025-11-07 12:02:15,898 - INFO - 执行全量刷新：清除状态文件
+2025-11-07 12:02:16,379 - INFO - 读取SFC数据: 14717 行
+2025-11-07 12:02:16,392 - INFO - 合并SFC数据完成: 9616 行，匹配到Checkin_SFC: 1441 行
+2025-11-07 12:02:16,395 - INFO - 使用通配符查找到最新的标准时间表: SAP_Routing_20251107.parquet
+2025-11-07 12:02:16,434 - INFO - 读取合并后的标准时间表: 38293 行
+2025-11-07 12:02:16,492 - INFO - 合并标准时间数据完成: 9617 行，总匹配成功: 9617 行
+2025-11-07 12:02:16,493 - INFO - 匹配到EH_machine(s): 9617 行
+2025-11-07 12:02:16,493 - INFO - 匹配到EH_labor(s): 9617 行
+2025-11-07 12:02:16,494 - INFO - 匹配到OEE: 9617 行
+2025-11-07 12:02:17,886 - INFO - MES数据字段筛选完成：保留 30 个字段
+2025-11-07 12:02:17,886 - INFO - 历史数据文件不存在，直接使用新数据
+2025-11-07 12:02:17,990 - INFO - 已保存Parquet文件: c:\Users\huangk14\OneDrive - Medtronic PLC\Huangkai Files\B1_Project\250418_MDDAP_project\10-SA指标\13-SA数据清洗\publish/MES_处理后数据_latest.parquet, 行数: 9617
+2025-11-07 12:02:18,168 - INFO - 状态更新完成：已处理记录 9606 条，本次新增 9606 条
+2025-11-07 12:02:18,169 - INFO - 增量处理：已保存到latest文件并更新状态
+2025-11-07 12:02:18,170 - INFO - 处理完成，耗时: 14.01秒
+2025-11-07 20:58:57,321 - INFO - ============================================================
+2025-11-07 20:58:57,324 - INFO - 用户选择: 增量刷新
+2025-11-07 20:58:57,325 - INFO - ============================================================
+2025-11-07 20:58:57,325 - INFO - 测试模式已启用，将仅读取前 10000 行数据
+2025-11-07 20:58:57,327 - INFO - 读取MES数据: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\30-MES导出数据\Product Output -CZM -FY26.xlsx
+2025-11-07 20:59:20,253 - INFO - 测试模式：仅读取前 10000 行数据
+2025-11-07 20:59:20,397 - INFO - 已从Group字段提取数字部分
+2025-11-07 20:59:20,415 - INFO - 已从Resource字段提取资源代码，创建machine字段
+2025-11-07 20:59:23,187 - INFO - 执行增量处理：过滤新数据
+2025-11-07 20:59:23,721 - INFO - 增量过滤：总数据 9606 行，已处理 9606 行，新数据 0 行
+2025-11-07 20:59:23,722 - INFO - MES数据没有新数据，跳过后续处理
+2025-11-07 20:59:23,731 - WARNING - MES处理后的数据为空，跳过保存
+2025-11-07 21:08:55,130 - INFO - ============================================================
+2025-11-07 21:08:55,131 - INFO - 用户选择: 全量刷新
+2025-11-07 21:08:55,131 - INFO - ============================================================
+2025-11-07 21:08:55,132 - INFO - 测试模式已启用，将仅读取前 10000 行数据
+2025-11-07 21:08:55,132 - INFO - 读取MES数据: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\30-MES导出数据\Product Output -CZM -FY26.xlsx
+2025-11-07 21:09:11,440 - INFO - 测试模式：仅读取前 10000 行数据
+2025-11-07 21:09:11,611 - INFO - 已从Group字段提取数字部分
+2025-11-07 21:09:11,640 - INFO - 已从Resource字段提取资源代码，创建machine字段
+2025-11-07 21:09:14,812 - INFO - 执行全量刷新：清除状态文件和历史数据文件
+2025-11-07 21:09:14,817 - INFO - 已删除状态文件: c:\Users\huangk14\OneDrive - Medtronic PLC\Huangkai Files\B1_Project\250418_MDDAP_project\10-SA指标\13-SA数据清洗\publish/etl_state.json
+2025-11-07 21:09:14,828 - INFO - 已删除历史数据文件: c:\Users\huangk14\OneDrive - Medtronic PLC\Huangkai Files\B1_Project\250418_MDDAP_project\10-SA指标\13-SA数据清洗\publish/MES_处理后数据_latest.parquet
+2025-11-07 21:09:15,453 - INFO - 读取SFC数据: 14495 行
+2025-11-07 21:09:15,480 - INFO - 合并SFC数据完成: 9722 行，匹配到Checkin_SFC: 1451 行
+2025-11-07 21:09:15,489 - INFO - 使用通配符查找到最新的标准时间表: SAP_Routing_20251107.parquet
+2025-11-07 21:09:15,530 - INFO - 读取合并后的标准时间表: 38293 行
+2025-11-07 21:09:15,671 - INFO - 合并标准时间数据完成: 9724 行，总匹配成功: 9724 行
+2025-11-07 21:09:15,675 - INFO - 匹配到EH_machine(s): 9724 行
+2025-11-07 21:09:15,676 - INFO - 匹配到EH_labor(s): 9724 行
+2025-11-07 21:09:15,678 - INFO - 匹配到OEE: 9724 行
+2025-11-07 21:09:15,705 - INFO - 开始计算 PreviousBatchEndTime：有效machine记录 9724 条，总计 9724 条
+2025-11-07 21:09:15,772 - INFO - 计算 PreviousBatchEndTime 完成：总计 9724 条，成功计算 9724 条（其中有效machine记录 9724 条）
+2025-11-07 21:09:18,986 - INFO - MES数据字段筛选完成：保留 31 个字段
+2025-11-07 21:09:18,988 - INFO - 历史数据文件不存在，直接使用新数据
+2025-11-07 21:09:18,989 - INFO - 对所有合并后的数据统一计算 PreviousBatchEndTime
+2025-11-07 21:09:18,995 - INFO - 开始计算 PreviousBatchEndTime：有效machine记录 9724 条，总计 9724 条
+2025-11-07 21:09:19,022 - INFO - 计算 PreviousBatchEndTime 完成：总计 9724 条，成功计算 9724 条（其中有效machine记录 9724 条）
+2025-11-07 21:09:19,292 - INFO - 已保存Parquet文件: c:\Users\huangk14\OneDrive - Medtronic PLC\Huangkai Files\B1_Project\250418_MDDAP_project\10-SA指标\13-SA数据清洗\publish/MES_处理后数据_latest.parquet, 行数: 9724
+2025-11-07 21:09:19,664 - INFO - 状态更新完成：已处理记录 9606 条，本次新增 9606 条
+2025-11-07 21:09:19,665 - INFO - 增量处理：已保存到latest文件并更新状态
+2025-11-07 21:09:19,666 - INFO - 处理完成，耗时: 24.53秒
+2025-11-07 21:56:36,456 - INFO - ============================================================
+2025-11-07 21:56:36,460 - INFO - 用户选择: 增量刷新
+2025-11-07 21:56:36,465 - INFO - ============================================================
+2025-11-07 21:56:36,467 - INFO - 测试模式已启用，将仅读取前 10000 行数据
+2025-11-07 21:56:36,471 - INFO - 读取MES数据: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\30-MES导出数据\Product Output -CZM -FY26.xlsx
+2025-11-07 21:56:51,533 - INFO - 测试模式：仅读取前 10000 行数据
+2025-11-07 21:56:51,717 - INFO - 已从Group字段提取数字部分
+2025-11-07 21:56:51,732 - INFO - 已从Resource字段提取资源代码，创建machine字段
+2025-11-07 21:56:55,139 - INFO - 执行增量处理：过滤新数据
+2025-11-07 21:56:55,662 - INFO - 增量过滤：总数据 9606 行，已处理 9606 行，新数据 0 行
+2025-11-07 21:56:55,663 - INFO - MES数据没有新数据，跳过后续处理
+2025-11-07 21:56:55,671 - WARNING - MES处理后的数据为空，跳过保存
+2025-11-07 21:58:03,237 - INFO - ============================================================
+2025-11-07 21:58:03,239 - INFO - 用户选择: 增量刷新
+2025-11-07 21:58:03,240 - INFO - ============================================================
+2025-11-07 21:58:03,241 - INFO - 测试模式已启用，将仅读取前 20000 行数据
+2025-11-07 21:58:03,243 - INFO - 读取MES数据: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\30-MES导出数据\Product Output -CZM -FY26.xlsx
+2025-11-07 21:58:22,226 - INFO - 测试模式：仅读取前 20000 行数据
+2025-11-07 21:58:22,404 - INFO - 已从Group字段提取数字部分
+2025-11-07 21:58:22,429 - INFO - 已从Resource字段提取资源代码，创建machine字段
+2025-11-07 21:58:24,832 - INFO - 执行增量处理：过滤新数据
+2025-11-07 21:58:25,193 - INFO - 增量过滤：总数据 18983 行，已处理 9606 行，新数据 9377 行
+2025-11-07 21:58:25,859 - INFO - 读取SFC数据: 14495 行
+2025-11-07 21:58:25,891 - INFO - 合并SFC数据完成: 9440 行，匹配到Checkin_SFC: 794 行
+2025-11-07 21:58:25,901 - INFO - 使用通配符查找到最新的标准时间表: SAP_Routing_20251107.parquet
+2025-11-07 21:58:25,964 - INFO - 读取合并后的标准时间表: 38293 行
+2025-11-07 21:58:26,070 - INFO - 第一步Material Number匹配后，还有 5 条记录未匹配，尝试使用CFN匹配
+2025-11-07 21:58:26,101 - INFO - 合并标准时间数据完成: 9442 行，总匹配成功: 9437 行
+2025-11-07 21:58:26,103 - INFO - 匹配到EH_machine(s): 9437 行
+2025-11-07 21:58:26,104 - INFO - 匹配到EH_labor(s): 9437 行
+2025-11-07 21:58:26,106 - INFO - 匹配到OEE: 9442 行
+2025-11-07 21:58:26,119 - INFO - 开始计算 PreviousBatchEndTime：有效machine记录 9442 条，总计 9442 条
+2025-11-07 21:58:26,144 - INFO - 计算 PreviousBatchEndTime 完成：总计 9442 条，成功计算 9442 条（其中有效machine记录 9442 条）
+2025-11-07 21:58:27,798 - INFO - MES数据字段筛选完成：保留 31 个字段
+2025-11-07 21:58:27,850 - INFO - 加载历史数据: 9724 行
+2025-11-07 21:58:27,892 - INFO - 数据合并完成：历史 9724 行 + 新增 9442 行 = 合并后 18983 行
+2025-11-07 21:58:27,893 - INFO - 对所有合并后的数据统一计算 PreviousBatchEndTime
+2025-11-07 21:58:27,904 - INFO - 开始计算 PreviousBatchEndTime：有效machine记录 18983 条，总计 18983 条
+2025-11-07 21:58:28,057 - INFO - 计算 PreviousBatchEndTime 完成：总计 18983 条，成功计算 18983 条（其中有效machine记录 18983 条）
+2025-11-07 21:58:28,288 - INFO - 已保存Parquet文件: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\30-MES导出数据\publish\MES_处理后数据_latest.parquet, 行数: 18983
+2025-11-07 21:58:28,689 - INFO - 状态更新完成：已处理记录 18983 条，本次新增 18983 条
+2025-11-07 21:58:28,689 - INFO - 增量处理：已保存到latest文件并更新状态
+2025-11-07 21:58:28,691 - INFO - 处理完成，耗时: 25.45秒
+2025-11-08 07:22:24,613 - INFO - ============================================================
+2025-11-08 07:22:24,643 - INFO - 用户选择: 增量刷新
+2025-11-08 07:22:24,647 - INFO - ============================================================
+2025-11-08 07:22:24,649 - INFO - 测试模式已启用，将仅读取前 20000 行数据
+2025-11-08 07:22:24,653 - INFO - 读取MES数据: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\30-MES导出数据\Product Output -CZM -FY26.xlsx
+2025-11-08 07:23:18,711 - INFO - 测试模式：仅读取前 20000 行数据
+2025-11-08 07:23:18,983 - INFO - 已从Group字段提取数字部分
+2025-11-08 07:23:19,019 - INFO - 已从Resource字段提取资源代码，创建machine字段
+2025-11-08 07:23:25,004 - INFO - 执行增量处理：过滤新数据
+2025-11-08 07:23:26,424 - INFO - 增量过滤：总数据 18983 行，已处理 18983 行，新数据 0 行
+2025-11-08 07:23:26,425 - INFO - MES数据没有新数据，跳过后续处理
+2025-11-08 07:23:26,444 - WARNING - MES处理后的数据为空，跳过保存
+2025-11-08 08:41:13,298 - INFO - ============================================================
+2025-11-08 08:41:13,303 - INFO - 用户选择: 全量刷新
+2025-11-08 08:41:13,305 - INFO - ============================================================
+2025-11-08 08:41:13,307 - INFO - 测试模式已启用，将仅读取前 20000 行数据
+2025-11-08 08:41:13,311 - INFO - 读取MES数据: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\30-MES导出数据\Product Output -CZM -FY26.xlsx
+2025-11-08 08:41:31,337 - INFO - 测试模式：仅读取前 20000 行数据
+2025-11-08 08:41:31,508 - INFO - 已从Group字段提取数字部分
+2025-11-08 08:41:31,538 - INFO - 已从Resource字段提取资源代码，创建machine字段
+2025-11-08 08:41:34,079 - INFO - 执行全量刷新：清除状态文件和历史数据文件
+2025-11-08 08:41:34,084 - INFO - 已删除状态文件: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\30-MES导出数据\publish\etl_state.json
+2025-11-08 08:41:34,089 - INFO - 已删除历史数据文件: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\30-MES导出数据\publish\MES_处理后数据_latest.parquet
+2025-11-08 08:41:34,763 - INFO - 读取SFC数据: 13420 行
+2025-11-08 08:41:34,831 - INFO - 合并SFC数据完成: 19009 行，匹配到Checkin_SFC: 2096 行
+2025-11-08 08:41:34,842 - INFO - 使用通配符查找到最新的标准时间表: SAP_Routing_20251108.parquet
+2025-11-08 08:41:34,931 - INFO - 读取合并后的标准时间表: 38293 行
+2025-11-08 08:41:35,124 - INFO - 第一步Material Number匹配后，还有 5 条记录未匹配，尝试使用CFN匹配
+2025-11-08 08:41:35,162 - INFO - 合并标准时间数据完成: 19012 行，总匹配成功: 19007 行
+2025-11-08 08:41:35,164 - INFO - 匹配到EH_machine(s): 19007 行
+2025-11-08 08:41:35,165 - INFO - 匹配到EH_labor(s): 19007 行
+2025-11-08 08:41:35,166 - INFO - 匹配到OEE: 19012 行
+2025-11-08 08:41:35,233 - INFO - 开始计算 PreviousBatchEndTime：有效machine记录 19012 条，总计 19012 条
+2025-11-08 08:41:35,358 - INFO - 计算 PreviousBatchEndTime 完成：总计 19012 条，成功计算 19012 条（其中有效machine记录 19012 条）
+2025-11-08 08:41:39,084 - INFO - MES数据字段筛选完成：保留 31 个字段
+2025-11-08 08:41:39,085 - INFO - 历史数据文件不存在，直接使用新数据
+2025-11-08 08:41:39,087 - INFO - 对所有合并后的数据统一计算 PreviousBatchEndTime
+2025-11-08 08:41:39,120 - INFO - 开始计算 PreviousBatchEndTime：有效machine记录 19012 条，总计 19012 条
+2025-11-08 08:41:39,264 - INFO - 计算 PreviousBatchEndTime 完成：总计 19012 条，成功计算 19012 条（其中有效machine记录 19012 条）
+2025-11-08 08:41:39,497 - INFO - 已保存Parquet文件: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\30-MES导出数据\publish\MES_处理后数据_latest.parquet, 行数: 19012
+2025-11-08 08:41:39,947 - INFO - 状态更新完成：已处理记录 18983 条，本次新增 18983 条
+2025-11-08 08:41:39,948 - INFO - 增量处理：已保存到latest文件并更新状态
+2025-11-08 08:41:39,948 - INFO - 处理完成，耗时: 26.64秒
+2025-11-08 13:17:53,630 - INFO - ============================================================
+2025-11-08 13:17:53,635 - INFO - 用户选择: 全量刷新
+2025-11-08 13:17:53,637 - INFO - ============================================================
+2025-11-08 13:17:53,639 - INFO - 测试模式已启用，将仅读取前 20000 行数据
+2025-11-08 13:17:53,642 - INFO - 读取MES数据: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\30-MES导出数据\Product Output -CZM -FY26.xlsx
+2025-11-08 13:18:31,789 - INFO - 测试模式：仅读取前 20000 行数据
+2025-11-08 13:18:32,042 - INFO - 已从Group字段提取数字部分
+2025-11-08 13:18:32,096 - INFO - 已从Resource字段提取资源代码，创建machine字段
+2025-11-08 13:18:36,206 - INFO - 执行全量刷新：清除状态文件和历史数据文件
+2025-11-08 13:18:36,213 - INFO - 已删除状态文件: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\30-MES导出数据\publish\etl_state.json
+2025-11-08 13:18:36,226 - INFO - 已删除历史数据文件: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\30-MES导出数据\publish\MES_处理后数据_latest.parquet
+2025-11-08 13:18:36,969 - INFO - 读取SFC数据: 13420 行
+2025-11-08 13:18:37,036 - INFO - 合并SFC数据完成: 19009 行，匹配到Checkin_SFC: 2096 行
+2025-11-08 13:18:37,050 - INFO - 使用通配符查找到最新的标准时间表: SAP_Routing_20251108.parquet
+2025-11-08 13:18:37,112 - INFO - 读取合并后的标准时间表: 38293 行
+2025-11-08 13:18:37,274 - INFO - 第一步Material Number匹配后，还有 5 条记录未匹配，尝试使用CFN匹配
+2025-11-08 13:18:37,330 - INFO - 合并标准时间数据完成: 19012 行，总匹配成功: 19007 行
+2025-11-08 13:18:37,332 - INFO - 匹配到EH_machine(s): 19007 行
+2025-11-08 13:18:37,333 - INFO - 匹配到EH_labor(s): 19007 行
+2025-11-08 13:18:37,335 - INFO - 匹配到OEE: 19012 行
+2025-11-08 13:18:37,387 - INFO - 成功加载日历表: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\30-MES导出数据\publish\日历工作日表.csv, 共1095条记录
+2025-11-08 13:18:37,396 - INFO - 开始计算 PreviousBatchEndTime：有效machine记录 19012 条，总计 19012 条
+2025-11-08 13:18:37,483 - INFO - 计算 PreviousBatchEndTime 完成：总计 19012 条，成功计算 19012 条（其中有效machine记录 19012 条）
+2025-11-08 13:18:47,880 - INFO - MES数据字段筛选完成：保留 31 个字段
+2025-11-08 13:18:47,882 - INFO - 历史数据文件不存在，直接使用新数据
+2025-11-08 13:18:47,883 - INFO - 对所有合并后的数据统一计算 PreviousBatchEndTime
+2025-11-08 13:18:47,899 - INFO - 开始计算 PreviousBatchEndTime：有效machine记录 19012 条，总计 19012 条
+2025-11-08 13:18:47,978 - INFO - 计算 PreviousBatchEndTime 完成：总计 19012 条，成功计算 19012 条（其中有效machine记录 19012 条）
+2025-11-08 13:18:48,325 - INFO - 已保存Parquet文件: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\30-MES导出数据\publish\MES_处理后数据_latest.parquet, 行数: 19012
+2025-11-08 13:18:49,487 - INFO - 状态更新完成：已处理记录 18983 条，本次新增 18983 条
+2025-11-08 13:18:49,488 - INFO - 增量处理：已保存到latest文件并更新状态
+2025-11-08 13:18:49,489 - INFO - 处理完成，耗时: 55.85秒
+2025-11-10 09:02:31,992 - INFO - ============================================================
+2025-11-10 09:02:31,995 - INFO - 用户选择: 全量刷新
+2025-11-10 09:02:31,996 - INFO - ============================================================
+2025-11-10 09:02:31,996 - INFO - 测试模式已启用，将仅读取前 20000 行数据
+2025-11-10 09:02:31,999 - INFO - 读取MES数据: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\30-MES导出数据\Product Output -CZM -FY26.xlsx
+2025-11-10 09:03:12,974 - INFO - 测试模式：仅读取前 20000 行数据
+2025-11-10 09:03:13,229 - INFO - 已从Group字段提取数字部分
+2025-11-10 09:03:13,252 - INFO - 已从Resource字段提取资源代码，创建machine字段
+2025-11-10 09:03:16,339 - INFO - 执行全量刷新：清除状态文件和历史数据文件
+2025-11-10 09:03:16,354 - INFO - 已删除状态文件: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\30-MES导出数据\publish\etl_state.json
+2025-11-10 09:03:16,372 - INFO - 已删除历史数据文件: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\30-MES导出数据\publish\MES_处理后数据_latest.parquet
+2025-11-10 09:03:16,967 - INFO - 读取SFC数据: 13420 行
+2025-11-10 09:03:17,006 - INFO - 合并SFC数据完成: 19006 行，匹配到Checkin_SFC: 2097 行
+2025-11-10 09:03:17,016 - INFO - 使用通配符查找到最新的标准时间表: SAP_Routing_20251108.parquet
+2025-11-10 09:03:17,046 - INFO - 读取合并后的标准时间表: 38293 行
+2025-11-10 09:03:17,170 - INFO - 第一步Material Number匹配后，还有 5 条记录未匹配，尝试使用CFN匹配
+2025-11-10 09:03:17,218 - INFO - 合并标准时间数据完成: 19009 行，总匹配成功: 19004 行
+2025-11-10 09:03:17,219 - INFO - 匹配到EH_machine(s): 19004 行
+2025-11-10 09:03:17,220 - INFO - 匹配到EH_labor(s): 19004 行
+2025-11-10 09:03:17,221 - INFO - 匹配到OEE: 19009 行
+2025-11-10 09:03:17,272 - INFO - 成功加载日历表: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\30-MES导出数据\publish\日历工作日表.csv, 共1095条记录
+2025-11-10 09:03:17,279 - INFO - 开始计算 PreviousBatchEndTime：有效machine记录 19009 条，总计 19009 条
+2025-11-10 09:03:17,344 - INFO - 计算 PreviousBatchEndTime 完成：总计 19009 条，成功计算 19009 条（其中有效machine记录 19009 条）
+2025-11-10 09:03:24,480 - INFO - MES数据字段筛选完成：保留 31 个字段
+2025-11-10 09:03:24,482 - INFO - 历史数据文件不存在，直接使用新数据
+2025-11-10 09:03:24,483 - INFO - 对所有合并后的数据统一计算 PreviousBatchEndTime
+2025-11-10 09:03:24,496 - INFO - 开始计算 PreviousBatchEndTime：有效machine记录 19009 条，总计 19009 条
+2025-11-10 09:03:24,548 - INFO - 计算 PreviousBatchEndTime 完成：总计 19009 条，成功计算 19009 条（其中有效machine记录 19009 条）
+2025-11-10 09:03:24,820 - INFO - 已保存Parquet文件: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\30-MES导出数据\publish\MES_处理后数据_latest.parquet, 行数: 19009
+2025-11-10 09:03:25,381 - INFO - 状态更新完成：已处理记录 18980 条，本次新增 18980 条
+2025-11-10 09:03:25,381 - INFO - 增量处理：已保存到latest文件并更新状态
+2025-11-10 09:03:25,382 - INFO - 处理完成，耗时: 53.39秒
+2025-11-10 13:05:46,225 - INFO - ============================================================
+2025-11-10 13:05:46,229 - INFO - 用户选择: 全量刷新
+2025-11-10 13:05:46,232 - INFO - ============================================================
+2025-11-10 13:05:46,234 - INFO - 测试模式已启用，将仅读取前 20000 行数据
+2025-11-10 13:05:46,238 - INFO - 读取MES数据: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\30-MES导出数据\Product Output -CZM -FY26.xlsx
+2025-11-10 13:06:06,366 - INFO - 测试模式：仅读取前 20000 行数据
+2025-11-10 13:06:06,683 - INFO - 已从Group字段提取数字部分
+2025-11-10 13:06:06,744 - INFO - 已从Resource字段提取资源代码，创建machine字段
+2025-11-10 13:06:10,706 - INFO - 执行全量刷新：清除状态文件和历史数据文件
+2025-11-10 13:06:10,714 - INFO - 已删除状态文件: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\30-MES导出数据\publish\etl_state.json
+2025-11-10 13:06:10,721 - INFO - 已删除历史数据文件: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\30-MES导出数据\publish\MES_处理后数据_latest.parquet
+2025-11-10 13:06:11,628 - INFO - 读取SFC数据: 13420 行
+2025-11-10 13:06:11,668 - INFO - 合并SFC数据完成: 19006 行，匹配到Checkin_SFC: 2097 行
+2025-11-10 13:06:11,675 - INFO - 使用通配符查找到最新的标准时间表: SAP_Routing_20251108.parquet
+2025-11-10 13:06:11,707 - INFO - 读取合并后的标准时间表: 38293 行
+2025-11-10 13:06:11,859 - INFO - 第一步Material Number匹配后，还有 5 条记录未匹配，尝试使用CFN匹配
+2025-11-10 13:06:11,908 - INFO - 合并标准时间数据完成: 19009 行，总匹配成功: 19004 行
+2025-11-10 13:06:11,909 - INFO - 匹配到EH_machine(s): 19004 行
+2025-11-10 13:06:11,909 - INFO - 匹配到EH_labor(s): 19004 行
+2025-11-10 13:06:11,910 - INFO - 匹配到OEE: 19009 行
+2025-11-10 13:06:11,956 - INFO - 成功加载日历表: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\30-MES导出数据\publish\日历工作日表.csv, 共1095条记录
+2025-11-10 13:06:11,962 - INFO - 开始计算 PreviousBatchEndTime：有效machine记录 19009 条，总计 19009 条
+2025-11-10 13:06:12,027 - INFO - 计算 PreviousBatchEndTime 完成：总计 19009 条，成功计算 19009 条（其中有效machine记录 19009 条）
+2025-11-10 13:06:19,714 - INFO - MES数据字段筛选完成：保留 31 个字段
+2025-11-10 13:06:19,715 - INFO - 历史数据文件不存在，直接使用新数据
+2025-11-10 13:06:19,715 - INFO - 对所有合并后的数据统一计算 PreviousBatchEndTime
+2025-11-10 13:06:19,731 - INFO - 开始计算 PreviousBatchEndTime：有效machine记录 19009 条，总计 19009 条
+2025-11-10 13:06:19,901 - INFO - 计算 PreviousBatchEndTime 完成：总计 19009 条，成功计算 19009 条（其中有效machine记录 19009 条）
+2025-11-10 13:06:20,161 - INFO - 已保存Parquet文件: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\30-MES导出数据\publish\MES_处理后数据_latest.parquet, 行数: 19009
+2025-11-10 13:06:20,864 - INFO - 状态更新完成：已处理记录 18980 条，本次新增 18980 条
+2025-11-10 13:06:20,865 - INFO - 增量处理：已保存到latest文件并更新状态
+2025-11-10 13:06:20,865 - INFO - 处理完成，耗时: 34.63秒
+2025-11-10 15:02:09,295 - INFO - ============================================================
+2025-11-10 15:02:09,299 - INFO - 用户选择: 全量刷新
+2025-11-10 15:02:09,300 - INFO - ============================================================
+2025-11-10 15:02:09,302 - INFO - 测试模式已启用，将仅读取前 20000 行数据
+2025-11-10 15:02:09,304 - INFO - 读取MES数据: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\30-MES导出数据\Product Output -CZM -FY26.xlsx
+2025-11-10 15:02:34,783 - INFO - 测试模式：仅读取前 20000 行数据
+2025-11-10 15:02:35,043 - INFO - 已从Group字段提取数字部分
+2025-11-10 15:02:35,074 - INFO - 已从Resource字段提取资源代码，创建machine字段
+2025-11-10 15:02:39,169 - INFO - 执行全量刷新：清除状态文件和历史数据文件
+2025-11-10 15:02:39,179 - INFO - 已删除状态文件: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\30-MES导出数据\publish\etl_state.json
+2025-11-10 15:02:39,190 - INFO - 已删除历史数据文件: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\30-MES导出数据\publish\MES_处理后数据_latest.parquet
+2025-11-10 15:02:40,309 - INFO - 读取SFC数据: 13420 行
+2025-11-10 15:02:40,387 - INFO - 合并SFC数据完成: 19006 行，匹配到Checkin_SFC: 2097 行
+2025-11-10 15:02:40,399 - INFO - 使用通配符查找到最新的标准时间表: SAP_Routing_20251108.parquet
+2025-11-10 15:02:40,458 - INFO - 读取合并后的标准时间表: 38293 行
+2025-11-10 15:02:40,727 - INFO - 第一步Material Number匹配后，还有 5 条记录未匹配，尝试使用CFN匹配
+2025-11-10 15:02:40,829 - INFO - 合并标准时间数据完成: 19009 行，总匹配成功: 19004 行
+2025-11-10 15:02:40,831 - INFO - 匹配到EH_machine(s): 19004 行
+2025-11-10 15:02:40,833 - INFO - 匹配到EH_labor(s): 19004 行
+2025-11-10 15:02:40,835 - INFO - 匹配到OEE: 19009 行
+2025-11-10 15:02:40,912 - INFO - 成功加载日历表: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\30-MES导出数据\publish\日历工作日表.csv, 共1095条记录
+2025-11-10 15:02:40,916 - INFO - 日历表示例: 2024-10-01 是否工作日=False
+2025-11-10 15:02:40,917 - INFO - 日历表示例: 2024-10-07 是否工作日=False
+2025-11-10 15:02:40,918 - INFO - 日历表示例: 2024-10-08 是否工作日=True
+2025-11-10 15:02:40,931 - INFO - 开始计算 PreviousBatchEndTime：有效machine记录 19009 条，总计 19009 条
+2025-11-10 15:02:41,055 - INFO - 计算 PreviousBatchEndTime 完成：总计 19009 条，成功计算 19009 条（其中有效machine记录 19009 条）
+2025-11-10 15:02:47,720 - INFO - MES数据字段筛选完成：保留 31 个字段
+2025-11-10 15:02:47,720 - INFO - 历史数据文件不存在，直接使用新数据
+2025-11-10 15:02:47,721 - INFO - 对所有合并后的数据统一计算 PreviousBatchEndTime
+2025-11-10 15:02:47,731 - INFO - 开始计算 PreviousBatchEndTime：有效machine记录 19009 条，总计 19009 条
+2025-11-10 15:02:47,783 - INFO - 计算 PreviousBatchEndTime 完成：总计 19009 条，成功计算 19009 条（其中有效machine记录 19009 条）
+2025-11-10 15:02:48,022 - INFO - 已保存Parquet文件: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\30-MES导出数据\publish\MES_处理后数据_latest.parquet, 行数: 19009
+2025-11-10 15:02:48,512 - INFO - 状态更新完成：已处理记录 18980 条，本次新增 18980 条
+2025-11-10 15:02:48,512 - INFO - 增量处理：已保存到latest文件并更新状态
+2025-11-10 15:02:48,513 - INFO - 处理完成，耗时: 39.21秒
+2025-11-10 15:27:57,810 - INFO - ============================================================
+2025-11-10 15:27:57,811 - INFO - 用户选择: 全量刷新
+2025-11-10 15:27:57,812 - INFO - ============================================================
+2025-11-10 15:27:57,813 - INFO - 测试模式已启用，将仅读取前 20000 行数据
+2025-11-10 15:27:57,814 - INFO - 读取MES数据: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\30-MES导出数据\Product Output -CZM -FY26.xlsx
+2025-11-10 15:28:18,771 - INFO - 测试模式：仅读取前 20000 行数据
+2025-11-10 15:28:18,962 - INFO - 已从Group字段提取数字部分
+2025-11-10 15:28:18,988 - INFO - 已从Resource字段提取资源代码，创建machine字段
+2025-11-10 15:28:21,440 - INFO - 执行全量刷新：清除状态文件和历史数据文件
+2025-11-10 15:28:21,445 - INFO - 已删除状态文件: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\30-MES导出数据\publish\etl_state.json
+2025-11-10 15:28:21,455 - INFO - 已删除历史数据文件: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\30-MES导出数据\publish\MES_处理后数据_latest.parquet
+2025-11-10 15:28:22,013 - INFO - 读取SFC数据: 13420 行
+2025-11-10 15:28:22,041 - INFO - 合并SFC数据完成: 19006 行，匹配到Checkin_SFC: 2097 行
+2025-11-10 15:28:22,049 - INFO - 使用通配符查找到最新的标准时间表: SAP_Routing_20251108.parquet
+2025-11-10 15:28:22,074 - INFO - 读取合并后的标准时间表: 38293 行
+2025-11-10 15:28:22,186 - INFO - 第一步Material Number匹配后，还有 5 条记录未匹配，尝试使用CFN匹配
+2025-11-10 15:28:22,231 - INFO - 合并标准时间数据完成: 19009 行，总匹配成功: 19004 行
+2025-11-10 15:28:22,232 - INFO - 匹配到EH_machine(s): 19004 行
+2025-11-10 15:28:22,232 - INFO - 匹配到EH_labor(s): 19004 行
+2025-11-10 15:28:22,233 - INFO - 匹配到OEE: 19009 行
+2025-11-10 15:28:22,266 - INFO - 成功加载日历表: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\30-MES导出数据\publish\日历工作日表.csv, 共1095条记录
+2025-11-10 15:28:22,268 - INFO - 日历表示例: 2024-10-01 是否工作日=False
+2025-11-10 15:28:22,268 - INFO - 日历表示例: 2024-10-07 是否工作日=False
+2025-11-10 15:28:22,269 - INFO - 日历表示例: 2024-10-08 是否工作日=True
+2025-11-10 15:28:22,275 - INFO - 开始计算 PreviousBatchEndTime：有效machine记录 19009 条，总计 19009 条
+2025-11-10 15:28:22,330 - INFO - 计算 PreviousBatchEndTime 完成：总计 19009 条，成功计算 19009 条（其中有效machine记录 19009 条）
+2025-11-10 15:28:27,989 - INFO - MES数据字段筛选完成：保留 31 个字段
+2025-11-10 15:28:27,989 - INFO - 历史数据文件不存在，直接使用新数据
+2025-11-10 15:28:27,990 - INFO - 对所有合并后的数据统一计算 PreviousBatchEndTime
+2025-11-10 15:28:28,000 - INFO - 开始计算 PreviousBatchEndTime：有效machine记录 19009 条，总计 19009 条
+2025-11-10 15:28:28,045 - INFO - 计算 PreviousBatchEndTime 完成：总计 19009 条，成功计算 19009 条（其中有效machine记录 19009 条）
+2025-11-10 15:28:28,271 - INFO - 已保存Parquet文件: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\30-MES导出数据\publish\MES_处理后数据_latest.parquet, 行数: 19009
+2025-11-10 15:28:28,688 - INFO - 状态更新完成：已处理记录 18980 条，本次新增 18980 条
+2025-11-10 15:28:28,689 - INFO - 增量处理：已保存到latest文件并更新状态
+2025-11-10 15:28:28,689 - INFO - 处理完成，耗时: 30.88秒
+2025-11-10 16:13:12,432 - INFO - ============================================================
+2025-11-10 16:13:12,436 - INFO - 用户选择: 全量刷新
+2025-11-10 16:13:12,437 - INFO - ============================================================
+2025-11-10 16:13:12,439 - INFO - 测试模式已启用，将仅读取前 20000 行数据
+2025-11-10 16:13:12,441 - INFO - 读取MES数据: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\30-MES导出数据\Product Output -CZM -FY26.xlsx
+2025-11-10 16:13:30,518 - INFO - 测试模式：仅读取前 20000 行数据
+2025-11-10 16:13:30,729 - INFO - 已从Group字段提取数字部分
+2025-11-10 16:13:30,751 - INFO - 已从Resource字段提取资源代码，创建machine字段
+2025-11-10 16:13:33,428 - INFO - 执行全量刷新：清除状态文件和历史数据文件
+2025-11-10 16:13:33,439 - INFO - 已删除状态文件: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\30-MES导出数据\publish\etl_state.json
+2025-11-10 16:13:33,448 - INFO - 已删除历史数据文件: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\30-MES导出数据\publish\MES_处理后数据_latest.parquet
+2025-11-10 16:13:34,309 - INFO - 读取SFC数据: 13420 行
+2025-11-10 16:13:34,351 - INFO - 合并SFC数据完成: 19006 行，匹配到Checkin_SFC: 2097 行
+2025-11-10 16:13:34,365 - INFO - 使用通配符查找到最新的标准时间表: SAP_Routing_20251108.parquet
+2025-11-10 16:13:34,430 - INFO - 读取合并后的标准时间表: 38293 行
+2025-11-10 16:13:34,564 - INFO - 第一步Material Number匹配后，还有 5 条记录未匹配，尝试使用CFN匹配
+2025-11-10 16:13:34,602 - INFO - 合并标准时间数据完成: 19009 行，总匹配成功: 19004 行
+2025-11-10 16:13:34,603 - INFO - 匹配到EH_machine(s): 19004 行
+2025-11-10 16:13:34,603 - INFO - 匹配到EH_labor(s): 19004 行
+2025-11-10 16:13:34,604 - INFO - 匹配到OEE: 19009 行
+2025-11-10 16:13:34,636 - INFO - 成功加载日历表: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\30-MES导出数据\publish\日历工作日表.csv, 共1095条记录
+2025-11-10 16:13:34,637 - INFO - 日历表示例: 2024-10-01 是否工作日=False
+2025-11-10 16:13:34,637 - INFO - 日历表示例: 2024-10-07 是否工作日=False
+2025-11-10 16:13:34,638 - INFO - 日历表示例: 2024-10-08 是否工作日=True
+2025-11-10 16:13:34,643 - INFO - 开始计算 PreviousBatchEndTime：有效machine记录 19009 条，总计 19009 条
+2025-11-10 16:13:34,692 - INFO - 计算 PreviousBatchEndTime 完成：总计 19009 条，成功计算 19009 条（其中有效machine记录 19009 条）
+2025-11-10 16:13:44,640 - INFO - MES数据字段筛选完成：保留 31 个字段
+2025-11-10 16:13:44,641 - INFO - 历史数据文件不存在，直接使用新数据
+2025-11-10 16:13:44,641 - INFO - 对所有合并后的数据统一计算 PreviousBatchEndTime
+2025-11-10 16:13:44,655 - INFO - 开始计算 PreviousBatchEndTime：有效machine记录 19009 条，总计 19009 条
+2025-11-10 16:13:44,725 - INFO - 计算 PreviousBatchEndTime 完成：总计 19009 条，成功计算 19009 条（其中有效machine记录 19009 条）
+2025-11-10 16:13:45,193 - INFO - 已保存Parquet文件: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\30-MES导出数据\publish\MES_处理后数据_latest.parquet, 行数: 19009
+2025-11-10 16:13:45,758 - INFO - 状态更新完成：已处理记录 18980 条，本次新增 18980 条
+2025-11-10 16:13:45,759 - INFO - 增量处理：已保存到latest文件并更新状态
+2025-11-10 16:13:45,759 - INFO - 处理完成，耗时: 33.32秒
+2025-11-10 16:44:00,915 - INFO - ============================================================
+2025-11-10 16:44:00,918 - INFO - 用户选择: 增量刷新
+2025-11-10 16:44:00,919 - INFO - ============================================================
+2025-11-10 16:44:00,920 - INFO - 测试模式已启用，将仅读取前 20000 行数据
+2025-11-10 16:44:00,922 - INFO - 读取MES数据: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\30-MES导出数据\Product Output -CZM -FY26.xlsx
+2025-11-10 16:44:20,239 - INFO - 测试模式：仅读取前 20000 行数据
+2025-11-10 16:44:20,468 - INFO - 已从Group字段提取数字部分
+2025-11-10 16:44:20,505 - INFO - 已从Resource字段提取资源代码，创建machine字段
+2025-11-10 16:44:33,286 - INFO - ============================================================
+2025-11-10 16:44:33,287 - INFO - 用户选择: 全量刷新
+2025-11-10 16:44:33,288 - INFO - ============================================================
+2025-11-10 16:44:33,289 - INFO - 测试模式已启用，将仅读取前 20000 行数据
+2025-11-10 16:44:33,291 - INFO - 读取MES数据: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\30-MES导出数据\Product Output -CZM -FY26.xlsx
+2025-11-10 16:44:53,911 - INFO - 测试模式：仅读取前 20000 行数据
+2025-11-10 16:44:54,095 - INFO - 已从Group字段提取数字部分
+2025-11-10 16:44:54,119 - INFO - 已从Resource字段提取资源代码，创建machine字段
+2025-11-10 16:44:57,064 - INFO - 执行全量刷新：清除状态文件和历史数据文件
+2025-11-10 16:44:57,073 - INFO - 已删除状态文件: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\30-MES导出数据\publish\etl_state.json
+2025-11-10 16:44:57,092 - INFO - 已删除历史数据文件: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\30-MES导出数据\publish\MES_处理后数据_latest.parquet
+2025-11-10 16:44:57,715 - INFO - 读取SFC数据: 13420 行
+2025-11-10 16:44:57,744 - INFO - 合并SFC数据完成: 19006 行，匹配到Checkin_SFC: 2097 行
+2025-11-10 16:44:57,754 - INFO - 使用通配符查找到最新的标准时间表: SAP_Routing_20251108.parquet
+2025-11-10 16:44:57,781 - INFO - 读取合并后的标准时间表: 38293 行
+2025-11-10 16:44:57,914 - INFO - 第一步Material Number匹配后，还有 5 条记录未匹配，尝试使用CFN匹配
+2025-11-10 16:44:57,990 - INFO - 合并标准时间数据完成: 19009 行，总匹配成功: 19004 行
+2025-11-10 16:44:57,991 - INFO - 匹配到EH_machine(s): 19004 行
+2025-11-10 16:44:57,991 - INFO - 匹配到EH_labor(s): 19004 行
+2025-11-10 16:44:57,991 - INFO - 匹配到OEE: 19009 行
+2025-11-10 16:44:58,064 - INFO - 成功加载日历表: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\30-MES导出数据\publish\日历工作日表.csv, 共1095条记录
+2025-11-10 16:44:58,068 - INFO - 日历表示例: 2024-10-01 是否工作日=False
+2025-11-10 16:44:58,069 - INFO - 日历表示例: 2024-10-07 是否工作日=False
+2025-11-10 16:44:58,070 - INFO - 日历表示例: 2024-10-08 是否工作日=True
+2025-11-10 16:44:58,083 - INFO - 开始计算 PreviousBatchEndTime：有效machine记录 19009 条，总计 19009 条
+2025-11-10 16:44:58,176 - INFO - 计算 PreviousBatchEndTime 完成：总计 19009 条，成功计算 19009 条（其中有效machine记录 19009 条）
+2025-11-10 16:45:10,192 - INFO - MES数据字段筛选完成：保留 31 个字段
+2025-11-10 16:45:10,193 - INFO - 历史数据文件不存在，直接使用新数据
+2025-11-10 16:45:10,193 - INFO - 对所有合并后的数据统一计算 PreviousBatchEndTime
+2025-11-10 16:45:10,203 - INFO - 开始计算 PreviousBatchEndTime：有效machine记录 19009 条，总计 19009 条
+2025-11-10 16:45:10,263 - INFO - 计算 PreviousBatchEndTime 完成：总计 19009 条，成功计算 19009 条（其中有效machine记录 19009 条）
+2025-11-10 16:45:10,534 - INFO - 已保存Parquet文件: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\30-MES导出数据\publish\MES_处理后数据_latest.parquet, 行数: 19009
+2025-11-10 16:45:11,070 - INFO - 状态更新完成：已处理记录 18980 条，本次新增 18980 条
+2025-11-10 16:45:11,071 - INFO - 增量处理：已保存到latest文件并更新状态
+2025-11-10 16:45:11,071 - INFO - 处理完成，耗时: 37.78秒
+2025-11-10 16:55:56,802 - INFO - ============================================================
+2025-11-10 16:55:56,806 - INFO - 用户选择: 全量刷新
+2025-11-10 16:55:56,809 - INFO - ============================================================
+2025-11-10 16:55:56,811 - INFO - 测试模式已启用，将仅读取前 20000 行数据
+2025-11-10 16:55:56,815 - INFO - 读取MES数据: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\30-MES导出数据\Product Output -CZM -FY26.xlsx
+2025-11-10 16:56:27,475 - INFO - 测试模式：仅读取前 20000 行数据
+2025-11-10 16:56:27,805 - INFO - 已从Group字段提取数字部分
+2025-11-10 16:56:27,846 - INFO - 已从Resource字段提取资源代码，创建machine字段
+2025-11-10 16:56:29,920 - INFO - 执行全量刷新：清除状态文件和历史数据文件
+2025-11-10 16:56:29,927 - INFO - 已删除状态文件: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\30-MES导出数据\publish\etl_state.json
+2025-11-10 16:56:29,934 - INFO - 已删除历史数据文件: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\30-MES导出数据\publish\MES_处理后数据_latest.parquet
+2025-11-10 16:56:30,641 - INFO - 读取SFC数据: 13420 行
+2025-11-10 16:56:30,672 - INFO - 合并SFC数据完成: 19006 行，匹配到Checkin_SFC: 2097 行
+2025-11-10 16:56:30,678 - INFO - 使用通配符查找到最新的标准时间表: SAP_Routing_20251108.parquet
+2025-11-10 16:56:30,725 - INFO - 读取合并后的标准时间表: 38293 行
+2025-11-10 16:56:30,885 - INFO - 第一步Material Number匹配后，还有 5 条记录未匹配，尝试使用CFN匹配
+2025-11-10 16:56:30,946 - INFO - 合并标准时间数据完成: 19009 行，总匹配成功: 19004 行
+2025-11-10 16:56:30,949 - INFO - 匹配到EH_machine(s): 19004 行
+2025-11-10 16:56:30,951 - INFO - 匹配到EH_labor(s): 19004 行
+2025-11-10 16:56:30,953 - INFO - 匹配到OEE: 19009 行
+2025-11-10 16:56:31,065 - INFO - 成功加载日历表: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\30-MES导出数据\publish\日历工作日表.csv, 共1095条记录
+2025-11-10 16:56:31,070 - INFO - 日历表示例: 2024-10-01 是否工作日=False
+2025-11-10 16:56:31,072 - INFO - 日历表示例: 2024-10-07 是否工作日=False
+2025-11-10 16:56:31,074 - INFO - 日历表示例: 2024-10-08 是否工作日=True
+2025-11-10 16:56:31,091 - INFO - 开始计算 PreviousBatchEndTime：有效machine记录 19009 条，总计 19009 条
+2025-11-10 16:56:31,177 - INFO - 计算 PreviousBatchEndTime 完成：总计 19009 条，成功计算 19009 条（其中有效machine记录 19009 条）
+2025-11-10 16:56:42,875 - INFO - MES数据字段筛选完成：保留 31 个字段
+2025-11-10 16:56:42,876 - INFO - 历史数据文件不存在，直接使用新数据
+2025-11-10 16:56:42,877 - INFO - 对所有合并后的数据统一计算 PreviousBatchEndTime
+2025-11-10 16:56:42,888 - INFO - 开始计算 PreviousBatchEndTime：有效machine记录 19009 条，总计 19009 条
+2025-11-10 16:56:42,979 - INFO - 计算 PreviousBatchEndTime 完成：总计 19009 条，成功计算 19009 条（其中有效machine记录 19009 条）
+2025-11-10 16:56:43,263 - INFO - 已保存Parquet文件: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\30-MES导出数据\publish\MES_处理后数据_latest.parquet, 行数: 19009
+2025-11-10 16:56:43,908 - INFO - 状态更新完成：已处理记录 18980 条，本次新增 18980 条
+2025-11-10 16:56:43,909 - INFO - 增量处理：已保存到latest文件并更新状态
+2025-11-10 16:56:43,910 - INFO - 处理完成，耗时: 47.10秒
+2025-11-10 19:18:21,023 - INFO - ============================================================
+2025-11-10 19:18:21,025 - INFO - 用户选择: 全量刷新
+2025-11-10 19:18:21,026 - INFO - ============================================================
+2025-11-10 19:18:21,028 - INFO - 测试模式已启用，将仅读取前 5000 行数据
+2025-11-10 19:18:21,029 - INFO - 读取MES数据: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\30-MES导出数据\Product Output -CZM -FY26.xlsx
+2025-11-10 19:18:42,112 - INFO - 测试模式：仅读取前 5000 行数据
+2025-11-10 19:18:42,229 - INFO - 已从Group字段提取数字部分
+2025-11-10 19:18:42,246 - INFO - 已从Resource字段提取资源代码，创建machine字段
+2025-11-10 19:18:43,592 - INFO - 执行全量刷新：清除状态文件和历史数据文件
+2025-11-10 19:18:43,606 - INFO - 已删除状态文件: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\30-MES导出数据\publish\etl_state.json
+2025-11-10 19:18:43,645 - INFO - 已删除历史数据文件: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\30-MES导出数据\publish\MES_处理后数据_latest.parquet
+2025-11-10 19:18:44,484 - INFO - 读取SFC数据: 13420 行
+2025-11-10 19:18:44,508 - INFO - 合并SFC数据完成: 4983 行，匹配到Checkin_SFC: 769 行
+2025-11-10 19:18:44,515 - INFO - 使用通配符查找到最新的标准时间表: SAP_Routing_20251108.parquet
+2025-11-10 19:18:44,559 - INFO - 读取合并后的标准时间表: 38293 行
+2025-11-10 19:18:44,716 - INFO - 合并标准时间数据完成: 4983 行，总匹配成功: 4983 行
+2025-11-10 19:18:44,720 - INFO - 匹配到EH_machine(s): 4983 行
+2025-11-10 19:18:44,725 - INFO - 匹配到EH_labor(s): 4983 行
+2025-11-10 19:18:44,746 - INFO - 匹配到OEE: 4983 行
+2025-11-10 19:18:44,874 - INFO - 成功加载日历表: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\30-MES导出数据\publish\日历工作日表.csv, 共1095条记录
+2025-11-10 19:18:44,887 - INFO - 日历表示例: 2024-10-01 是否工作日=False
+2025-11-10 19:18:44,897 - INFO - 日历表示例: 2024-10-07 是否工作日=False
+2025-11-10 19:18:44,905 - INFO - 日历表示例: 2024-10-08 是否工作日=True
+2025-11-10 19:18:44,913 - INFO - 开始计算 PreviousBatchEndTime：有效machine记录 4983 条，总计 4983 条
+2025-11-10 19:18:44,987 - INFO - 计算 PreviousBatchEndTime 完成：总计 4983 条，成功计算 4983 条（其中有效machine记录 4983 条）
+2025-11-10 19:18:55,792 - INFO - MES数据字段筛选完成：保留 31 个字段
+2025-11-10 19:18:55,792 - INFO - 历史数据文件不存在，直接使用新数据
+2025-11-10 19:18:55,793 - INFO - 对所有合并后的数据统一计算 PreviousBatchEndTime
+2025-11-10 19:18:55,796 - INFO - 开始计算 PreviousBatchEndTime：有效machine记录 4983 条，总计 4983 条
+2025-11-10 19:18:55,817 - INFO - 计算 PreviousBatchEndTime 完成：总计 4983 条，成功计算 4983 条（其中有效machine记录 4983 条）
+2025-11-10 19:18:55,925 - INFO - 已保存Parquet文件: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\30-MES导出数据\publish\MES_处理后数据_latest.parquet, 行数: 4983
+2025-11-10 19:18:56,067 - INFO - 状态更新完成：已处理记录 4979 条，本次新增 4979 条
+2025-11-10 19:18:56,068 - INFO - 增量处理：已保存到latest文件并更新状态
+2025-11-10 19:18:56,068 - INFO - 处理完成，耗时: 35.04秒
+2025-11-10 19:49:23,765 - INFO - ============================================================
+2025-11-10 19:49:23,766 - INFO - 用户选择: 增量刷新
+2025-11-10 19:49:23,767 - INFO - ============================================================
+2025-11-10 19:49:23,768 - INFO - 测试模式已启用，将仅读取前 50000 行数据
+2025-11-10 19:49:23,769 - INFO - 读取MES数据: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\30-MES导出数据\Product Output -CZM -FY26.xlsx
+2025-11-10 19:49:50,779 - INFO - 测试模式：仅读取前 50000 行数据
+2025-11-10 19:49:51,124 - INFO - 已从Group字段提取数字部分
+2025-11-10 19:49:51,177 - INFO - 已从Resource字段提取资源代码，创建machine字段
+2025-11-10 19:49:52,937 - INFO - 执行增量处理：过滤新数据
+2025-11-10 19:49:53,928 - INFO - 增量过滤：总数据 47110 行，已处理 4979 行，新数据 42131 行
+2025-11-10 19:49:54,638 - INFO - 读取SFC数据: 13420 行
+2025-11-10 19:49:54,694 - INFO - 合并SFC数据完成: 42197 行，匹配到Checkin_SFC: 3551 行
+2025-11-10 19:49:54,708 - INFO - 使用通配符查找到最新的标准时间表: SAP_Routing_20251108.parquet
+2025-11-10 19:49:54,787 - INFO - 读取合并后的标准时间表: 38293 行
+2025-11-10 19:49:55,029 - INFO - 第一步Material Number匹配后，还有 9 条记录未匹配，尝试使用CFN匹配
+2025-11-10 19:49:55,086 - INFO - 合并标准时间数据完成: 42200 行，总匹配成功: 42191 行
+2025-11-10 19:49:55,089 - INFO - 匹配到EH_machine(s): 42191 行
+2025-11-10 19:49:55,091 - INFO - 匹配到EH_labor(s): 42191 行
+2025-11-10 19:49:55,093 - INFO - 匹配到OEE: 42200 行
+2025-11-10 19:49:55,168 - INFO - 成功加载日历表: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\30-MES导出数据\publish\日历工作日表.csv, 共1095条记录
+2025-11-10 19:49:55,169 - INFO - 日历表示例: 2024-10-01 是否工作日=False
+2025-11-10 19:49:55,170 - INFO - 日历表示例: 2024-10-07 是否工作日=False
+2025-11-10 19:49:55,170 - INFO - 日历表示例: 2024-10-08 是否工作日=True
+2025-11-10 19:49:55,183 - INFO - 开始计算 PreviousBatchEndTime：有效machine记录 42200 条，总计 42200 条
+2025-11-10 19:49:55,325 - INFO - 计算 PreviousBatchEndTime 完成：总计 42200 条，成功计算 42200 条（其中有效machine记录 42200 条）
+2025-11-10 19:50:12,039 - INFO - MES数据字段筛选完成：保留 31 个字段
+2025-11-10 19:50:12,096 - INFO - 加载历史数据: 4983 行
+2025-11-10 19:50:12,208 - INFO - 数据合并完成：历史 4983 行 + 新增 42200 行 = 合并后 47109 行
+2025-11-10 19:50:12,209 - INFO - 对所有合并后的数据统一计算 PreviousBatchEndTime
+2025-11-10 19:50:12,244 - INFO - 开始计算 PreviousBatchEndTime：有效machine记录 47109 条，总计 47109 条
+2025-11-10 19:50:12,349 - INFO - 计算 PreviousBatchEndTime 完成：总计 47109 条，成功计算 47109 条（其中有效machine记录 47109 条）
+2025-11-10 19:50:12,596 - INFO - 已保存Parquet文件: C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\30-MES导出数据\publish\MES_处理后数据_latest.parquet, 行数: 47109
+2025-11-10 19:50:13,738 - INFO - 状态更新完成：已处理记录 47109 条，本次新增 47109 条
+2025-11-10 19:50:13,739 - INFO - 增量处理：已保存到latest文件并更新状态
+2025-11-10 19:50:13,739 - INFO - 处理完成，耗时: 49.97秒

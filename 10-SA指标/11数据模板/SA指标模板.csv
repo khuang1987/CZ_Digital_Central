@@ -1,0 +1,3 @@
+BatchNumber,CFN,ProductionOrder,Operation,OperationDescription,Group,ResourceCode,ProductionArea,EnterStepTime,StepInTime,StartTime,TrackOutTime,CheckinSFC,DueTime,TrackOutDate,StepInQuantity,TrackOutQuantity,StepDuration,Machine(h),Labor(h),OEE,SetupTime(h),LT(d),PT(d),ST(d),CompletionStatus,Weekend(d),Machine(#),Setup,EffectiveTime(h),SA状态,SA达成率
+
+
