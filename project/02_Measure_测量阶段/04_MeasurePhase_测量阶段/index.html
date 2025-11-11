@@ -1,0 +1,2709 @@
+
+<!doctype html>
+<html lang="zh" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="CZ Ops 数字化数据平台的数据字段定义、计算方法、数据来源及使用指南">
+      
+      
+        <meta name="author" content="Medtronic CZ Ops Team">
+      
+      
+      
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.23">
+    
+    
+      
+        <title>测量阶段实施指南 / Measure Phase Implementation Guide - CZ Ops 数字化数据平台 - 电子说明书</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.84d31ad4.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#measure-phase-implementation-guide" class="md-skip">
+          跳转至
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="页眉">
+    <a href="../../.." title="CZ Ops 数字化数据平台 - 电子说明书" class="md-header__button md-logo" aria-label="CZ Ops 数字化数据平台 - 电子说明书" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            CZ Ops 数字化数据平台 - 电子说明书
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              测量阶段实施指南 / Measure Phase Implementation Guide
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="切换到深色模式"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="切换到深色模式" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="切换到亮色模式"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="切换到亮色模式" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="搜索" placeholder="搜索" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="查找">
+        
+          <a href="javascript:void(0)" class="md-search__icon md-icon" title="分享" aria-label="分享" data-clipboard data-clipboard-text="" data-md-component="search-share" tabindex="-1">
+            
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9a3 3 0 0 0-3 3 3 3 0 0 0 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.15c-.05.21-.08.43-.08.66 0 1.61 1.31 2.91 2.92 2.91s2.92-1.3 2.92-2.91A2.92 2.92 0 0 0 18 16.08"/></svg>
+          </a>
+        
+        <button type="reset" class="md-search__icon md-icon" title="清空当前内容" aria-label="清空当前内容" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            正在初始化搜索引擎
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+    
+      
+<nav class="md-tabs" aria-label="标签" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  首页
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../kpi/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  KPI 指标体系
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../etl/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  数据处理 ETL
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../pq/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Power Query 代码
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../guide/quick-start/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  使用指南
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../01_Define_%E5%AE%9A%E4%B9%89%E9%98%B6%E6%AE%B5/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  项目管理
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../reference/naming-convention/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  参考信息
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../changelog/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  更新日志
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+    
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="导航栏" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="CZ Ops 数字化数据平台 - 电子说明书" class="md-nav__button md-logo" aria-label="CZ Ops 数字化数据平台 - 电子说明书" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    CZ Ops 数字化数据平台 - 电子说明书
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    首页
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../kpi/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    KPI 指标体系
+    
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2" id="__nav_2_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            KPI 指标体系
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_2" id="__nav_2_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    供应链 KPI
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_2">
+            <span class="md-nav__icon md-icon"></span>
+            供应链 KPI
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../kpi/supply-chain/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    供应链 KPI 概述
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2_2_2" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../sa/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    SA - 计划达成率
+    
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2_2_2" id="__nav_2_2_2_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_2_2_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_2_2">
+            <span class="md-nav__icon md-icon"></span>
+            SA - 计划达成率
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../sa/calculation-definition/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    计算方法与定义
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../sa/field-specification/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    字段说明
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../sa/data-sources/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    数据源说明
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../sa/examples/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    计算示例
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_3" id="__nav_2_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    生产部门 KPI
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_3">
+            <span class="md-nav__icon md-icon"></span>
+            生产部门 KPI
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../kpi/production/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    生产 KPI 概述
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_4" id="__nav_2_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    质量部门 KPI
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_4">
+            <span class="md-nav__icon md-icon"></span>
+            质量部门 KPI
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../kpi/quality/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    质量 KPI 概述
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_5" id="__nav_2_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    持续改进 KPI
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_5">
+            <span class="md-nav__icon md-icon"></span>
+            持续改进 KPI
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../kpi/ci/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    持续改进 KPI 概述
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../etl/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    数据处理 ETL
+    
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3" id="__nav_3_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            数据处理 ETL
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../etl/etl-process/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    ETL 流程说明
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../etl/etl-sa/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    SA 数据清洗
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../etl/etl-sfc/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    SFC 数据清洗
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../etl/standard-time/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    标准时间处理
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../etl/configuration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    配置说明
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../pq/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    Power Query 代码
+    
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4" id="__nav_4_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            Power Query 代码
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../pq/mes-records/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    MES 报工记录
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../pq/sfc-records/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    SFC 报工记录
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../pq/standard-time/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    标准时间查询
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../pq/incremental-refresh/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    增量刷新方案
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    使用指南
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            使用指南
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../guide/quick-start/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    快速开始
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../guide/data-update/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    数据更新流程
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../guide/faq/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    常见问题 FAQ
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../guide/troubleshooting/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    故障排查
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../progress/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    项目管理
+    
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_6" id="__nav_6_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            项目管理
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6_1" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../01_Define_%E5%AE%9A%E4%B9%89%E9%98%B6%E6%AE%B5/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    DMAIC 阶段
+    
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_6_1" id="__nav_6_1_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6_1">
+            <span class="md-nav__icon md-icon"></span>
+            DMAIC 阶段
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    测量阶段（Measure）
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../03_Analyze_%E5%88%86%E6%9E%90%E9%98%B6%E6%AE%B5/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    分析阶段（Analyze）
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../04_Improve_%E6%94%B9%E8%BF%9B%E9%98%B6%E6%AE%B5/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    改进阶段（Improve）
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../05_Control_%E6%8E%A7%E5%88%B6%E9%98%B6%E6%AE%B5/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    控制阶段（Control）
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../meetings/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    会议纪要
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    参考信息
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            参考信息
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/naming-convention/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    文件命名规范
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/dictionary/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    字典表说明
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../changelog/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    更新日志
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#preliminary-information-collection" class="md-nav__link">
+    <span class="md-ellipsis">
+      前期信息收集 / Preliminary Information Collection
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="前期信息收集 / Preliminary Information Collection">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      需要确认的信息
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#data-collection-plan" class="md-nav__link">
+    <span class="md-ellipsis">
+      一、数据收集计划 / Data Collection Plan
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="一、数据收集计划 / Data Collection Plan">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1" class="md-nav__link">
+    <span class="md-ellipsis">
+      1. 系统使用现状调查
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2" class="md-nav__link">
+    <span class="md-ellipsis">
+      2. 数据一致性评估
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3" class="md-nav__link">
+    <span class="md-ellipsis">
+      3. 工作量基准测定
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#key-metrics-definition" class="md-nav__link">
+    <span class="md-ellipsis">
+      二、关键指标定义 / Key Metrics Definition
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="二、关键指标定义 / Key Metrics Definition">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      1. 效率指标
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      2. 质量指标
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      3. 满意度指标
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#data-collection-tools" class="md-nav__link">
+    <span class="md-ellipsis">
+      三、数据收集工具 / Data Collection Tools
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="三、数据收集工具 / Data Collection Tools">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      1. 调查问卷设计
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      2. 观察记录表
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      3. 系统数据提取模板
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#implementation-timeline" class="md-nav__link">
+    <span class="md-ellipsis">
+      四、实施时间表 / Implementation Timeline
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="四、实施时间表 / Implementation Timeline">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      第1周：准备阶段
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-3" class="md-nav__link">
+    <span class="md-ellipsis">
+      第2-3周：数据收集阶段
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4" class="md-nav__link">
+    <span class="md-ellipsis">
+      第4周：数据分析阶段
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#key-considerations" class="md-nav__link">
+    <span class="md-ellipsis">
+      五、注意事项 / Key Considerations
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#a3-ppt" class="md-nav__link">
+    <span class="md-ellipsis">
+      本项目 A3 - 测量部分（可直接复制到PPT）
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="本项目 A3 - 测量部分（可直接复制到PPT）">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#process-thinking-" class="md-nav__link">
+    <span class="md-ellipsis">
+      一、Process Thinking（问题-方案-进展）
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      二、测量目标与范围
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      三、数据流与系统边界
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      四、关键指标口径（与文档对齐）
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      五、数据质量与一致性验证（执行中）
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      六、阶段性基线（示例占位）
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      七、下一步两周计划
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_8" class="md-nav__link">
+    <span class="md-ellipsis">
+      八、附件与引用
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="measure-phase-implementation-guide">测量阶段实施指南 / Measure Phase Implementation Guide<a class="headerlink" href="#measure-phase-implementation-guide" title="Permanent link">&para;</a></h1>
+<h2 id="preliminary-information-collection">前期信息收集 / Preliminary Information Collection<a class="headerlink" href="#preliminary-information-collection" title="Permanent link">&para;</a></h2>
+<h3 id="_1">需要确认的信息<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h3>
+<p>请在下方提供相关信息，以帮助我们制定更准确的测量阶段实施计划：</p>
+<ol>
+<li>项目背景与目标</li>
+<li>项目的具体目标是什么？
+      对工厂的各类改善项目进行管理，统计当前的项目管理方法和管理软件，识别优劣，最终决定一套标准化的改善项目管理办法</li>
+<li>项目涉及哪些系统？
+      目前的范围是改善类型的项目，需要在第一次会议上明确是否需要包含其他的项目管理，比如新品开发项目，固资投资项目，或者其他可能的项目是否需要在这次的项目中包含</li>
+<li>
+<p>主要的项目干系人有哪些？
+      工程师，各部门经理，技术人员，CI ，管理层等</p>
+</li>
+<li>
+<p>现有系统情况</p>
+</li>
+<li>目前使用的主要系统有哪些？
+      目前最基础的是excel 表，然后有人会使用ppt 的A3 模板做项目报告，planisware 用来统计和跟踪固资和改善项目回报等；project 主要用来做新品开发或者需要跟踪分解任务跟踪进展的项目</li>
+<li>各系统之间的数据流转方式是什么？
+      使用excel 统计汇总，手动填写或者上传</li>
+<li>
+<p>现有的数据收集方式和工具有哪些？
+      手动统计，部分数据会用excel 保存在Sharepoint 使用powerBI 采集和展示</p>
+</li>
+<li>
+<p>资源情况</p>
+</li>
+<li>可投入的人力资源有多少？
+      5人左右的团队，来自CI 和生产部门，有最高领导支持，各部门经理配合</li>
+<li>是否有专门的数据分析团队？
+      不是专业的数据分析团队，有一定的数据分析能力，会使用powerBI powerapp 等工具</li>
+<li>
+<p>可用的工具和技术支持有哪些？
+      Office 套件，planner  ，powerBI 等工具，</p>
+</li>
+<li>
+<p>时间安排</p>
+</li>
+<li>测量阶段的总体时间要求是多久？
+      1个月左右</li>
+<li>是否有关键的时间节点需要考虑？
+      暂时没有定</li>
+<li>
+<p>各部门的可参与时间情况如何？
+      计划一周2小时左右，如果必要的情况可以延长</p>
+</li>
+<li>
+<p>特殊要求</p>
+</li>
+<li>是否有特殊的数据安全要求？
+      不能使用外部的服务器存放数据</li>
+<li>是否需要考虑特定的合规要求？
+      需要满足公司内部的要求</li>
+<li>是否有其他需要特别注意的事项？</li>
+</ol>
+<p>请在以上问题下方填写您的回复，我们将根据您提供的信息调整和完善测量阶段的实施计划。</p>
+<hr />
+<h2 id="data-collection-plan">一、数据收集计划 / Data Collection Plan<a class="headerlink" href="#data-collection-plan" title="Permanent link">&para;</a></h2>
+<h3 id="1">1. 系统使用现状调查<a class="headerlink" href="#1" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>调查项目</th>
+<th>收集方法</th>
+<th>数据来源</th>
+<th>频率</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>各系统活跃项目数量</td>
+<td>系统导出</td>
+<td>Project/Planisware/Teams/Excel</td>
+<td>每周</td>
+</tr>
+<tr>
+<td>使用人数及部门分布</td>
+<td>问卷调查</td>
+<td>各部门项目管理人员</td>
+<td>一次性</td>
+</tr>
+<tr>
+<td>系统功能使用情况</td>
+<td>系统日志分析</td>
+<td>各系统后台数据</td>
+<td>每月</td>
+</tr>
+<tr>
+<td>A3模板使用情况</td>
+<td>文件统计</td>
+<td>SharePoint/本地存储</td>
+<td>每周</td>
+</tr>
+<tr>
+<td>数据重复录入情况</td>
+<td>工作观察</td>
+<td>项目管理人员</td>
+<td>每周</td>
+</tr>
+</tbody>
+</table>
+<h3 id="2">2. 数据一致性评估<a class="headerlink" href="#2" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>评估项目</th>
+<th>收集方法</th>
+<th>样本量</th>
+<th>周期</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>项目状态一致性</td>
+<td>跨系统数据比对</td>
+<td>30个活跃项目</td>
+<td>每周</td>
+</tr>
+<tr>
+<td>进度数据准确性</td>
+<td>实地核实vs系统记录</td>
+<td>15个关键项目</td>
+<td>每周</td>
+</tr>
+<tr>
+<td>资源分配准确度</td>
+<td>人力记录vs系统数据</td>
+<td>所有项目组</td>
+<td>每月</td>
+</tr>
+<tr>
+<td>项目收益计算一致性</td>
+<td>跨系统数据比对</td>
+<td>所有完成项目</td>
+<td>每月</td>
+</tr>
+<tr>
+<td>文档版本一致性</td>
+<td>文件比对</td>
+<td>随机抽查20个项目</td>
+<td>每周</td>
+</tr>
+</tbody>
+</table>
+<h3 id="3">3. 工作量基准测定<a class="headerlink" href="#3" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>测量项目</th>
+<th>记录方法</th>
+<th>统计维度</th>
+<th>周期</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>数据整合时间</td>
+<td>工时记录表</td>
+<td>人员/部门/任务类型</td>
+<td>每天</td>
+</tr>
+<tr>
+<td>重复工作统计</td>
+<td>工作日志分析</td>
+<td>任务类型/频率</td>
+<td>每周</td>
+</tr>
+<tr>
+<td>异常处理时间</td>
+<td>问题跟踪记录</td>
+<td>问题类型/解决时间</td>
+<td>实时</td>
+</tr>
+<tr>
+<td>项目报告准备时间</td>
+<td>时间记录</td>
+<td>项目类型/报告类型</td>
+<td>每周</td>
+</tr>
+<tr>
+<td>跨系统数据同步时间</td>
+<td>操作记录</td>
+<td>系统组合/数据量</td>
+<td>每次操作</td>
+</tr>
+</tbody>
+</table>
+<h2 id="key-metrics-definition">二、关键指标定义 / Key Metrics Definition<a class="headerlink" href="#key-metrics-definition" title="Permanent link">&para;</a></h2>
+<h3 id="1_1">1. 效率指标<a class="headerlink" href="#1_1" title="Permanent link">&para;</a></h3>
+<ul>
+<li>项目数据更新及时率 = 及时更新项目数/总项目数 × 100%</li>
+<li>数据整合工时 = Σ(数据收集+整理+校验时间)</li>
+<li>跨系统数据同步延迟时间 = 系统间数据不一致持续时间</li>
+</ul>
+<h3 id="2_1">2. 质量指标<a class="headerlink" href="#2_1" title="Permanent link">&para;</a></h3>
+<ul>
+<li>数据一致性比率 = 数据一致项目数/总项目数 × 100%</li>
+<li>错误发生率 = 数据错误事件数/总数据录入次数 × 100%</li>
+<li>返工率 = 需重复录入次数/总录入次数 × 100%</li>
+</ul>
+<h3 id="3_1">3. 满意度指标<a class="headerlink" href="#3_1" title="Permanent link">&para;</a></h3>
+<ul>
+<li>用户满意度评分（1-5分制）</li>
+<li>系统使用便利性评分</li>
+<li>报告获取便捷度评分</li>
+</ul>
+<h2 id="data-collection-tools">三、数据收集工具 / Data Collection Tools<a class="headerlink" href="#data-collection-tools" title="Permanent link">&para;</a></h2>
+<h3 id="1_2">1. 调查问卷设计<a class="headerlink" href="#1_2" title="Permanent link">&para;</a></h3>
+<ul>
+<li>系统使用频率调查</li>
+<li>功能满意度评估</li>
+<li>痛点和需求收集</li>
+</ul>
+<h3 id="2_2">2. 观察记录表<a class="headerlink" href="#2_2" title="Permanent link">&para;</a></h3>
+<ul>
+<li>工作流程时间记录</li>
+<li>系统操作步骤记录</li>
+<li>问题发生记录</li>
+</ul>
+<h3 id="3_2">3. 系统数据提取模板<a class="headerlink" href="#3_2" title="Permanent link">&para;</a></h3>
+<ul>
+<li>项目状态数据表</li>
+<li>资源使用数据表</li>
+<li>进度偏差数据表</li>
+</ul>
+<h2 id="implementation-timeline">四、实施时间表 / Implementation Timeline<a class="headerlink" href="#implementation-timeline" title="Permanent link">&para;</a></h2>
+<h3 id="1_3">第1周：准备阶段<a class="headerlink" href="#1_3" title="Permanent link">&para;</a></h3>
+<ul>
+<li>完成调查问卷设计</li>
+<li>建立数据收集模板</li>
+<li>确定数据收集责任人</li>
+<li>准备PowerBI数据模型</li>
+<li>建立Teams协作空间</li>
+</ul>
+<h3 id="2-3">第2-3周：数据收集阶段<a class="headerlink" href="#2-3" title="Permanent link">&para;</a></h3>
+<ul>
+<li>开展问卷调查</li>
+<li>进行实地观察</li>
+<li>收集系统数据</li>
+<li>建立基准数据</li>
+<li>开始数据一致性检查</li>
+</ul>
+<h3 id="4">第4周：数据分析阶段<a class="headerlink" href="#4" title="Permanent link">&para;</a></h3>
+<ul>
+<li>数据整理和验证</li>
+<li>基准数据确定</li>
+<li>问题模式识别</li>
+<li>准备测量阶段报告</li>
+<li>制定改进建议</li>
+</ul>
+<h2 id="key-considerations">五、注意事项 / Key Considerations<a class="headerlink" href="#key-considerations" title="Permanent link">&para;</a></h2>
+<ol>
+<li>确保数据收集过程不影响正常工作</li>
+<li>注意数据的保密性和安全性</li>
+<li>保持与相关部门的沟通</li>
+<li>及时记录异常情况</li>
+<li>定期检查数据质量</li>
+<li>重点关注跨系统数据同步问题</li>
+<li>记录所有重复性工作</li>
+<li>评估现有工具的使用效率</li>
+<li>收集用户对现有系统的反馈</li>
+<li>识别数据整合的瓶颈 </li>
+</ol>
+<hr />
+<h2 id="a3-ppt">本项目 A3 - 测量部分（可直接复制到PPT）<a class="headerlink" href="#a3-ppt" title="Permanent link">&para;</a></h2>
+<h3 id="process-thinking-">一、Process Thinking（问题-方案-进展）<a class="headerlink" href="#process-thinking-" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>序号</th>
+<th>发现的问题</th>
+<th>方案与进展</th>
+<th>预期收益</th>
+<th>风险/依赖</th>
+<th>Owner/截止</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>数据源分散在 Excel、SFC、OEE、MES、OneDrive/SharePoint，命名不统一，人工整合成本高</td>
+<td>已开发标准 Excel/网页采集模板；完成 <code>Power Query</code> 数据管道：<code>e1_批次报工记录_SFC.pq</code>、<code>e2_批次报工记录_MES.pq</code>、<code>e3_产品标准时间_exl.pq</code>；建立命名规范与最新版文件自动抓取；可用 <code>Power Automate</code>/计划刷新实现准实时更新</td>
+<td>自动化采集，减少人工整合≥70%；数据时效性由每周提升到每日/小时级</td>
+<td>依赖SharePoint空间与命名规范落地；计划刷新配额</td>
+<td>CI/ME-数据小组 / 本月内</td>
+</tr>
+<tr>
+<td>2</td>
+<td>字典/主数据不清晰（工序名、设备、产品号、工艺路线等），口径不一致</td>
+<td>已完成14类工序名称标准化与映射；建立产品、工序、设备维表与唯一键规则；新增异常字典收敛流程（每周审查）</td>
+<td>提升数据一致性，减少报表口径争议</td>
+<td>历史数据遗留映射需补录</td>
+<td>工艺&amp;计划 / 持续</td>
+</tr>
+<tr>
+<td>3</td>
+<td>无系统化的数据一致性与完整性验证，难以形成可信基线</td>
+<td>建立校验规则：必填字段、时间逻辑、SFC⇄MES匹配率、标准时间覆盖率；实施周度质量报告（OnTime/Overdue判定、缺失项清单）</td>
+<td>报表可信度提升；为改进阶段提供可用基线</td>
+<td>需跨部门配合补充缺失字段</td>
+<td>数据治理组 / 本月内</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>补充说明：
+- 已完成生产记录模型与初版可视化；支持工序/设备/产品多维度SA分析。
+- 具备按命名规则自动抓取“最新版本”能力，避免人工换源。
+- 拟采用增量/分区刷新以支撑每周几十万行数据更新需求。</p>
+</blockquote>
+<h3 id="_2">二、测量目标与范围<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h3>
+<ul>
+<li>目标：形成“可复用、可审计、可度量”的数据资产与SA/效率类KPI的可信基线。</li>
+<li>范围：SFC批次记录、MES生产记录、标准时间/工艺路由、必要的主数据（产品、工序、设备、资源、区域）。</li>
+</ul>
+<h3 id="_3">三、数据流与系统边界<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h3>
+<ol>
+<li>数据采集：SharePoint/OneDrive 中 Excel 最新文件 → <code>Power Query</code> 脚本（<code>e1/e2/e3</code>）。</li>
+<li>数据处理：字段标准化（工序号补零、时间统一为DateTime、数量校验）；工序名称映射与主数据关联。</li>
+<li>指标计算：按 <code>10-SA指标/SA指标计算方法与定义.md</code> 定义生成 LT/PT/PPT/DueTime/CompletionStatus 与 SA 达成率。</li>
+<li>存储与消费：Power BI Dataset（事实表+维表）；报表/导出/API供后续改进阶段使用。</li>
+</ol>
+<h3 id="_4">四、关键指标口径（与文档对齐）<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h3>
+<ul>
+<li>SA达成率、按期/逾期批次数、平均Lead Time、平均Process Time。</li>
+<li>更详细的KPI口径与数据来源，参见：</li>
+<li><code>02_Measure_测量阶段/02_KpiSpecification_KPI详细说明.md</code></li>
+<li><code>10-SA指标/SA指标计算方法与定义.md</code></li>
+</ul>
+<h3 id="_5">五、数据质量与一致性验证（执行中）<a class="headerlink" href="#_5" title="Permanent link">&para;</a></h3>
+<ul>
+<li>必填字段校验：<code>BatchNumber</code>、<code>CFN</code>、<code>Operation</code>、<code>TrackOutTime</code>。</li>
+<li>时间逻辑校验：<code>TrackOutTime ≥ StartTime ≥ EnterStepTime</code>；<code>0010</code>工序LT起点使用 <code>Checkin_SFC</code>。</li>
+<li>关联性校验：SFC⇄MES匹配率、标准时间覆盖率、主数据映射命中率。</li>
+<li>异常清单：缺失/异常时间值、负数与极端数量、无法映射的工序/设备。</li>
+</ul>
+<h3 id="_6">六、阶段性基线（示例占位）<a class="headerlink" href="#_6" title="Permanent link">&para;</a></h3>
+<ul>
+<li>SA达成率：TBD（本月第2周样本，批次数：TBD）</li>
+<li>平均Lead Time：TBD 天；平均Process Time：TBD 天</li>
+<li>SFC⇄MES匹配率：TBD%；标准时间覆盖率：TBD%</li>
+</ul>
+<h3 id="_7">七、下一步两周计划<a class="headerlink" href="#_7" title="Permanent link">&para;</a></h3>
+<ul>
+<li>完成增量/分区刷新设置与容量评估；形成运行手册。</li>
+<li>补齐历史数据的工序/设备映射，清理异常批次；输出数据质量周报V1。</li>
+<li>在报表中发布工序/设备/产品三视角的SA对比与明细追溯页面。</li>
+<li>组织一次跨部门评审，冻结测量口径，作为改进阶段输入。</li>
+</ul>
+<h3 id="_8">八、附件与引用<a class="headerlink" href="#_8" title="Permanent link">&para;</a></h3>
+<ul>
+<li>数据脚本：<code>10-SA指标/e1_批次报工记录_SFC.pq</code>、<code>10-SA指标/e2_批次报工记录_MES.pq</code>、<code>10-SA指标/e3_产品标准时间_exl.pq</code></li>
+<li>口径文档：<code>10-SA指标/SA指标计算方法与定义.md</code>、<code>02_Measure_测量阶段/02_KpiSpecification_KPI详细说明.md</code></li>
+</ul>
+
+
+
+
+
+
+
+  
+    
+  
+  
+    
+  
+
+
+  <aside class="md-source-file">
+    
+      
+  <span class="md-source-file__fact">
+    <span class="md-icon" title="最后更新">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
+    </span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-datetime" title="2025年11月11日 13:24:47 UTC">2025年11月11日 13:24:47</span>
+  </span>
+
+    
+    
+      
+  <span class="md-source-file__fact">
+    <span class="md-icon" title="创建日期">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14.47 15.08 11 13V7h1.5v5.25l3.08 1.83c-.41.28-.79.62-1.11 1m-1.39 4.84c-.36.05-.71.08-1.08.08-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8c0 .37-.03.72-.08 1.08.69.1 1.33.32 1.92.64.1-.56.16-1.13.16-1.72 0-5.5-4.5-10-10-10S2 6.5 2 12s4.47 10 10 10c.59 0 1.16-.06 1.72-.16-.32-.59-.54-1.23-.64-1.92M18 15v3h-3v2h3v3h2v-3h3v-2h-3v-3z"/></svg>
+    </span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-datetime" title="2025年11月11日 13:24:47 UTC">2025年11月11日 13:24:47</span>
+  </span>
+
+    
+    
+    
+  </aside>
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  回到页面顶部
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+    <a href="https://github.com/" target="_blank" rel="noopener" title="GitHub" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      <script id="__config" type="application/json">{"base": "../../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.tabs.sticky", "navigation.sections", "navigation.expand", "navigation.indexes", "navigation.top", "toc.follow", "search.suggest", "search.highlight", "search.share", "content.code.copy", "content.code.annotate"], "search": "../../../assets/javascripts/workers/search.973d3a69.min.js", "tags": null, "translations": {"clipboard.copied": "\u5df2\u590d\u5236", "clipboard.copy": "\u590d\u5236", "search.result.more.one": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.more.other": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 # \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.none": "\u6ca1\u6709\u627e\u5230\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.one": "\u627e\u5230 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.other": "# \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.placeholder": "\u952e\u5165\u4ee5\u5f00\u59cb\u641c\u7d22", "search.result.term.missing": "\u7f3a\u5c11", "select.version": "\u9009\u62e9\u5f53\u524d\u7248\u672c"}, "version": null}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.f55a23d4.min.js"></script>
+      
+        <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>

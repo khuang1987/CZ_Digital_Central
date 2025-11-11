@@ -1,0 +1,3268 @@
+
+<!doctype html>
+<html lang="zh" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="CZ Ops 数字化数据平台的数据字段定义、计算方法、数据来源及使用指南">
+      
+      
+        <meta name="author" content="Medtronic CZ Ops Team">
+      
+      
+      
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.23">
+    
+    
+      
+        <title>KPI 详细说明文档 / KPI Detailed Specification - CZ Ops 数字化数据平台 - 电子说明书</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.84d31ad4.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#kpi-kpi-detailed-specification" class="md-skip">
+          跳转至
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="页眉">
+    <a href="../../.." title="CZ Ops 数字化数据平台 - 电子说明书" class="md-header__button md-logo" aria-label="CZ Ops 数字化数据平台 - 电子说明书" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            CZ Ops 数字化数据平台 - 电子说明书
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              KPI 详细说明文档 / KPI Detailed Specification
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="切换到深色模式"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="切换到深色模式" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="切换到亮色模式"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="切换到亮色模式" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="搜索" placeholder="搜索" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="查找">
+        
+          <a href="javascript:void(0)" class="md-search__icon md-icon" title="分享" aria-label="分享" data-clipboard data-clipboard-text="" data-md-component="search-share" tabindex="-1">
+            
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9a3 3 0 0 0-3 3 3 3 0 0 0 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.15c-.05.21-.08.43-.08.66 0 1.61 1.31 2.91 2.92 2.91s2.92-1.3 2.92-2.91A2.92 2.92 0 0 0 18 16.08"/></svg>
+          </a>
+        
+        <button type="reset" class="md-search__icon md-icon" title="清空当前内容" aria-label="清空当前内容" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            正在初始化搜索引擎
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+    
+      
+<nav class="md-tabs" aria-label="标签" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  首页
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../kpi/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  KPI 指标体系
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../etl/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  数据处理 ETL
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../pq/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Power Query 代码
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../guide/quick-start/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  使用指南
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../01_Define_%E5%AE%9A%E4%B9%89%E9%98%B6%E6%AE%B5/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  项目管理
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../reference/naming-convention/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  参考信息
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../changelog/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  更新日志
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+    
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="导航栏" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="CZ Ops 数字化数据平台 - 电子说明书" class="md-nav__button md-logo" aria-label="CZ Ops 数字化数据平台 - 电子说明书" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    CZ Ops 数字化数据平台 - 电子说明书
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    首页
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../kpi/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    KPI 指标体系
+    
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2" id="__nav_2_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            KPI 指标体系
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_2" id="__nav_2_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    供应链 KPI
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_2">
+            <span class="md-nav__icon md-icon"></span>
+            供应链 KPI
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../kpi/supply-chain/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    供应链 KPI 概述
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2_2_2" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../sa/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    SA - 计划达成率
+    
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2_2_2" id="__nav_2_2_2_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_2_2_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_2_2">
+            <span class="md-nav__icon md-icon"></span>
+            SA - 计划达成率
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../sa/calculation-definition/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    计算方法与定义
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../sa/field-specification/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    字段说明
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../sa/data-sources/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    数据源说明
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../sa/examples/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    计算示例
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_3" id="__nav_2_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    生产部门 KPI
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_3">
+            <span class="md-nav__icon md-icon"></span>
+            生产部门 KPI
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../kpi/production/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    生产 KPI 概述
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_4" id="__nav_2_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    质量部门 KPI
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_4">
+            <span class="md-nav__icon md-icon"></span>
+            质量部门 KPI
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../kpi/quality/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    质量 KPI 概述
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_5" id="__nav_2_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    持续改进 KPI
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_5">
+            <span class="md-nav__icon md-icon"></span>
+            持续改进 KPI
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../kpi/ci/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    持续改进 KPI 概述
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../etl/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    数据处理 ETL
+    
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3" id="__nav_3_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            数据处理 ETL
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../etl/etl-process/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    ETL 流程说明
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../etl/etl-sa/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    SA 数据清洗
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../etl/etl-sfc/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    SFC 数据清洗
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../etl/standard-time/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    标准时间处理
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../etl/configuration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    配置说明
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../pq/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    Power Query 代码
+    
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4" id="__nav_4_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            Power Query 代码
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../pq/mes-records/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    MES 报工记录
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../pq/sfc-records/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    SFC 报工记录
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../pq/standard-time/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    标准时间查询
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../pq/incremental-refresh/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    增量刷新方案
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    使用指南
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            使用指南
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../guide/quick-start/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    快速开始
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../guide/data-update/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    数据更新流程
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../guide/faq/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    常见问题 FAQ
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../guide/troubleshooting/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    故障排查
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../progress/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    项目管理
+    
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_6" id="__nav_6_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            项目管理
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6_1" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../01_Define_%E5%AE%9A%E4%B9%89%E9%98%B6%E6%AE%B5/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    DMAIC 阶段
+    
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_6_1" id="__nav_6_1_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6_1">
+            <span class="md-nav__icon md-icon"></span>
+            DMAIC 阶段
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    测量阶段（Measure）
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../03_Analyze_%E5%88%86%E6%9E%90%E9%98%B6%E6%AE%B5/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    分析阶段（Analyze）
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../04_Improve_%E6%94%B9%E8%BF%9B%E9%98%B6%E6%AE%B5/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    改进阶段（Improve）
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../05_Control_%E6%8E%A7%E5%88%B6%E9%98%B6%E6%AE%B5/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    控制阶段（Control）
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../meetings/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    会议纪要
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    参考信息
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            参考信息
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/naming-convention/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    文件命名规范
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../reference/dictionary/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    字典表说明
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../changelog/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    更新日志
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#kpi-part-1-kpi-overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      第一部分：KPI 概览 / Part 1: KPI Overview
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="第一部分：KPI 概览 / Part 1: KPI Overview">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#kpi-production-kpis" class="md-nav__link">
+    <span class="md-ellipsis">
+      生产部门 KPI / Production KPIs
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#kpi-quality-kpis" class="md-nav__link">
+    <span class="md-ellipsis">
+      质量部门 KPI / Quality KPIs
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#kpi-ci-kpis" class="md-nav__link">
+    <span class="md-ellipsis">
+      持续改进 KPI / CI KPIs
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#kpi-supply-chain-kpis" class="md-nav__link">
+    <span class="md-ellipsis">
+      供应链 KPI / Supply Chain KPIs
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#kpi-finance-kpis" class="md-nav__link">
+    <span class="md-ellipsis">
+      财务部门 KPI / Finance KPIs
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#kpi-equipment-kpis" class="md-nav__link">
+    <span class="md-ellipsis">
+      设备管理 KPI / Equipment KPIs
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#kpi-facilities-kpis" class="md-nav__link">
+    <span class="md-ellipsis">
+      设施管理 KPI / Facilities KPIs
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#kpi-safety-kpis" class="md-nav__link">
+    <span class="md-ellipsis">
+      安全部门 KPI / Safety KPIs
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#kpi-part-2-kpi-detailed-description" class="md-nav__link">
+    <span class="md-ellipsis">
+      第二部分：KPI 详细说明 / Part 2: KPI Detailed Description
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="第二部分：KPI 详细说明 / Part 2: KPI Detailed Description">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#kpi-production-kpis_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      生产部门 KPI / Production KPIs
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="生产部门 KPI / Production KPIs">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-oee" class="md-nav__link">
+    <span class="md-ellipsis">
+      1. 设备综合效率（OEE）%
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-pcp" class="md-nav__link">
+    <span class="md-ellipsis">
+      2. 生产计划完成率（PCP）
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-cur" class="md-nav__link">
+    <span class="md-ellipsis">
+      3. 产能利用率（CUR）
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-ct" class="md-nav__link">
+    <span class="md-ellipsis">
+      4. 生产周期时间（CT）
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-mfg-variances" class="md-nav__link">
+    <span class="md-ellipsis">
+      5. 制造差异（Mfg Variances）
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6-period-expense" class="md-nav__link">
+    <span class="md-ellipsis">
+      6. 期间费用（Period Expense）
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#7-labor-efficiency" class="md-nav__link">
+    <span class="md-ellipsis">
+      7. 人工效率（Labor Efficiency）
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#kpi-quality-kpis_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      质量部门 KPI / Quality KPIs
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="质量部门 KPI / Quality KPIs">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-first-pass-yield" class="md-nav__link">
+    <span class="md-ellipsis">
+      1. 一次合格率（First Pass Yield）
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2" class="md-nav__link">
+    <span class="md-ellipsis">
+      2. 不合格品管理
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3" class="md-nav__link">
+    <span class="md-ellipsis">
+      3. 客户投诉率
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4" class="md-nav__link">
+    <span class="md-ellipsis">
+      4. 返工率
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#kpi-ci-kpis_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      持续改进 KPI / CI KPIs
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="持续改进 KPI / CI KPIs">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1" class="md-nav__link">
+    <span class="md-ellipsis">
+      1. 改善项目完成率
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      2. 成本节约
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      3. 员工参与度
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      4. 标准化完成率
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-ohs-engagement-dl-" class="md-nav__link">
+    <span class="md-ellipsis">
+      5. OHS Engagement (DL) % - 一线员工职业健康安全参与度
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6-ohs-innovation-idl-" class="md-nav__link">
+    <span class="md-ellipsis">
+      6. OHS Innovation (IDL) % - 间接人员职业健康安全创新参与度
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#7-yb-certification-" class="md-nav__link">
+    <span class="md-ellipsis">
+      7. YB Certification (%) - 黄带认证率
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#8-gbcertification-" class="md-nav__link">
+    <span class="md-ellipsis">
+      8. GBCertification (%) - 绿带认证率
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#9-bb-certification-" class="md-nav__link">
+    <span class="md-ellipsis">
+      9. BB Certification (%) - 黑带认证率
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#10-programmatic-savings-m-" class="md-nav__link">
+    <span class="md-ellipsis">
+      10. Programmatic Savings ($M) - 项目节约
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#kpi-supply-chain-kpis_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      供应链 KPI / Supply Chain KPIs
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="供应链 KPI / Supply Chain KPIs">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      1. 库存周转率
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      2. 准时交付率
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      3. 采购成本节约
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      4. 供应商绩效
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-backlog-m-" class="md-nav__link">
+    <span class="md-ellipsis">
+      5. Backlog ($M) - 积压订单（百万美元）
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6-backlog-weeks-" class="md-nav__link">
+    <span class="md-ellipsis">
+      6. Backlog Weeks - 积压订单周数
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#7-total-inventory-wipfg-sitesrm-m-" class="md-nav__link">
+    <span class="md-ellipsis">
+      7. Total Inventory (WIP+FG sites+RM) ($M) - 总库存（在制品+成品+原材料）（百万美元）
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#8-inventory-turns-" class="md-nav__link">
+    <span class="md-ellipsis">
+      8. Inventory Turns - 库存周转率
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#kpi-finance-kpis_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      财务部门 KPI / Finance KPIs
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="财务部门 KPI / Finance KPIs">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      1. 运营成本
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-roi" class="md-nav__link">
+    <span class="md-ellipsis">
+      2. 投资回报率 (ROI)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      3. 现金流
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      4. 预算执行率
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#kpi-equipment-kpis_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      设备管理 KPI / Equipment KPIs
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="设备管理 KPI / Equipment KPIs">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      1. 设备可用率
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      2. 预防性维护完成率
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      3. 设备故障率
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      4. 维修成本
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#kpi-facilities-kpis_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      设施管理 KPI / Facilities KPIs
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="设施管理 KPI / Facilities KPIs">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      1. 能源消耗
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      2. 设施维护成本
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      3. 安全事件率
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      4. 环境合规性
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#kpi-safety-kpis_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      安全部门 KPI / Safety KPIs
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="安全部门 KPI / Safety KPIs">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-trir-ratio-" class="md-nav__link">
+    <span class="md-ellipsis">
+      1. TRIR (Ratio) - 总可记录事故率
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-recordable-incidents-" class="md-nav__link">
+    <span class="md-ellipsis">
+      2. Recordable Incidents (#) - 可记录事故数量
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-hazard-findings-" class="md-nav__link">
+    <span class="md-ellipsis">
+      3. Hazard Findings (#) - 隐患发现数量
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="kpi-kpi-detailed-specification">KPI 详细说明文档 / KPI Detailed Specification<a class="headerlink" href="#kpi-kpi-detailed-specification" title="Permanent link">&para;</a></h1>
+<h2 id="kpi-part-1-kpi-overview">第一部分：KPI 概览 / Part 1: KPI Overview<a class="headerlink" href="#kpi-part-1-kpi-overview" title="Permanent link">&para;</a></h2>
+<h3 id="kpi-production-kpis">生产部门 KPI / Production KPIs<a class="headerlink" href="#kpi-production-kpis" title="Permanent link">&para;</a></h3>
+<ol>
+<li>设备综合效率（OEE）% - 衡量设备实际生产能力相对于理论生产能力的比率</li>
+<li>生产计划完成率（PCP）% - 实际完成的生产计划数量与计划生产数量的比率</li>
+<li>产能利用率（CUR）% - 实际产出与理论最大产能的比率</li>
+<li>生产周期时间（CT）小时 - 从原材料投入开始到成品产出所需的总时间</li>
+<li>制造差异（Mfg Variances）% - 不包括采购价格差异和非重点支出的制造差异</li>
+<li>期间费用（Period Expense）$M - 包括SOGL、闲置设施、制造支持OPS01和人工分配的费用</li>
+<li>人工效率（Labor Efficiency）% - 产出工时与员工实际出勤时间的比值</li>
+</ol>
+<h3 id="kpi-quality-kpis">质量部门 KPI / Quality KPIs<a class="headerlink" href="#kpi-quality-kpis" title="Permanent link">&para;</a></h3>
+<ol>
+<li>一次合格率（FPY）% - 产品首次检验合格的数量与总检验数量的比率</li>
+<li>不合格品率（NCR）% - 不合格品数量与总生产数量的比率</li>
+<li>CAPA完成率（CAPA）% - 按时完成的CAPA数量与总CAPA数量的比率</li>
+<li>客户投诉率（CCR）% - 客户投诉数量与总发货数量的比率</li>
+<li>返工率（Rework）% - 需要返工的产品数量与总生产数量的比率</li>
+<li>制造不合格品报告减少率（NCMR Reduction）% - 制造不合格品报告的减少比例</li>
+<li>制造逃逸（Manufacturing Escapes）# - 1级和2级制造逃逸的总数</li>
+<li>重大逃逸（Breakthrough Escape）# - 生产线清场、批次隔离和产品放行相关的重大逃逸</li>
+<li>变更控制（Change Control）% - 变更控制的有效性</li>
+<li>良率报废（Yielded Scrap）% - 生产过程中的报废率</li>
+</ol>
+<h3 id="kpi-ci-kpis">持续改进 KPI / CI KPIs<a class="headerlink" href="#kpi-ci-kpis" title="Permanent link">&para;</a></h3>
+<ol>
+<li>改善项目完成率（CI Project）% - 按时完成的改善项目数量与总改善项目数量的比率</li>
+<li>成本节约（Cost Savings）$M - 通过改善项目实现的成本节约金额</li>
+<li>员工参与度（Employee Engagement）% - 参与改善活动的员工数量与总员工数量的比率</li>
+<li>标准化完成率（Standardization）% - 已完成标准化的流程数量与计划标准化流程数量的比率</li>
+<li>一线员工职业健康安全参与度（OHS Engagement DL）% - 一线员工参与职业健康安全活动的比例</li>
+<li>间接人员职业健康安全创新参与度（OHS Innovation IDL）% - 间接人员参与职业健康安全创新的比率</li>
+<li>黄带认证率（YB Certification）% - 获得黄带认证的员工比例</li>
+<li>绿带认证率（GB Certification）% - 获得绿带认证的员工比例</li>
+<li>黑带认证率（BB Certification）% - 获得黑带认证的员工比例</li>
+<li>项目节约（Programmatic Savings）$M - 包括间接费用、人工、良率报废/材料使用差异、其他运营成本的节约</li>
+</ol>
+<h3 id="kpi-supply-chain-kpis">供应链 KPI / Supply Chain KPIs<a class="headerlink" href="#kpi-supply-chain-kpis" title="Permanent link">&para;</a></h3>
+<ol>
+<li>库存周转率（Inventory Turns）次 - 一定时期内库存周转的次数</li>
+<li>准时交付率（OTD）% - 按时交付的订单数量与总订单数量的比率</li>
+<li>采购成本节约（Procurement Savings）$M - 通过采购优化实现的成本节约金额</li>
+<li>供应商绩效（Supplier Performance）% - 供应商在质量、交付、价格等方面的综合表现</li>
+<li>积压订单（Backlog）$M - 未完成订单的总价值</li>
+<li>积压订单周数（Backlog Weeks）周 - 未完成订单的总周数</li>
+<li>总库存（Total Inventory）$M - 在制品、成品和原材料的总价值</li>
+<li>库存周转率（Inventory Turns）次 - 一定时期内库存周转的次数</li>
+</ol>
+<h3 id="kpi-finance-kpis">财务部门 KPI / Finance KPIs<a class="headerlink" href="#kpi-finance-kpis" title="Permanent link">&para;</a></h3>
+<ol>
+<li>运营成本（Operating Cost）$M - 企业日常运营所需的总成本</li>
+<li>投资回报率（ROI）% - 投资获得的收益与投资成本的比率</li>
+<li>现金流（Cash Flow）$M - 企业在一定时期内的现金流入和流出情况</li>
+<li>预算执行率（Budget Execution）% - 实际支出与预算金额的比率</li>
+</ol>
+<h3 id="kpi-equipment-kpis">设备管理 KPI / Equipment KPIs<a class="headerlink" href="#kpi-equipment-kpis" title="Permanent link">&para;</a></h3>
+<ol>
+<li>设备可用率（Equipment Availability）% - 设备可运行时间与计划运行时间的比率</li>
+<li>预防性维护完成率（PM Completion）% - 按时完成的预防性维护任务数量与计划维护任务数量的比率</li>
+<li>设备故障率（Equipment Failure）次/小时 - 设备故障次数与运行时间的比率</li>
+<li>维修成本（Maintenance Cost）$M - 设备维护和修理的总成本</li>
+</ol>
+<h3 id="kpi-facilities-kpis">设施管理 KPI / Facilities KPIs<a class="headerlink" href="#kpi-facilities-kpis" title="Permanent link">&para;</a></h3>
+<ol>
+<li>能源消耗（Energy Consumption）kWh - 设施运行所需的能源使用量</li>
+<li>设施维护成本（Facility Maintenance）$M - 设施维护和修理的总成本</li>
+<li>安全事件率（Safety Incident）次/小时 - 安全事件发生次数与工作时间的比率</li>
+<li>环境合规性（Environmental Compliance）% - 符合环境法规要求的程度</li>
+</ol>
+<h3 id="kpi-safety-kpis">安全部门 KPI / Safety KPIs<a class="headerlink" href="#kpi-safety-kpis" title="Permanent link">&para;</a></h3>
+<ol>
+<li>总可记录事故率（TRIR）次/小时 - 可记录事故次数与总工作时间的比率</li>
+<li>可记录事故数量（Recordable Incidents）# - 可记录事故的数量</li>
+<li>隐患发现数量（Hazard Findings）# - 发现的安全隐患数量</li>
+</ol>
+<hr />
+<h2 id="kpi-part-2-kpi-detailed-description">第二部分：KPI 详细说明 / Part 2: KPI Detailed Description<a class="headerlink" href="#kpi-part-2-kpi-detailed-description" title="Permanent link">&para;</a></h2>
+<h3 id="kpi-production-kpis_1">生产部门 KPI / Production KPIs<a class="headerlink" href="#kpi-production-kpis_1" title="Permanent link">&para;</a></h3>
+<h4 id="1-oee">1. 设备综合效率（OEE）%<a class="headerlink" href="#1-oee" title="Permanent link">&para;</a></h4>
+<h5 id="11">1.1 指标定义与计算<a class="headerlink" href="#11" title="Permanent link">&para;</a></h5>
+<ul>
+<li><strong>定义</strong>：衡量设备实际生产能力相对于理论生产能力的比率</li>
+<li><strong>计算公式</strong>：OEE = 可用率 × 性能率 × 质量率</li>
+<li><strong>构成要素</strong>：</li>
+<li>可用率 = 实际运行时间 / 计划运行时间</li>
+<li>性能率 = 实际产量 / 理论产量</li>
+<li>质量率 = 合格品数量 / 总生产数量</li>
+</ul>
+<h5 id="12">1.2 数据管理<a class="headerlink" href="#12" title="Permanent link">&para;</a></h5>
+<ul>
+<li><strong>数据来源</strong>：</li>
+<li>生产执行系统（MES）：设备运行时间、生产计划、实际产量</li>
+<li>质量管理系统（QMS）：产品检验、不良品、返工记录</li>
+<li>
+<p>设备管理系统（EMS）：设备维护、停机、参数记录</p>
+</li>
+<li>
+<p><strong>数据存储</strong>：</p>
+</li>
+<li>存储位置：PowerBI Dataset（Production_OEE_Dataset）</li>
+<li>更新频率：实时数据每小时更新，历史数据每日归档</li>
+<li>访问方式：PowerBI报表（实时监控）、数据集（分析导出）、API接口（系统集成）</li>
+<li>备份策略：每日增量备份、每周完整备份、月度归档</li>
+</ul>
+<h4 id="2-pcp">2. 生产计划完成率（PCP）<a class="headerlink" href="#2-pcp" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>定义</strong>：实际完成的生产计划数量与计划生产数量的比率</li>
+<li><strong>数据来源</strong>：</li>
+<li>ERP 系统</li>
+<li>生产计划系统</li>
+<li>生产执行系统</li>
+<li><strong>计算方法</strong>：
+  <div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>生产计划完成率 = 实际完成数量 / 计划生产数量 × 100%
+</span></code></pre></div></li>
+</ul>
+<h4 id="3-cur">3. 产能利用率（CUR）<a class="headerlink" href="#3-cur" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>定义</strong>：实际产出与理论最大产能的比率</li>
+<li><strong>数据来源</strong>：</li>
+<li>生产系统</li>
+<li>设备运行数据</li>
+<li>产能规划数据</li>
+<li><strong>计算方法</strong>：
+  <div class="language-text highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>产能利用率 = 实际产出 / 理论最大产能 × 100%
+</span></code></pre></div></li>
+</ul>
+<h4 id="4-ct">4. 生产周期时间（CT）<a class="headerlink" href="#4-ct" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>定义</strong>：从原材料投入开始到成品产出所需的总时间</li>
+<li><strong>数据来源</strong>：</li>
+<li>MES 系统</li>
+<li>生产记录</li>
+<li>工单数据</li>
+<li><strong>计算方法</strong>：
+  <div class="language-text highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>生产周期时间 = 成品产出时间 - 原材料投入时间
+</span></code></pre></div></li>
+</ul>
+<h4 id="5-mfg-variances">5. 制造差异（Mfg Variances）<a class="headerlink" href="#5-mfg-variances" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>定义</strong>：不包括采购价格差异和非重点支出的制造差异</li>
+<li><strong>数据来源</strong>：</li>
+<li>成本核算系统</li>
+<li>生产执行系统</li>
+<li>财务系统</li>
+<li><strong>计算方法</strong>：
+  <div class="language-text highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>制造差异 = 实际成本 - 标准成本
+</span></code></pre></div></li>
+</ul>
+<h4 id="6-period-expense">6. 期间费用（Period Expense）<a class="headerlink" href="#6-period-expense" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>定义</strong>：包括SOGL、闲置设施、制造支持OPS01和人工分配的费用</li>
+<li><strong>数据来源</strong>：</li>
+<li>财务系统</li>
+<li>人力资源系统</li>
+<li>预算系统</li>
+<li><strong>计算方法</strong>：
+  <div class="language-text highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>期间费用 = SOGL + 闲置设施费用 + 制造支持费用 + 人工分配费用
+</span></code></pre></div></li>
+</ul>
+<h4 id="7-labor-efficiency">7. 人工效率（Labor Efficiency）<a class="headerlink" href="#7-labor-efficiency" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>定义</strong>：产出工时与员工实际出勤时间的比值</li>
+<li><strong>数据来源</strong>：</li>
+<li>人力资源系统</li>
+<li>生产执行系统</li>
+<li>考勤记录</li>
+<li><strong>计算方法</strong>：
+  <div class="language-text highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>人工效率 = (产出工时 / 实际出勤时间) × 100%
+</span></code></pre></div></li>
+</ul>
+<h3 id="kpi-quality-kpis_1">质量部门 KPI / Quality KPIs<a class="headerlink" href="#kpi-quality-kpis_1" title="Permanent link">&para;</a></h3>
+<h4 id="1-first-pass-yield">1. 一次合格率（First Pass Yield）<a class="headerlink" href="#1-first-pass-yield" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>定义</strong>：产品首次检验合格的数量与总检验数量的比率</li>
+<li><strong>数据来源</strong>：</li>
+<li>质量检验系统</li>
+<li>检验记录</li>
+<li>不合格品报告</li>
+<li><strong>计算方法</strong>：
+  <div class="language-text highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>一次合格率 = 首次检验合格数量 / 总检验数量 × 100%
+</span></code></pre></div></li>
+</ul>
+<h4 id="2">2. 不合格品管理<a class="headerlink" href="#2" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>定义</strong>：不合格品率与 CAPA 完成情况的综合指标</li>
+<li><strong>数据来源</strong>：</li>
+<li>质量管理系统</li>
+<li>不合格品记录</li>
+<li>CAPA 跟踪系统</li>
+<li><strong>计算方法</strong>：
+  <div class="language-text highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>不合格品率 = 不合格品数量 / 总生产数量 × 100%
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>CAPA 完成率 = 按时完成的 CAPA 数量 / 总 CAPA 数量 × 100%
+</span></code></pre></div></li>
+</ul>
+<h4 id="3">3. 客户投诉率<a class="headerlink" href="#3" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>定义</strong>：客户投诉数量与总发货数量的比率</li>
+<li><strong>数据来源</strong>：</li>
+<li>客户关系管理系统</li>
+<li>投诉记录</li>
+<li>发货记录</li>
+<li><strong>计算方法</strong>：
+  <div class="language-text highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>客户投诉率 = 投诉数量 / 总发货数量 × 100%
+</span></code></pre></div></li>
+</ul>
+<h4 id="4">4. 返工率<a class="headerlink" href="#4" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>定义</strong>：需要返工的产品数量与总生产数量的比率</li>
+<li><strong>数据来源</strong>：</li>
+<li>生产系统</li>
+<li>返工记录</li>
+<li>质量记录</li>
+<li><strong>计算方法</strong>：
+  <div class="language-text highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>返工率 = 返工数量 / 总生产数量 × 100%
+</span></code></pre></div></li>
+</ul>
+<h3 id="kpi-ci-kpis_1">持续改进 KPI / CI KPIs<a class="headerlink" href="#kpi-ci-kpis_1" title="Permanent link">&para;</a></h3>
+<h4 id="1">1. 改善项目完成率<a class="headerlink" href="#1" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>定义</strong>：按时完成的改善项目数量与总改善项目数量的比率</li>
+<li><strong>数据来源</strong>：</li>
+<li>项目管理工具</li>
+<li>改善项目跟踪系统</li>
+<li>项目状态报告</li>
+<li><strong>计算方法</strong>：
+  <div class="language-text highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>改善项目完成率 = 按时完成项目数 / 总项目数 × 100%
+</span></code></pre></div></li>
+</ul>
+<h4 id="2_1">2. 成本节约<a class="headerlink" href="#2_1" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>定义</strong>：通过改善项目实现的成本节约金额</li>
+<li><strong>数据来源</strong>：</li>
+<li>财务系统</li>
+<li>项目收益报告</li>
+<li>成本核算系统</li>
+<li><strong>计算方法</strong>：
+  <div class="language-text highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>成本节约 = 改善前成本 - 改善后成本
+</span></code></pre></div></li>
+</ul>
+<h4 id="3_1">3. 员工参与度<a class="headerlink" href="#3_1" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>定义</strong>：参与改善活动的员工数量与总员工数量的比率</li>
+<li><strong>数据来源</strong>：</li>
+<li>人力资源系统</li>
+<li>改善活动记录</li>
+<li>员工参与记录</li>
+<li><strong>计算方法</strong>：
+  <div class="language-text highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>员工参与度 = 参与员工数 / 总员工数 × 100%
+</span></code></pre></div></li>
+</ul>
+<h4 id="4_1">4. 标准化完成率<a class="headerlink" href="#4_1" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>定义</strong>：已完成标准化的流程数量与计划标准化流程数量的比率</li>
+<li><strong>数据来源</strong>：</li>
+<li>标准化管理系统</li>
+<li>流程文档系统</li>
+<li>标准化状态报告</li>
+<li><strong>计算方法</strong>：
+  <div class="language-text highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>标准化完成率 = 已完成标准化流程数 / 计划标准化流程数 × 100%
+</span></code></pre></div></li>
+</ul>
+<h4 id="5-ohs-engagement-dl-">5. OHS Engagement (DL) % - 一线员工职业健康安全参与度<a class="headerlink" href="#5-ohs-engagement-dl-" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>定义</strong>：一线员工参与职业健康安全活动的比例</li>
+<li><strong>数据来源</strong>：</li>
+<li>人力资源系统</li>
+<li>安全培训记录</li>
+<li>员工参与度调查</li>
+<li><strong>计算方法</strong>：
+  <div class="language-text highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a>OHS Engagement (DL) % = 参与员工数 / 总员工数 × 100%
+</span></code></pre></div></li>
+</ul>
+<h4 id="6-ohs-innovation-idl-">6. OHS Innovation (IDL) % - 间接人员职业健康安全创新参与度<a class="headerlink" href="#6-ohs-innovation-idl-" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>定义</strong>：间接人员参与职业健康安全创新的比率</li>
+<li><strong>数据来源</strong>：</li>
+<li>人力资源系统</li>
+<li>安全创新活动记录</li>
+<li>员工参与度调查</li>
+<li><strong>计算方法</strong>：
+  <div class="language-text highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a>OHS Innovation (IDL) % = 参与员工数 / 总员工数 × 100%
+</span></code></pre></div></li>
+</ul>
+<h4 id="7-yb-certification-">7. YB Certification (%) - 黄带认证率<a class="headerlink" href="#7-yb-certification-" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>定义</strong>：获得黄带认证的员工比例</li>
+<li><strong>数据来源</strong>：</li>
+<li>人力资源系统</li>
+<li>认证记录</li>
+<li>员工参与度调查</li>
+<li><strong>计算方法</strong>：
+  <div class="language-text highlight"><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a>YB Certification (%) = 获得黄带认证的员工数 / 总员工数 × 100%
+</span></code></pre></div></li>
+</ul>
+<h4 id="8-gbcertification-">8. GBCertification (%) - 绿带认证率<a class="headerlink" href="#8-gbcertification-" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>定义</strong>：获得绿带认证的员工比例</li>
+<li><strong>数据来源</strong>：</li>
+<li>人力资源系统</li>
+<li>认证记录</li>
+<li>员工参与度调查</li>
+<li><strong>计算方法</strong>：
+  <div class="language-text highlight"><pre><span></span><code><span id="__span-17-1"><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a>GBCertification (%) = 获得绿带认证的员工数 / 总员工数 × 100%
+</span></code></pre></div></li>
+</ul>
+<h4 id="9-bb-certification-">9. BB Certification (%) - 黑带认证率<a class="headerlink" href="#9-bb-certification-" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>定义</strong>：获得黑带认证的员工比例</li>
+<li><strong>数据来源</strong>：</li>
+<li>人力资源系统</li>
+<li>认证记录</li>
+<li>员工参与度调查</li>
+<li><strong>计算方法</strong>：
+  <div class="language-text highlight"><pre><span></span><code><span id="__span-18-1"><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a>BB Certification (%) = 获得黑带认证的员工数 / 总员工数 × 100%
+</span></code></pre></div></li>
+</ul>
+<h4 id="10-programmatic-savings-m-">10. Programmatic Savings ($M) - 项目节约<a class="headerlink" href="#10-programmatic-savings-m-" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>定义</strong>：通过改善项目实现的成本节约金额</li>
+<li><strong>数据来源</strong>：</li>
+<li>财务系统</li>
+<li>项目收益报告</li>
+<li>成本核算系统</li>
+<li><strong>计算方法</strong>：
+  <div class="language-text highlight"><pre><span></span><code><span id="__span-19-1"><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a>Programmatic Savings ($M) = 改善前成本 - 改善后成本
+</span></code></pre></div></li>
+</ul>
+<h3 id="kpi-supply-chain-kpis_1">供应链 KPI / Supply Chain KPIs<a class="headerlink" href="#kpi-supply-chain-kpis_1" title="Permanent link">&para;</a></h3>
+<h4 id="1_1">1. 库存周转率<a class="headerlink" href="#1_1" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>定义</strong>：一定时期内库存周转的次数</li>
+<li><strong>数据来源</strong>：</li>
+<li>库存管理系统</li>
+<li>财务系统</li>
+<li>销售数据</li>
+<li><strong>计算方法</strong>：
+  <div class="language-text highlight"><pre><span></span><code><span id="__span-20-1"><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a>库存周转率 = 销售成本 / 平均库存价值
+</span></code></pre></div></li>
+</ul>
+<h4 id="2_2">2. 准时交付率<a class="headerlink" href="#2_2" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>定义</strong>：按时交付的订单数量与总订单数量的比率</li>
+<li><strong>数据来源</strong>：</li>
+<li>订单管理系统</li>
+<li>物流系统</li>
+<li>交付记录</li>
+<li><strong>计算方法</strong>：
+  <div class="language-text highlight"><pre><span></span><code><span id="__span-21-1"><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a>准时交付率 = 准时交付订单数 / 总订单数 × 100%
+</span></code></pre></div></li>
+</ul>
+<h4 id="3_2">3. 采购成本节约<a class="headerlink" href="#3_2" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>定义</strong>：通过采购优化实现的成本节约金额</li>
+<li><strong>数据来源</strong>：</li>
+<li>采购系统</li>
+<li>财务系统</li>
+<li>成本核算系统</li>
+<li><strong>计算方法</strong>：
+  <div class="language-text highlight"><pre><span></span><code><span id="__span-22-1"><a id="__codelineno-22-1" name="__codelineno-22-1" href="#__codelineno-22-1"></a>采购成本节约 = 原采购成本 - 优化后采购成本
+</span></code></pre></div></li>
+</ul>
+<h4 id="4_2">4. 供应商绩效<a class="headerlink" href="#4_2" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>定义</strong>：供应商在质量、交付、价格等方面的综合表现</li>
+<li><strong>数据来源</strong>：</li>
+<li>供应商评估系统</li>
+<li>质量记录</li>
+<li>交付记录</li>
+<li><strong>计算方法</strong>：
+  <div class="language-text highlight"><pre><span></span><code><span id="__span-23-1"><a id="__codelineno-23-1" name="__codelineno-23-1" href="#__codelineno-23-1"></a>供应商绩效 = (质量得分 × 0.4 + 交付得分 × 0.3 + 价格得分 × 0.3) × 100%
+</span></code></pre></div></li>
+</ul>
+<h4 id="5-backlog-m-">5. Backlog ($M) - 积压订单（百万美元）<a class="headerlink" href="#5-backlog-m-" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>定义</strong>：未完成订单的总价值</li>
+<li><strong>数据来源</strong>：</li>
+<li>订单管理系统</li>
+<li>财务系统</li>
+<li>销售数据</li>
+<li><strong>计算方法</strong>：
+  <div class="language-text highlight"><pre><span></span><code><span id="__span-24-1"><a id="__codelineno-24-1" name="__codelineno-24-1" href="#__codelineno-24-1"></a>Backlog ($M) = 未完成订单总价值 / 1,000,000
+</span></code></pre></div></li>
+</ul>
+<h4 id="6-backlog-weeks-">6. Backlog Weeks - 积压订单周数<a class="headerlink" href="#6-backlog-weeks-" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>定义</strong>：未完成订单的总周数</li>
+<li><strong>数据来源</strong>：</li>
+<li>订单管理系统</li>
+<li>生产计划系统</li>
+<li>生产执行系统</li>
+<li><strong>计算方法</strong>：
+  <div class="language-text highlight"><pre><span></span><code><span id="__span-25-1"><a id="__codelineno-25-1" name="__codelineno-25-1" href="#__codelineno-25-1"></a>Backlog Weeks = 未完成订单总周数
+</span></code></pre></div></li>
+</ul>
+<h4 id="7-total-inventory-wipfg-sitesrm-m-">7. Total Inventory (WIP+FG sites+RM) ($M) - 总库存（在制品+成品+原材料）（百万美元）<a class="headerlink" href="#7-total-inventory-wipfg-sitesrm-m-" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>定义</strong>：在制品、成品和原材料的总价值</li>
+<li><strong>数据来源</strong>：</li>
+<li>库存管理系统</li>
+<li>财务系统</li>
+<li>生产数据</li>
+<li><strong>计算方法</strong>：
+  <div class="language-text highlight"><pre><span></span><code><span id="__span-26-1"><a id="__codelineno-26-1" name="__codelineno-26-1" href="#__codelineno-26-1"></a>Total Inventory (WIP+FG sites+RM) ($M) = 在制品价值 + 成品价值 + 原材料价值 / 1,000,000
+</span></code></pre></div></li>
+</ul>
+<h4 id="8-inventory-turns-">8. Inventory Turns - 库存周转率<a class="headerlink" href="#8-inventory-turns-" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>定义</strong>：一定时期内库存周转的次数</li>
+<li><strong>数据来源</strong>：</li>
+<li>库存管理系统</li>
+<li>财务系统</li>
+<li>销售数据</li>
+<li><strong>计算方法</strong>：
+  <div class="language-text highlight"><pre><span></span><code><span id="__span-27-1"><a id="__codelineno-27-1" name="__codelineno-27-1" href="#__codelineno-27-1"></a>Inventory Turns = 销售成本 / 平均库存价值
+</span></code></pre></div></li>
+</ul>
+<h3 id="kpi-finance-kpis_1">财务部门 KPI / Finance KPIs<a class="headerlink" href="#kpi-finance-kpis_1" title="Permanent link">&para;</a></h3>
+<h4 id="1_2">1. 运营成本<a class="headerlink" href="#1_2" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>定义</strong>：企业日常运营所需的总成本</li>
+<li><strong>数据来源</strong>：</li>
+<li>财务系统</li>
+<li>成本核算系统</li>
+<li>预算系统</li>
+<li><strong>计算方法</strong>：
+  <div class="language-text highlight"><pre><span></span><code><span id="__span-28-1"><a id="__codelineno-28-1" name="__codelineno-28-1" href="#__codelineno-28-1"></a>运营成本 = 直接成本 + 间接成本
+</span></code></pre></div></li>
+</ul>
+<h4 id="2-roi">2. 投资回报率 (ROI)<a class="headerlink" href="#2-roi" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>定义</strong>：投资获得的收益与投资成本的比率</li>
+<li><strong>数据来源</strong>：</li>
+<li>财务系统</li>
+<li>投资记录</li>
+<li>收益记录</li>
+<li><strong>计算方法</strong>：
+  <div class="language-text highlight"><pre><span></span><code><span id="__span-29-1"><a id="__codelineno-29-1" name="__codelineno-29-1" href="#__codelineno-29-1"></a>ROI = (投资收益 - 投资成本) / 投资成本 × 100%
+</span></code></pre></div></li>
+</ul>
+<h4 id="3_3">3. 现金流<a class="headerlink" href="#3_3" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>定义</strong>：企业在一定时期内的现金流入和流出情况</li>
+<li><strong>数据来源</strong>：</li>
+<li>财务系统</li>
+<li>银行账户</li>
+<li>现金日记账</li>
+<li><strong>计算方法</strong>：
+  <div class="language-text highlight"><pre><span></span><code><span id="__span-30-1"><a id="__codelineno-30-1" name="__codelineno-30-1" href="#__codelineno-30-1"></a>现金流 = 现金流入 - 现金流出
+</span></code></pre></div></li>
+</ul>
+<h4 id="4_3">4. 预算执行率<a class="headerlink" href="#4_3" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>定义</strong>：实际支出与预算金额的比率</li>
+<li><strong>数据来源</strong>：</li>
+<li>预算系统</li>
+<li>财务系统</li>
+<li>支出记录</li>
+<li><strong>计算方法</strong>：
+  <div class="language-text highlight"><pre><span></span><code><span id="__span-31-1"><a id="__codelineno-31-1" name="__codelineno-31-1" href="#__codelineno-31-1"></a>预算执行率 = 实际支出 / 预算金额 × 100%
+</span></code></pre></div></li>
+</ul>
+<h3 id="kpi-equipment-kpis_1">设备管理 KPI / Equipment KPIs<a class="headerlink" href="#kpi-equipment-kpis_1" title="Permanent link">&para;</a></h3>
+<h4 id="1_3">1. 设备可用率<a class="headerlink" href="#1_3" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>定义</strong>：设备可运行时间与计划运行时间的比率</li>
+<li><strong>数据来源</strong>：</li>
+<li>设备管理系统</li>
+<li>运行记录</li>
+<li>维护记录</li>
+<li><strong>计算方法</strong>：
+  <div class="language-text highlight"><pre><span></span><code><span id="__span-32-1"><a id="__codelineno-32-1" name="__codelineno-32-1" href="#__codelineno-32-1"></a>设备可用率 = 可运行时间 / 计划运行时间 × 100%
+</span></code></pre></div></li>
+</ul>
+<h4 id="2_3">2. 预防性维护完成率<a class="headerlink" href="#2_3" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>定义</strong>：按时完成的预防性维护任务数量与计划维护任务数量的比率</li>
+<li><strong>数据来源</strong>：</li>
+<li>维护管理系统</li>
+<li>维护计划</li>
+<li>维护记录</li>
+<li><strong>计算方法</strong>：
+  <div class="language-text highlight"><pre><span></span><code><span id="__span-33-1"><a id="__codelineno-33-1" name="__codelineno-33-1" href="#__codelineno-33-1"></a>预防性维护完成率 = 按时完成维护任务数 / 计划维护任务数 × 100%
+</span></code></pre></div></li>
+</ul>
+<h4 id="3_4">3. 设备故障率<a class="headerlink" href="#3_4" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>定义</strong>：设备故障次数与运行时间的比率</li>
+<li><strong>数据来源</strong>：</li>
+<li>设备管理系统</li>
+<li>故障记录</li>
+<li>运行记录</li>
+<li><strong>计算方法</strong>：
+  <div class="language-text highlight"><pre><span></span><code><span id="__span-34-1"><a id="__codelineno-34-1" name="__codelineno-34-1" href="#__codelineno-34-1"></a>设备故障率 = 故障次数 / 运行时间
+</span></code></pre></div></li>
+</ul>
+<h4 id="4_4">4. 维修成本<a class="headerlink" href="#4_4" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>定义</strong>：设备维护和修理的总成本</li>
+<li><strong>数据来源</strong>：</li>
+<li>财务系统</li>
+<li>维护记录</li>
+<li>成本核算系统</li>
+<li><strong>计算方法</strong>：
+  <div class="language-text highlight"><pre><span></span><code><span id="__span-35-1"><a id="__codelineno-35-1" name="__codelineno-35-1" href="#__codelineno-35-1"></a>维修成本 = 预防性维护成本 + 故障维修成本
+</span></code></pre></div></li>
+</ul>
+<h3 id="kpi-facilities-kpis_1">设施管理 KPI / Facilities KPIs<a class="headerlink" href="#kpi-facilities-kpis_1" title="Permanent link">&para;</a></h3>
+<h4 id="1_4">1. 能源消耗<a class="headerlink" href="#1_4" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>定义</strong>：设施运行所需的能源使用量</li>
+<li><strong>数据来源</strong>：</li>
+<li>能源管理系统</li>
+<li>电表读数</li>
+<li>能源账单</li>
+<li><strong>计算方法</strong>：
+  <div class="language-text highlight"><pre><span></span><code><span id="__span-36-1"><a id="__codelineno-36-1" name="__codelineno-36-1" href="#__codelineno-36-1"></a>能源消耗 = 总能源使用量 / 生产量
+</span></code></pre></div></li>
+</ul>
+<h4 id="2_4">2. 设施维护成本<a class="headerlink" href="#2_4" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>定义</strong>：设施维护和修理的总成本</li>
+<li><strong>数据来源</strong>：</li>
+<li>财务系统</li>
+<li>维护记录</li>
+<li>成本核算系统</li>
+<li><strong>计算方法</strong>：
+  <div class="language-text highlight"><pre><span></span><code><span id="__span-37-1"><a id="__codelineno-37-1" name="__codelineno-37-1" href="#__codelineno-37-1"></a>设施维护成本 = 日常维护成本 + 修理成本
+</span></code></pre></div></li>
+</ul>
+<h4 id="3_5">3. 安全事件率<a class="headerlink" href="#3_5" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>定义</strong>：安全事件发生次数与工作时间的比率</li>
+<li><strong>数据来源</strong>：</li>
+<li>安全管理系统</li>
+<li>事故报告</li>
+<li>工时记录</li>
+<li><strong>计算方法</strong>：
+  <div class="language-text highlight"><pre><span></span><code><span id="__span-38-1"><a id="__codelineno-38-1" name="__codelineno-38-1" href="#__codelineno-38-1"></a>安全事件率 = 安全事件次数 / 总工作时间
+</span></code></pre></div></li>
+</ul>
+<h4 id="4_5">4. 环境合规性<a class="headerlink" href="#4_5" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>定义</strong>：符合环境法规要求的程度</li>
+<li><strong>数据来源</strong>：</li>
+<li>环境监测系统</li>
+<li>合规检查记录</li>
+<li>环境报告</li>
+<li><strong>计算方法</strong>：
+  <div class="language-text highlight"><pre><span></span><code><span id="__span-39-1"><a id="__codelineno-39-1" name="__codelineno-39-1" href="#__codelineno-39-1"></a>环境合规性 = 合规项目数 / 总检查项目数 × 100%
+</span></code></pre></div></li>
+</ul>
+<h3 id="kpi-safety-kpis_1">安全部门 KPI / Safety KPIs<a class="headerlink" href="#kpi-safety-kpis_1" title="Permanent link">&para;</a></h3>
+<h4 id="1-trir-ratio-">1. TRIR (Ratio) - 总可记录事故率<a class="headerlink" href="#1-trir-ratio-" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>定义</strong>：可记录事故次数与总工作时间的比率</li>
+<li><strong>数据来源</strong>：</li>
+<li>安全管理系统</li>
+<li>事故报告</li>
+<li>工时记录</li>
+<li><strong>计算方法</strong>：
+  <div class="language-text highlight"><pre><span></span><code><span id="__span-40-1"><a id="__codelineno-40-1" name="__codelineno-40-1" href="#__codelineno-40-1"></a>TRIR (Ratio) = 可记录事故次数 / 总工作时间
+</span></code></pre></div></li>
+</ul>
+<h4 id="2-recordable-incidents-">2. Recordable Incidents (#) - 可记录事故数量<a class="headerlink" href="#2-recordable-incidents-" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>定义</strong>：可记录事故的数量</li>
+<li><strong>数据来源</strong>：</li>
+<li>安全管理系统</li>
+<li>事故报告</li>
+<li><strong>计算方法</strong>：
+  <div class="language-text highlight"><pre><span></span><code><span id="__span-41-1"><a id="__codelineno-41-1" name="__codelineno-41-1" href="#__codelineno-41-1"></a>Recordable Incidents (#) = 可记录事故数量
+</span></code></pre></div></li>
+</ul>
+<h4 id="3-hazard-findings-">3. Hazard Findings (#) - 隐患发现数量<a class="headerlink" href="#3-hazard-findings-" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>定义</strong>：发现的安全隐患数量</li>
+<li><strong>数据来源</strong>：</li>
+<li>安全管理系统</li>
+<li>隐患检查记录</li>
+<li><strong>计算方法</strong>：
+  <div class="language-text highlight"><pre><span></span><code><span id="__span-42-1"><a id="__codelineno-42-1" name="__codelineno-42-1" href="#__codelineno-42-1"></a>Hazard Findings (#) = 发现的安全隐患数量
+</span></code></pre></div></li>
+</ul>
+
+
+
+
+
+
+
+  
+    
+  
+  
+    
+  
+
+
+  <aside class="md-source-file">
+    
+      
+  <span class="md-source-file__fact">
+    <span class="md-icon" title="最后更新">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
+    </span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-datetime" title="2025年11月11日 13:24:47 UTC">2025年11月11日 13:24:47</span>
+  </span>
+
+    
+    
+      
+  <span class="md-source-file__fact">
+    <span class="md-icon" title="创建日期">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14.47 15.08 11 13V7h1.5v5.25l3.08 1.83c-.41.28-.79.62-1.11 1m-1.39 4.84c-.36.05-.71.08-1.08.08-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8c0 .37-.03.72-.08 1.08.69.1 1.33.32 1.92.64.1-.56.16-1.13.16-1.72 0-5.5-4.5-10-10-10S2 6.5 2 12s4.47 10 10 10c.59 0 1.16-.06 1.72-.16-.32-.59-.54-1.23-.64-1.92M18 15v3h-3v2h3v3h2v-3h3v-2h-3v-3z"/></svg>
+    </span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-datetime" title="2025年11月11日 13:24:47 UTC">2025年11月11日 13:24:47</span>
+  </span>
+
+    
+    
+    
+  </aside>
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  回到页面顶部
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+    <a href="https://github.com/" target="_blank" rel="noopener" title="GitHub" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      <script id="__config" type="application/json">{"base": "../../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.tabs.sticky", "navigation.sections", "navigation.expand", "navigation.indexes", "navigation.top", "toc.follow", "search.suggest", "search.highlight", "search.share", "content.code.copy", "content.code.annotate"], "search": "../../../assets/javascripts/workers/search.973d3a69.min.js", "tags": null, "translations": {"clipboard.copied": "\u5df2\u590d\u5236", "clipboard.copy": "\u590d\u5236", "search.result.more.one": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.more.other": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 # \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.none": "\u6ca1\u6709\u627e\u5230\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.one": "\u627e\u5230 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.other": "# \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.placeholder": "\u952e\u5165\u4ee5\u5f00\u59cb\u641c\u7d22", "search.result.term.missing": "\u7f3a\u5c11", "select.version": "\u9009\u62e9\u5f53\u524d\u7248\u672c"}, "version": null}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.f55a23d4.min.js"></script>
+      
+        <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>
