@@ -14,5 +14,5 @@
 | 4 | 客户投诉率 | CCR | % | ≤ 0.5% |
 | 5 | 返工率 | Rework | % | ≤ 3% |
 
-完整内容请参考：[KPI 完整详细说明](kpi-specification.md#质量部门-kpi)
+完整内容请参考：[KPI 完整详细说明](kpi-specification.md) - 质量部门 KPI 章节
 

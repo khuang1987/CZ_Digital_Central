@@ -89,9 +89,9 @@
 **您可能需要：**
 
 1. 📋 **项目文档**
-   - [项目定义](../project/definition.md)
-   - [实施计划](../project/implementation.md)
-   - [会议纪要](../project/meetings.md)
+   - [项目定义](../project/01_Define_定义阶段/index.md)
+   - [项目进展总览](../project/progress/index.md)
+   - [会议纪要](../project/meetings/index.md)
 
 2. 📊 **整体架构**
    - [数据源说明](../sa/data-sources.md)
@@ -210,7 +210,7 @@
     👉 继续阅读 [KPI 指标说明](../kpi/index.md)
 
 === "项目管理者"
-    👉 继续阅读 [项目定义](../project/definition.md)
+    👉 继续阅读 [项目定义](../project/01_Define_定义阶段/index.md)
 
 ---
 

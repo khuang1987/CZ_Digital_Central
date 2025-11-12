@@ -12,5 +12,5 @@
 | 2 | 成本节约 | Cost Savings | $M | 年度目标 |
 | 3 | 员工参与度 | Employee Engagement | % | ≥ 80% |
 
-完整内容请参考：[KPI 完整详细说明](kpi-specification.md#持续改进-kpi)
+完整内容请参考：[KPI 完整详细说明](kpi-specification.md) - 持续改进 KPI 章节
 

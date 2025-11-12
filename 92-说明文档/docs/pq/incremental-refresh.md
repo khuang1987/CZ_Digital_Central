@@ -145,5 +145,5 @@ in
 
 - [Power Query 概述](index.md)
 - [数据更新流程](../guide/data-update.md)
-- [性能优化](../guide/troubleshooting.md#性能优化)
+- [性能优化章节](../guide/troubleshooting.md#性能优化)
 

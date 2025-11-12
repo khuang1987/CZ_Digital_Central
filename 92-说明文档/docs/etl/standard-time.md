@@ -68,5 +68,5 @@ python convert_standard_time.py
 ## 相关资源
 
 - [ETL 流程概述](index.md)
-- [数据源说明](../sa/data-sources.md#23-产品标准时间表)
+- [数据源说明 - 产品标准时间表章节](../sa/data-sources.md#23-产品标准时间表)
 

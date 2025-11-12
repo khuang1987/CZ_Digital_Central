@@ -3,6 +3,12 @@ site_name: CZ Ops 数字化数据平台 - 电子说明书
 site_description: CZ Ops 数字化数据平台的数据字段定义、计算方法、数据来源及使用指南
 site_author: Medtronic CZ Ops Team
 
+# GitHub Pages 配置（部署到 GitHub 时需要）
+# 如果部署到 GitHub Pages，请取消注释并修改为您的实际仓库地址
+# site_url: https://您的用户名.github.io/250418_MDDAP_project/
+# repo_url: https://github.com/您的用户名/250418_MDDAP_project
+# repo_name: 您的用户名/250418_MDDAP_project
+
 # 主题配置
 theme:
   name: material
@@ -25,13 +31,12 @@ theme:
   features:
     - navigation.instant      # 即时加载
     - navigation.tracking     # 锚点跟踪
-    - navigation.tabs         # 顶部导航标签
+    - navigation.tabs         # 顶部导航标签（大分类）
     - navigation.tabs.sticky  # 顶部标签固定
     - navigation.sections     # 导航分组
-    - navigation.expand       # 默认展开导航
+    - navigation.expand       # 默认展开导航（点击展开）
     - navigation.indexes      # 章节索引页
     - navigation.top          # 返回顶部按钮
-    - toc.follow              # 目录跟随
     - search.suggest          # 搜索建议
     - search.highlight        # 搜索高亮
     - search.share            # 搜索分享
@@ -59,6 +64,8 @@ markdown_extensions:
   - toc:
       permalink: true
       toc_depth: 4
+      baselevel: 1
+      title: 目录
   - pymdownx.arithmatex:
       generic: true
   - pymdownx.betterem:
@@ -98,6 +105,7 @@ nav:
   
   - KPI 指标体系:
     - KPI 概述: kpi/index.md
+    - KPI 完整详细说明: kpi/kpi-specification.md
     - 供应链 KPI:
       - 供应链 KPI 概述: kpi/supply-chain.md
       - SA - 计划达成率:
@@ -136,13 +144,28 @@ nav:
   
   - 项目管理:
     - DMAIC 阶段:
-      - 定义阶段（Define）: project/01_Define_定义阶段/index.md
-      - 测量阶段（Measure）: project/02_Measure_测量阶段/index.md
+      - 定义阶段（Define）:
+        - 定义阶段概述: project/01_Define_定义阶段/index.md
+        - 项目定义文档: project/01_Define_定义阶段/01_ProjectDefinition_项目定义.md
+      - 测量阶段（Measure）:
+        - 测量阶段概述: project/02_Measure_测量阶段/index.md
+        - 数据收集计划: project/02_Measure_测量阶段/01_DataCollectionPlan_数据收集计划.md
+        - KPI详细说明: project/02_Measure_测量阶段/02_KpiSpecification_KPI详细说明.md
+        - KPI思维导图: project/02_Measure_测量阶段/03_KpiMindmap_KPI思维导图.md
+        - 测量阶段文档: project/02_Measure_测量阶段/04_MeasurePhase_测量阶段.md
       - 分析阶段（Analyze）: project/03_Analyze_分析阶段/index.md
-      - 改进阶段（Improve）: project/04_Improve_改进阶段/index.md
-      - 控制阶段（Control）: project/05_Control_控制阶段/index.md
-    - 项目进展总览: project/progress/index.md
-    - 会议纪要: project/meetings/index.md
+      - 改进阶段（Improve）:
+        - 改进阶段概述: project/04_Improve_改进阶段/index.md
+        - 改进方案: project/04_Improve_改进阶段/01_ImprovementPlan_改进方案.md
+      - 控制阶段（Control）:
+        - 控制阶段概述: project/05_Control_控制阶段/index.md
+        - 控制计划: project/05_Control_控制阶段/01_ControlPlan_控制计划.md
+    - 项目进展总览:
+      - 进展总览: project/progress/index.md
+      - 详细进展文档: project/progress/progress.md
+    - 会议纪要:
+      - 会议纪要概述: project/meetings/index.md
+      - 详细会议记录: project/meetings/meetings.md
   
   - 参考信息:
     - 文件命名规范: reference/naming-convention.md
