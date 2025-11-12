@@ -1,36 +1,8 @@
-/* 自定义样式 */
+/* ============================================
+   CZ Ops 数字化数据平台 - 电子说明书样式
+   基于 Material for MkDocs 标准样式
+   
+   已恢复为默认样式，不做自定义设置
+   ============================================ */
 
-/* 表格样式优化 */
-.md-typeset table:not([class]) {
-    font-size: 0.85em;
-    border-collapse: collapse;
-}
-
-.md-typeset table:not([class]) th {
-    background-color: var(--md-primary-fg-color);
-    color: white;
-    font-weight: bold;
-}
-
-/* 代码块样式 */
-.md-typeset code {
-    background-color: var(--md-code-bg-color);
-    padding: 0.1em 0.4em;
-}
-
-/* 提示框样式优化 */
-.md-typeset .admonition {
-    margin: 1.5em 0;
-}
-
-/* 标题锚点样式 */
-.md-typeset h2 {
-    border-bottom: 1px solid var(--md-default-fg-color--lightest);
-    padding-bottom: 0.3em;
-}
-
-/* 搜索框优化 */
-.md-search__input {
-    border-radius: 0.2rem;
-}
-
+/* 如需添加自定义样式，请在此处添加 */
