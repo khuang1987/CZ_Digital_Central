@@ -202,27 +202,6 @@ WARNING - Doc file '...' contains a link '...', but the target is not found
 
 ---
 
-### 问题 4：页面 404
-
-**原因：**
-- `site_url` 配置不正确
-- 文件路径问题
-
-**解决方法：**
-
-1. **检查 `site_url` 配置**
-   ```yaml
-   site_url: https://您的用户名.github.io/250418_MDDAP_project/
-   ```
-
-2. **重新构建和部署**
-   ```bash
-   mkdocs build --clean
-   mkdocs gh-deploy --force
-   ```
-
----
-
 ## 📝 自动化部署（可选）
 
 ### 使用 GitHub Actions
@@ -306,4 +285,5 @@ mkdocs gh-deploy
 ---
 
 **最后更新：** 2025-11-10
+
 

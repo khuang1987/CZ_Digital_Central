@@ -70,3 +70,6 @@ python convert_standard_time.py
 - [ETL 流程概述](index.md)
 - [数据源说明 - 产品标准时间表章节](../sa/data-sources.md#23-产品标准时间表)
 
+!!! note "数据源说明"
+    产品标准时间表的详细说明请参考[SA 数据源说明文档](../sa/data-sources.md)的"2.3 产品标准时间表"章节。
+

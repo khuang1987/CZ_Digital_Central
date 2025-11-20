@@ -1,3 +1,5 @@
+
+
 # CZ Ops 数字化数据平台 - 电子说明书
 
 ## 📖 项目简介
@@ -43,7 +45,7 @@
 ```bash
 # 生成静态网站
 mkdocs build
-
+页面地址：https://khuang1987.github.io/250418_MDDAP_project/
 # 将 site 文件夹复制到 Web 服务器
 ```
 
@@ -142,7 +144,7 @@ SA = \frac{\text{按期批次数}}{\text{总批次数}} \times 100\%
 
 如有问题，请联系：
 - CZ Ops 数字化团队
-- 项目负责人
+- 项目负责人 黄凯
 
 ## 📄 许可证
 

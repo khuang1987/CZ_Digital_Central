@@ -98,6 +98,9 @@
 | Process Time (天) | PT(d) | Number | 工序实际加工时间 | 见[计算方法 - 3.2节](calculation-definition.md#32-process-time-pt-计算) |
 | 标准时间 (天) | ST(d) | Number | 理论标准加工时间（天，不考虑周末） | 见[计算方法 - 3.3节](calculation-definition.md#33-标准时间-std-计算) |
 | 应完工时间 | DueTime | DateTime | 基于计划计算的应完工时间（考虑周末） | 见[计算方法 - 3.4节](calculation-definition.md#34-应完工时间-duetime-计算) |
+
+!!! note "计算方法链接"
+    点击上方链接可跳转到对应的详细计算方法说明，或查看[SA 计算方法完整文档](calculation-definition.md)。
 | 周末扣除天数 | Weekend(d) | Number | TrackIn到应完工之间剔除的周末天数（单位：天） | 算法自动计算 |
 | 完工状态 | CompletionStatus | Text | 是否按期完工（不含容差） | OnTime / Overdue |
 | 容差小时数 | Tolerance(h) | Number | 固定容差时间（8小时） | 固定值 8.0 |
