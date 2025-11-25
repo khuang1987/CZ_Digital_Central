@@ -14,9 +14,16 @@ output:
     include_stats: true
 
 source:
-  csv_base_dir: "../../11数据模板"
-  routing_csv: "1303 Routing及机加工产品清单_1303 Routing.csv"
-  machining_csv: "1303 Routing及机加工产品清单_1303机加工清单.csv"
+  excel_base_dir: "C:/Users/huangk14/OneDrive - Medtronic PLC/General - CZ OPS生产每日产出登记"
+  factory_files:
+    - file: "1303 Routing及机加工产品清单.xlsx"
+      factory_code: "1303"
+      routing_sheet: "1303 Routing"
+      machining_sheet: "1303机加工清单"
+    - file: "9997 Routing及机加工产品清单.xlsx"
+      factory_code: "9997"
+      routing_sheet: "9997 Routing"
+      machining_sheet: "9997机加工清单"
 
 processing:
   encoding: utf-8

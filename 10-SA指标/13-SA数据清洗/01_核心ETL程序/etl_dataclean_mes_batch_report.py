@@ -27,7 +27,11 @@ from etl_utils import (
     prompt_refresh_mode,
     update_etl_state,
     get_base_dir,
-    ensure_directory_exists
+    ensure_directory_exists,
+    # 多工厂数据处理工具
+    read_multi_factory_mes_data,
+    validate_multi_factory_data,
+    get_factory_summary
 )
 
 # Windows平台支持
@@ -225,7 +229,7 @@ def standardize_operation_name(op_name: str) -> str:
     根据分析报告的合并方案进行清洗
     
     清洗规则：
-    1. 去除CZM前缀
+    1. 去除工厂前缀（CZM、CKH等）
     2. 去除外协标识（（可外协）、（外协））
     3. 同类工序合并
     """
@@ -234,9 +238,11 @@ def standardize_operation_name(op_name: str) -> str:
     
     op_str = str(op_name).strip()
     
-    # 1. 去除CZM前缀
+    # 1. 去除工厂前缀（支持CZM、CKH等工厂代码）
     if op_str.startswith("CZM "):
         op_str = op_str[4:]  # 去除"CZM "
+    elif op_str.startswith("CKH "):
+        op_str = op_str[4:]  # 去除"CKH "
     
     # 2. 去除外协标识
     op_str = op_str.replace("（可外协）", "").replace("（外协）", "")
@@ -830,7 +836,9 @@ def calculate_metrics(df: pd.DataFrame, cfg: Dict[str, Any]) -> pd.DataFrame:
         "PreviousBatchEndTime", "DueTime", "NonWorkday(d)", "CompletionStatus", "Tolerance(h)",
         "LT(d)", "PT(d)", "ST(d)",
         "Setup", "Setup Time (h)", "OEE", "EH_machine(s)", "EH_labor(s)", "Machine(#)",
-        "VSM", "ERPCode", "Product_Description"
+        "VSM", "ERPCode", "Product_Description",
+        # 新增：多工厂数据标识字段
+        "factory_source", "factory_name"
     ]
     
     # 只保留实际存在的字段
@@ -1508,45 +1516,76 @@ def process_all_data(cfg: Dict[str, Any], force_full_refresh: bool = False) -> p
     if test_enabled:
         logging.info(f"测试模式已启用，将仅读取前 {max_rows} 行数据")
     
-    # 1. 读取MES数据（支持通配符）
-    mes_path = cfg.get("source", {}).get("mes_path", "")
-    if not mes_path:
-        logging.error("MES数据路径未配置")
-        return pd.DataFrame()
+    # 1. 读取MES数据（支持多工厂配置）
+    source_cfg = cfg.get("source", {})
+    mes_sources = source_cfg.get("mes_sources", [])
+    mes_path = source_cfg.get("mes_path", "")
     
-    # 处理通配符
-    if "*" in mes_path or "?" in mes_path:
-        mes_files = glob.glob(mes_path)
-        if not mes_files:
-            logging.error(f"未找到匹配的MES文件: {mes_path}")
-            return pd.DataFrame()
-        logging.info(f"找到 {len(mes_files)} 个MES文件")
-        # 读取所有文件并合并
-        mes_dfs = []
-        for file_path in mes_files:
-            try:
-                logging.info(f"读取MES文件: {file_path}")
-                df = read_sharepoint_excel(file_path, max_rows=max_rows)
-                mes_dfs.append(df)
-            except Exception as e:
-                logging.warning(f"读取文件失败 {file_path}: {e}")
-        if not mes_dfs:
-            logging.error("所有MES文件读取失败")
-            return pd.DataFrame()
-        mes_df = pd.concat(mes_dfs, ignore_index=True)
-        logging.info(f"合并后MES数据行数: {len(mes_df)}")
+    # 检查配置：优先使用新的多工厂配置，向后兼容单文件配置
+    if mes_sources:
+        logging.info(f"使用多工厂数据源配置，共 {len(mes_sources)} 个工厂")
+        # 多工厂模式
+        logging.info("开始读取多工厂数据...")
+        mes_df = read_multi_factory_mes_data(cfg)
         
-        # 在合并后立即去重（基于原始数据）
-        mes_df = remove_duplicates(mes_df, cfg)
-    else:
-        if not os.path.exists(mes_path):
-            logging.error(f"MES数据路径不存在: {mes_path}")
+        if mes_df.empty:
+            logging.error("未读取到任何MES数据，ETL终止")
             return pd.DataFrame()
-        logging.info(f"读取MES数据: {mes_path}")
-        mes_df = read_sharepoint_excel(mes_path, max_rows=max_rows)
+        
+        # 验证多工厂数据完整性
+        if not validate_multi_factory_data(mes_df):
+            logging.error("多工厂数据验证失败，ETL终止")
+            return pd.DataFrame()
+        
+        # 输出多工厂数据摘要
+        factory_summary = get_factory_summary(mes_df)
+        logging.info(f"多工厂数据摘要: 总计 {factory_summary['total_records']} 条记录，包含 {factory_summary['factory_count']} 个工厂")
+        for factory_id, details in factory_summary['factory_details'].items():
+            logging.info(f"  {factory_id} ({details['factory_name']}): {details['record_count']} 条记录")
+        
+        # 注意：去重将在字段映射后执行，以确保使用正确的字段名
+        
+    elif mes_path:
+        logging.info(f"使用单文件数据源配置: {mes_path}")
+        # 向后兼容：原有的单文件处理逻辑
+        if "*" in mes_path or "?" in mes_path:
+            mes_files = glob.glob(mes_path)
+            if not mes_files:
+                logging.error(f"未找到匹配的MES文件: {mes_path}")
+                return pd.DataFrame()
+            logging.info(f"找到 {len(mes_files)} 个MES文件")
+            # 读取所有文件并合并
+            mes_dfs = []
+            for file_path in mes_files:
+                try:
+                    logging.info(f"读取MES文件: {file_path}")
+                    df = read_sharepoint_excel(file_path, max_rows=max_rows)
+                    mes_dfs.append(df)
+                except Exception as e:
+                    logging.warning(f"读取文件失败 {file_path}: {e}")
+            if not mes_dfs:
+                logging.error("所有MES文件读取失败")
+                return pd.DataFrame()
+            mes_df = pd.concat(mes_dfs, ignore_index=True)
+            logging.info(f"合并后MES数据行数: {len(mes_df)}")
+            
+            # 在合并后立即去重（基于原始数据）
+            mes_df = remove_duplicates(mes_df, cfg)
+        else:
+            if not os.path.exists(mes_path):
+                logging.error(f"MES数据路径不存在: {mes_path}")
+                return pd.DataFrame()
+            logging.info(f"读取MES数据: {mes_path}")
+            mes_df = read_sharepoint_excel(mes_path, max_rows=max_rows)
+    else:
+        logging.error("未配置MES数据源（需要 mes_sources 或 mes_path）")
+        return pd.DataFrame()
     
     # 先做基础处理（字段映射和类型转换），以便增量过滤能识别标准字段名
     mes_df = process_mes_data(mes_df, cfg)
+    
+    # 执行去重（在字段映射之后，确保使用正确的字段名）
+    mes_df = remove_duplicates(mes_df, cfg)
     
     # 增量处理：在字段映射之后进行增量过滤
     incr_cfg = cfg.get("incremental", {})

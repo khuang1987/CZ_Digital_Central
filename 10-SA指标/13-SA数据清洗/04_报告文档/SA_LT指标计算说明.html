@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SA & LT 指标计算说明</title>
+    <style>
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #34495e;
+            margin-top: 30px;
+            border-left: 4px solid #3498db;
+            padding-left: 15px;
+        }
+        h3 {
+            color: #2980b9;
+            margin-top: 25px;
+        }
+        .formula {
+            background-color: #ecf0f1;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+            font-family: 'Courier New', monospace;
+            border-left: 4px solid #e74c3c;
+        }
+        .example {
+            background-color: #e8f5e8;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            border-left: 4px solid #27ae60;
+        }
+        .warning {
+            background-color: #fff3cd;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            border-left: 4px solid #f39c12;
+        }
+        .info {
+            background-color: #d1ecf1;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            border-left: 4px solid #17a2b8;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background-color: #3498db;
+            color: white;
+        }
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        .highlight {
+            background-color: #ffffcc;
+            padding: 2px 4px;
+            border-radius: 3px;
+        }
+        .toc {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 5px;
+            margin-bottom: 30px;
+        }
+        .toc ul {
+            list-style-type: none;
+        }
+        .toc li {
+            margin: 5px 0;
+        }
+        .toc a {
+            text-decoration: none;
+            color: #3498db;
+        }
+        .toc a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>SA & LT 指标计算说明</h1>
+        <p><strong>文档版本:</strong> v1.0</p>
+        <p><strong>更新日期:</strong> 2025-11-25</p>
+        <p><strong>适用范围:</strong> CZM工厂(1303) + CKH工厂(9997)</p>
+
+        <div class="toc">
+            <h3>📋 目录</h3>
+            <ul>
+                <li><a href="#lt-indicators">1. LT相关指标</a></li>
+                <li><a href="#sa-indicators">2. SA相关指标</a></li>
+                <li><a href="#calculation-examples">3. 计算示例</a></li>
+                <li><a href="#data-sources">4. 数据源说明</a></li>
+                <li><a href="#notes">5. 重要说明</a></li>
+            </ul>
+        </div>
+
+        <section id="lt-indicators">
+            <h2>📊 LT相关指标</h2>
+            
+            <h3>1.1 LT(d) - 生产周期 (天)</h3>
+            <div class="formula">
+                LT(d) = TrackOutTime - EnterStepTime
+            </div>
+            <div class="info">
+                <strong>说明:</strong> 从进入工序到完成工序的实际生产时间，单位为天
+            </div>
+            <div class="example">
+                <strong>示例:</strong> 2025-01-01 08:00 进入 → 2025-01-03 16:00 完成 = 2.33天
+            </div>
+
+            <h3>1.2 ST(d) - 标准时间 (天)</h3>
+            <div class="formula">
+                ST(d) = SAP_Routing_标准时间 / 每日工作时间(24小时)
+            </div>
+            <div class="info">
+                <strong>说明:</strong> 从SAP路由表获取的标准工时，转换为天数
+            </div>
+            <div class="example">
+                <strong>示例:</strong> SAP标准时间48小时 → ST(d) = 48/24 = 2天
+            </div>
+
+            <h3>1.3 PT(d) - 计划时间 (天)</h3>
+            <div class="formula">
+                PT(d) = DueTime - EnterStepTime
+            </div>
+            <div class="info">
+                <strong>说明:</strong> 从进入工序到计划完成时间，单位为天
+            </div>
+            <div class="example">
+                <strong>示例:</strong> 2025-01-01 08:00 进入 → 2025-01-02 08:00 计划完成 = 1天
+            </div>
+        </section>
+
+        <section id="sa-indicators">
+            <h2>📈 SA相关指标</h2>
+            
+            <h3>2.1 SA达成率</h3>
+            <div class="formula">
+                SA达成率 = (实际完成数 / 计划完成数) × 100%
+            </div>
+            <div class="info">
+                <strong>说明:</strong> 衡量生产计划执行情况的关键指标
+            </div>
+
+            <h3>2.2 准时率 (On-Time Rate)</h3>
+            <div class="formula">
+                准时率 = (TrackOutTime ≤ DueTime的记录数 / 总记录数) × 100%
+            </div>
+            <div class="warning">
+                <strong>注意:</strong> TrackOutTime(实际完成时间) ≤ DueTime(计划完成时间) 为准时
+            </div>
+
+            <h3>2.3 逾期率 (Overdue Rate)</h3>
+            <div class="formula">
+                逾期率 = (TrackOutTime > DueTime的记录数 / 总记录数) × 100%
+            </div>
+            <div class="info">
+                <strong>说明:</strong> 超过计划完成时间的记录比例
+            </div>
+
+            <h3>2.4 LT达成率</h3>
+            <div class="formula">
+                LT达成率 = (LT(d) ≤ ST(d)的记录数 / 总记录数) × 100%
+            </div>
+            <div class="info">
+                <strong>说明:</strong> 实际生产时间不超过标准时间的比例
+            </div>
+        </section>
+
+        <section id="calculation-examples">
+            <h2>🔢 计算示例</h2>
+            
+            <h3>3.1 完整计算示例</h3>
+            <table>
+                <tr>
+                    <th>字段</th>
+                    <th>数值</th>
+                    <th>说明</th>
+                </tr>
+                <tr>
+                    <td>EnterStepTime</td>
+                    <td>2025-01-01 08:00:00</td>
+                    <td>进入工序时间</td>
+                </tr>
+                <tr>
+                    <td>TrackOutTime</td>
+                    <td>2025-01-03 16:00:00</td>
+                    <td>实际完成时间</td>
+                </tr>
+                <tr>
+                    <td>DueTime</td>
+                    <td>2025-01-02 08:00:00</td>
+                    <td>计划完成时间</td>
+                </tr>
+                <tr>
+                    <td>SAP标准时间</td>
+                    <td>48小时</td>
+                    <td>工艺标准时间</td>
+                </tr>
+                <tr>
+                    <td><span class="highlight">LT(d)</span></td>
+                    <td>2.33天</td>
+                    <td>实际生产周期</td>
+                </tr>
+                <tr>
+                    <td><span class="highlight">ST(d)</span></td>
+                    <td>2.00天</td>
+                    <td>标准时间</td>
+                </tr>
+                <tr>
+                    <td><span class="highlight">PT(d)</span></td>
+                    <td>1.00天</td>
+                    <td>计划时间</td>
+                </tr>
+                <tr>
+                    <td><span class="highlight">准时状态</span></td>
+                    <td>❌ 逾期</td>
+                    <td>TrackOutTime > DueTime</td>
+                </tr>
+                <tr>
+                    <td><span class="highlight">LT达成</span></td>
+                    <td>❌ 未达成</td>
+                    <td>LT(d) > ST(d)</td>
+                </tr>
+            </table>
+        </section>
+
+        <section id="data-sources">
+            <h2>📁 数据源说明</h2>
+            
+            <h3>4.1 MES数据源</h3>
+            <ul>
+                <li><strong>CZM工厂:</strong> Product Output -CZM -FY26.xlsx</li>
+                <li><strong>CKH工厂:</strong> Product Output -CKH -FY26.xlsx</li>
+                <li><strong>更新频率:</strong> 每日自动更新</li>
+                <li><strong>数据范围:</strong> 包含实际生产记录</li>
+            </ul>
+
+            <h3>4.2 SAP路由数据</h3>
+            <ul>
+                <li><strong>数据源:</strong> SAP_Routing_latest.parquet</li>
+                <li><strong>用途:</strong> 提供标准工时(ST)</li>
+                <li><strong>更新方式:</strong> ETL自动处理</li>
+            </ul>
+
+            <h3>4.3 工序管理区域分类</h3>
+            <ul>
+                <li><strong>文件:</strong> 工序管理区域分类_最终版.csv</li>
+                <li><strong>用途:</strong> 工序管理区域划分</li>
+                <li><strong>覆盖范围:</strong> CZM(1303) + CKH(9997) 工厂</li>
+            </ul>
+        </section>
+
+        <section id="notes">
+            <h2>⚠️ 重要说明</h2>
+            
+            <h3>5.1 数据清洗规则</h3>
+            <div class="info">
+                <ul>
+                    <li><strong>工序名称标准化:</strong> 去除"CZM "和"CKH "前缀</li>
+                    <li><strong>批次号过滤:</strong> 排除包含"-"的批次号</li>
+                    <li><strong>多工厂支持:</strong> 同时支持CZM和CKH工厂数据</li>
+                </ul>
+            </div>
+
+            <h3>5.2 计算注意事项</h3>
+            <div class="warning">
+                <ul>
+                    <li><strong>时间计算:</strong> 所有时间基于24小时制连续生产</li>
+                    <li><strong>节假日:</strong> 不区分工作日/节假日，按实际时间计算</li>
+                    <li><strong>数据质量:</strong> 空值或异常数据会被自动过滤</li>
+                </ul>
+            </div>
+
+            <h3>5.3 指标监控建议</h3>
+            <div class="info">
+                <ul>
+                    <li><strong>重点关注:</strong> 逾期率和LT达成率</li>
+                    <li><strong>趋势分析:</strong> 按周/月分析指标变化趋势</li>
+                    <li><strong>异常预警:</strong> 逾期率 > 20% 需要关注</li>
+                </ul>
+            </div>
+
+            <h3>5.4 技术支持</h3>
+            <div class="info">
+                <p><strong>ETL脚本位置:</strong> 13-SA数据清洗/01_核心ETL程序/</p>
+                <p><strong>配置文件:</strong> config_mes_batch_report.yaml</p>
+                <p><strong>数据验证:</strong> 02_测试验证脚本/</p>
+            </div>
+        </section>
+
+        <footer style="margin-top: 50px; padding-top: 20px; border-top: 1px solid #ddd; text-align: center; color: #666;">
+            <p>© 2025 Medtronic PLC - SA指标数据清洗系统</p>
+            <p>如有问题请联系数据团队</p>
+        </footer>
+    </div>
+</body>
+</html>

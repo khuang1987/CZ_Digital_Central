@@ -356,3 +356,207 @@ def get_base_dir() -> str:
 def ensure_directory_exists(directory: str) -> None:
     """确保目录存在"""
     os.makedirs(directory, exist_ok=True)
+
+
+# ==================== 多工厂数据处理工具 ====================
+
+def read_multi_factory_mes_data(cfg: Dict[str, Any]) -> pd.DataFrame:
+    """
+    读取多工厂数据并合并
+    
+    Args:
+        cfg: 配置字典
+        
+    Returns:
+        合并后的DataFrame，包含factory_source和factory_name列
+    """
+    all_dataframes = []
+    
+    # 获取多工厂数据源配置
+    mes_sources = cfg.get("source", {}).get("mes_sources", [])
+    
+    if not mes_sources:
+        logging.error("未找到mes_sources配置，请检查配置文件")
+        return pd.DataFrame()
+    
+    logging.info(f"开始读取 {len(mes_sources)} 个工厂数据...")
+    
+    for source in mes_sources:
+        if not source.get("enabled", True):
+            logging.info(f"跳过已禁用的工厂: {source.get('factory_name', 'Unknown')}")
+            continue
+            
+        factory_id = source["factory_id"]
+        factory_name = source["factory_name"]
+        file_path = source["path"]
+        
+        logging.info(f"正在读取 {factory_name} 数据...")
+        logging.debug(f"文件路径: {file_path}")
+        
+        try:
+            # 读取Excel数据
+            df = read_sharepoint_excel(file_path)
+            
+            if not df.empty:
+                # 添加工厂标识列
+                df["factory_source"] = factory_id
+                df["factory_name"] = factory_name
+                
+                # 数据类型标准化处理
+                df = standardize_data_types(df)
+                
+                all_dataframes.append(df)
+                logging.info(f"✅ {factory_name}: 成功读取 {len(df)} 行数据")
+            else:
+                logging.warning(f"⚠️ {factory_name}: 数据为空")
+                
+        except Exception as e:
+            logging.error(f"❌ {factory_name}: 读取失败 - {e}")
+            continue
+    
+    if all_dataframes:
+        # 合并所有工厂数据
+        try:
+            combined_df = pd.concat(all_dataframes, ignore_index=True)
+            logging.info(f"✅ 多工厂数据合并完成: 总计 {len(combined_df)} 行数据")
+            
+            # 记录各工厂数据统计
+            factory_stats = combined_df['factory_source'].value_counts().to_dict()
+            logging.info(f"各工厂数据量: {factory_stats}")
+            
+            return combined_df
+            
+        except Exception as e:
+            logging.error(f"❌ 数据合并失败: {e}")
+            return pd.DataFrame()
+    else:
+        logging.error("❌ 没有读取到有效数据")
+        return pd.DataFrame()
+
+
+def standardize_data_types(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    标准化数据类型，处理多工厂间的类型差异
+    
+    Args:
+        df: 原始DataFrame
+        
+    Returns:
+        标准化后的DataFrame
+    """
+    result = df.copy()
+    
+    # 需要标准化的数值字段（基于验证结果）
+    numeric_fields = [
+        'ProductionOrder',
+        'Last_TrackIn_SecondaryQuantity',
+        'First_TrackIn_PrimaryQuantity', 
+        'Step_Duration_Minute',
+        'Last_TrackIn_PrimaryQuantity'
+    ]
+    
+    for field in numeric_fields:
+        if field in result.columns:
+            try:
+                # 转换为float64，处理空值和类型不一致
+                result[field] = pd.to_numeric(result[field], errors='coerce').astype('float64')
+                logging.debug(f"字段 {field} 已标准化为 float64")
+            except Exception as e:
+                logging.warning(f"字段 {field} 标准化失败: {e}")
+    
+    # 标准化其他数值字段
+    other_numeric_fields = [
+        'StepInQuantity',
+        'TrackOutQuantity',
+        'LT(d)',
+        'PT(d)', 
+        'ST(d)',
+        'Setup Time (h)',
+        'OEE',
+        'EH_machine(s)',
+        'EH_labor(s)',
+        'Tolerance(h)',
+        'NonWorkday(d)'
+    ]
+    
+    for field in other_numeric_fields:
+        if field in result.columns:
+            try:
+                result[field] = pd.to_numeric(result[field], errors='coerce')
+            except Exception as e:
+                logging.debug(f"字段 {field} 数值转换失败: {e}")
+    
+    return result
+
+
+def validate_multi_factory_data(df: pd.DataFrame) -> bool:
+    """
+    验证多工厂数据的完整性
+    
+    Args:
+        df: 合并后的DataFrame
+        
+    Returns:
+        验证是否通过
+    """
+    if df.empty:
+        logging.error("数据为空，验证失败")
+        return False
+    
+    # 检查必需的工厂标识列
+    required_columns = ['factory_source', 'factory_name']
+    missing_columns = [col for col in required_columns if col not in df.columns]
+    
+    if missing_columns:
+        logging.error(f"缺少必需的工厂标识列: {missing_columns}")
+        return False
+    
+    # 检查工厂数量
+    factory_count = df['factory_source'].nunique()
+    logging.info(f"数据包含 {factory_count} 个工厂")
+    
+    # 检查数据完整性
+    total_records = len(df)
+    null_factory_records = df['factory_source'].isnull().sum()
+    
+    if null_factory_records > 0:
+        logging.warning(f"发现 {null_factory_records} 条记录缺少工厂标识")
+    
+    logging.info(f"多工厂数据验证通过: {total_records} 条记录")
+    return True
+
+
+def get_factory_summary(df: pd.DataFrame) -> Dict[str, Any]:
+    """
+    获取多工厂数据摘要信息
+    
+    Args:
+        df: 合并后的DataFrame
+        
+    Returns:
+        包含各工厂统计信息的字典
+    """
+    if df.empty:
+        return {}
+    
+    summary = {
+        'total_records': len(df),
+        'factory_count': df['factory_source'].nunique(),
+        'factory_details': {}
+    }
+    
+    # 各工厂详细统计
+    for factory_id in df['factory_source'].unique():
+        factory_data = df[df['factory_source'] == factory_id]
+        factory_name = factory_data['factory_name'].iloc[0] if not factory_data.empty else factory_id
+        
+        summary['factory_details'][factory_id] = {
+            'factory_name': factory_name,
+            'record_count': len(factory_data),
+            'date_range': {
+                'start': factory_data['TrackOutDate'].min() if 'TrackOutDate' in factory_data.columns else None,
+                'end': factory_data['TrackOutDate'].max() if 'TrackOutDate' in factory_data.columns else None
+            }
+        }
+    
+    return summary
