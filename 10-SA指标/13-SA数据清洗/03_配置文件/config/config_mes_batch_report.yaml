@@ -102,7 +102,7 @@ output:
   # Excel输出配置（用于数据完整性检查）
   excel:
     enabled: true  # 是否启用Excel输出
-    max_rows: 200000  # Excel文件最大行数（避免文件过大）
+    max_rows: 2000  # Excel文件最大行数（避免文件过大）
     include_stats: true  # 是否包含统计信息工作表
 
 # 日志配置
@@ -156,6 +156,41 @@ incremental:
     - "machine"
     - "factory_source"  # 新增：工厂标识
     - "TrackOutTime"
+
+# 分层架构配置（新增：仅用于新脚本）
+layered_architecture:
+  # 是否启用分层架构
+  enabled: true  # 设置为true启用分层架构，false使用传统单文件输出
+  
+  # 系统和实体配置
+  system:
+    name: "MES"           # 系统名称
+    entity: "batch_report" # 实体名称
+  
+  # 输出路径配置
+  output:
+    base_dir: "C:\\Users\\huangk14\\OneDrive - Medtronic PLC\\CZ Production - 文档\\General\\POWER BI 数据源 V2\\A1_ETL_Output"
+    
+    # 分层目录配置
+    layers:
+      processed: "01_PROCESSED"  # 清洗处理层
+      publish: "02_PUBLISH"      # 发布消费层
+      metadata: "03_METADATA"    # 元数据管理层
+  
+  # 记录级增量检测配置
+  record_level_incremental:
+    enabled: true
+    hash_algorithm: "MD5"
+    hash_fields:  # 用于计算记录哈希的字段
+      - "BatchNumber"
+      - "Operation"
+      - "TrackOutTime"
+  
+  # 文件命名配置
+  naming:
+    incremental_prefix: "incremental"  # 增量文件前缀
+    full_prefix: "mes_batch_report"    # 全量文件前缀
+    latest_suffix: "latest"            # 最新文件后缀
   
   # 时间窗口（天）：只处理TrackOutTime在此时间窗口内的数据
   # 设置为0或null表示不限制时间窗口

@@ -132,7 +132,7 @@ def process_mes_data(df: pd.DataFrame, cfg: Dict[str, Any]) -> pd.DataFrame:
     # 6. 添加TrackOutDate（从TrackOutTime提取日期）
     # 注意：TrackOutTime字段已通过字段映射从TrackOutDate创建，现在需要提取日期部分
     if "TrackOutTime" in result.columns:
-        result["TrackOutDate"] = pd.to_datetime(result["TrackOutTime"], errors='coerce').dt.date
+        result["TrackOutDate"] = pd.to_datetime(result["TrackOutTime"], unit='ms', errors='coerce').dt.date
     
     # 7. 从Group字段提取数字部分
     if "Group" in result.columns:
@@ -739,7 +739,7 @@ def calculate_previous_batch_end_time(df: pd.DataFrame) -> pd.DataFrame:
         # 对有效记录进行分组计算
         # 确保TrackOutTime是datetime类型
         if result["TrackOutTime"].dtype not in ['datetime64[ns]', 'datetime64[us]', 'datetime64[ms]']:
-            result["TrackOutTime"] = pd.to_datetime(result["TrackOutTime"], errors='coerce')
+            result["TrackOutTime"] = pd.to_datetime(result["TrackOutTime"], unit='ms', errors='coerce')
         
         # 使用shift(1)获取上一批的TrackOutTime，保持datetime类型
         result.loc[mask_valid, "PreviousBatchEndTime"] = (
@@ -927,8 +927,8 @@ def calculate_pt(row: pd.Series) -> Optional[float]:
     # 检查是否存在停产期
     has_production_gap = False
     if pd.notna(enter_step) and pd.notna(previous_batch_end):
-        enter_step_dt = pd.to_datetime(enter_step)
-        previous_end_dt = pd.to_datetime(previous_batch_end)
+        enter_step_dt = pd.to_datetime(enter_step, unit='ms')
+        previous_end_dt = pd.to_datetime(previous_batch_end, unit='ms')
         if enter_step_dt > previous_end_dt:
             has_production_gap = True
             logging.debug(f"检测到停产期: EnterStepTime {enter_step} > PreviousBatchEndTime {previous_batch_end}")
@@ -956,8 +956,8 @@ def calculate_pt(row: pd.Series) -> Optional[float]:
             # 如果两者都为空，返回None
             return None
     
-    trackout_dt = pd.to_datetime(trackout)
-    start_dt = pd.to_datetime(start_time)
+    trackout_dt = pd.to_datetime(trackout, unit='ms')
+    start_dt = pd.to_datetime(start_time, unit='ms')
     
     # 确保结束时间大于开始时间
     if trackout_dt <= start_dt:
@@ -1835,12 +1835,34 @@ def should_do_full_refresh(cfg: Dict[str, Any], state_file: str) -> bool:
 
 
 if __name__ == "__main__":
+    import argparse
+    
+    # 添加命令行参数支持
+    parser = argparse.ArgumentParser(description='SA指标MES数据清洗ETL脚本')
+    parser.add_argument('--mode', choices=['incremental', 'full'], 
+                       default='incremental', help='刷新模式: incremental(增量) 或 full(全量)')
+    parser.add_argument('--unattended', action='store_true', 
+                       help='无人值守模式，不进行交互式提示')
+    
+    args = parser.parse_args()
+    
     cfg = load_config(CONFIG_PATH)
     setup_logging(cfg)
     
-    # 提示用户选择刷新模式
-    is_incremental = prompt_refresh_mode(default_incremental=True)
-    force_full_refresh = not is_incremental
+    # 根据命令行参数确定刷新模式
+    if args.unattended or args.mode:
+        is_incremental = (args.mode == 'incremental')
+        force_full_refresh = not is_incremental
+        
+        if args.unattended:
+            logging.info("="*60)
+            logging.info("无人值守模式启动")
+            logging.info(f"刷新模式: {'增量刷新' if is_incremental else '全量刷新'}")
+            logging.info("="*60)
+    else:
+        # 提示用户选择刷新模式（原有逻辑）
+        is_incremental = prompt_refresh_mode(default_incremental=True)
+        force_full_refresh = not is_incremental
     
     if force_full_refresh:
         logging.info("="*60)

@@ -1,0 +1,33 @@
+{
+  "timestamp": "2025-12-01T10:50:03.260569",
+  "status": "success",
+  "duration_seconds": 627.066819,
+  "processing_order": "calendar → sap → sfc → mes",
+  "execution_results": {
+    "calendar": {
+      "success": true,
+      "duration": 0,
+      "message": "Calendar data loaded via configuration"
+    },
+    "sap": {
+      "success": true,
+      "duration": 63.283121,
+      "return_code": 0
+    },
+    "sfc": {
+      "success": true,
+      "duration": 190.177088,
+      "return_code": 0
+    },
+    "mes": {
+      "success": true,
+      "duration": 373.592092,
+      "return_code": 0
+    }
+  },
+  "summary": {
+    "total_steps": 4,
+    "successful_steps": 4,
+    "failed_steps": 0
+  }
+}

@@ -103,7 +103,7 @@ test:
   enabled: true  # 设置为true启用测试模式，false读取全部数据
   
   # 测试模式下SFC文件数量限制
-  max_sfc_files: 200  # 测试模式下只处理最近N个SFC文件（按修改时间排序）
+  max_sfc_files: 100  # 测试模式下只处理最近N个SFC文件（按修改时间排序）
 
 # 增量处理配置
 incremental:

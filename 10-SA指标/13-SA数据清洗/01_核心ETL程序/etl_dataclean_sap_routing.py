@@ -241,6 +241,17 @@ def convert_and_merge_standard_time(excel_base_dir: str, factory_files: list, ro
 
 
 if __name__ == "__main__":
+    import argparse
+    
+    # 添加命令行参数支持
+    parser = argparse.ArgumentParser(description='SA指标SAP路由数据清洗ETL脚本')
+    parser.add_argument('--mode', choices=['incremental', 'full'], 
+                       default='incremental', help='刷新模式: incremental(增量) 或 full(全量)')
+    parser.add_argument('--unattended', action='store_true', 
+                       help='无人值守模式，不进行交互式提示')
+    
+    args = parser.parse_args()
+    
     # 加载配置
     try:
         if os.path.exists(CONFIG_PATH):
@@ -251,6 +262,16 @@ if __name__ == "__main__":
     except Exception as e:
         print(f"加载配置失败，使用默认配置: {e}")
         cfg = DEFAULT_CONFIG
+    
+    # 设置日志
+    setup_logging(cfg)
+    
+    # 记录运行模式
+    if args.unattended:
+        logging.info("="*60)
+        logging.info("无人值守模式启动")
+        logging.info(f"刷新模式: {'增量刷新' if args.mode == 'incremental' else '全量刷新'}")
+        logging.info("="*60)
     
     # 设置日志
     setup_logging(cfg)

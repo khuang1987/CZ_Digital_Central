@@ -9,8 +9,14 @@
 ```mermaid
 flowchart TD
     Start([开始]) --> LoadConfig[加载配置文件]
-    LoadConfig --> ReadMES[读取MES原始数据]
-    ReadMES --> ReadSFC{SFC数据<br/>是否存在?}
+    LoadConfig --> ReadMES[读取多工厂<br/>MES原始数据]
+    ReadMES --> ReadCZM[CZM工厂数据<br/>ERPCode 1303]
+    ReadMES --> ReadCKH[CKH工厂数据<br/>ERPCode 9997]
+    ReadCZM --> CleanCZM[清洗CZM工序<br/>去除"CZM "前缀]
+    ReadCKH --> CleanCKH[清洗CKH工序<br/>去除"CKH "前缀]
+    CleanCZM --> MergeFactories[合并多工厂数据]
+    CleanCKH --> MergeFactories
+    MergeFactories --> ReadSFC{SFC数据<br/>是否存在?}
     
     ReadSFC -->|是| MergeSFC[合并SFC Checkin]
     ReadSFC -->|否| Warning1[警告: 无SFC数据]
@@ -21,8 +27,9 @@ flowchart TD
     ReadRouting -->|是| MatchRouting[匹配标准时间参数]
     ReadRouting -->|否| Warning2[警告: 无标准时间]
     
-    MatchRouting --> CalcSetup[计算换批Setup]
-    Warning2 --> CalcSetup
+    MatchRouting --> LoadArea[加载工序管理<br/>区域分类]
+    Warning2 --> LoadArea
+    LoadArea --> CalcSetup[计算换批Setup]
     
     CalcSetup --> CalcLT[计算LT Lead Time]
     CalcLT --> CalcPT[计算PT Process Time]
@@ -33,7 +40,7 @@ flowchart TD
     CalcStatus --> QualityCheck[数据质量检查]
     
     QualityCheck --> Valid{检查通过?}
-    Valid -->|是| SaveParquet[保存Parquet文件]
+    Valid -->|是| SaveParquet[保存Parquet文件<br/>多工厂统一数据]
     Valid -->|否| LogErrors[记录错误日志]
     
     SaveParquet --> Backup[创建备份]
@@ -46,6 +53,9 @@ flowchart TD
     style End1 fill:#ffebee
     style Warning1 fill:#fff3e0
     style Warning2 fill:#fff3e0
+    style ReadCZM fill:#e3f2fd
+    style ReadCKH fill:#e3f2fd
+    style MergeFactories fill:#f3e5f5
 ```
 
 ---

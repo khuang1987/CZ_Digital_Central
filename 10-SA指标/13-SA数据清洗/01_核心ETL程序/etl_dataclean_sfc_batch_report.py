@@ -1583,17 +1583,21 @@ def merge_with_history(new_df: pd.DataFrame, history_file: str, cfg: Dict[str, A
         return new_df
 
 
-def prompt_refresh_mode(default_incremental: bool = True, countdown_seconds: int = None) -> bool:
+def prompt_refresh_mode(default_incremental: bool = True, countdown_seconds: int = 10) -> bool:
     """
     提示用户选择刷新模式（增量/全量）
     
     参数:
         default_incremental: 默认是否增量刷新（True=增量，False=全量）
+        countdown_seconds: 倒计时秒数，None表示不使用倒计时
     
     返回:
         True: 增量刷新
         False: 全量刷新
     """
+    import threading
+    import time
+    
     print("\n" + "="*60)
     print("请选择数据处理模式：")
     print("="*60)
@@ -1609,32 +1613,62 @@ def prompt_refresh_mode(default_incremental: bool = True, countdown_seconds: int
         default_num = 2
     
     print(f"\n默认选择: {default_num} ({default_text})")
-    print("请输入选择 (1 或 2)，直接回车使用默认选择:")
     
-    # 等待用户输入，不设置倒计时
-    while True:
+    user_choice = [None]  # 用于存储用户选择
+    
+    def get_user_input():
+        """获取用户输入的线程函数"""
         try:
+            print("请输入选择 (1 或 2)，直接回车使用默认选择:")
             user_input = input().strip()
             
             if user_input == "":
-                # 用户直接回车，使用默认选择
+                user_choice[0] = default_incremental
                 print(f"✓ 使用默认选择: {default_text}")
-                return default_incremental
             elif user_input == "1":
+                user_choice[0] = True
                 print("✓ 用户选择: 增量刷新")
-                return True
             elif user_input == "2":
+                user_choice[0] = False
                 print("✓ 用户选择: 全量刷新")
-                return False
             else:
                 print("输入无效，请输入 1（增量刷新）或 2（全量刷新），或直接回车使用默认选择:")
+                # 递归调用重新获取输入
+                user_choice[0] = prompt_refresh_mode(default_incremental, None)
                 
         except KeyboardInterrupt:
             print("\n用户中断，使用默认选择")
-            return default_incremental
+            user_choice[0] = default_incremental
         except EOFError:
             print("\n输入结束，使用默认选择")
+            user_choice[0] = default_incremental
+    
+    if countdown_seconds is not None:
+        # 使用倒计时模式
+        print(f"⏰ {countdown_seconds}秒后自动选择默认模式...")
+        
+        # 创建输入线程
+        input_thread = threading.Thread(target=get_user_input)
+        input_thread.daemon = True
+        input_thread.start()
+        
+        # 倒计时等待
+        for i in range(countdown_seconds, 0, -1):
+            if user_choice[0] is not None:
+                break
+            print(f"\r⏰ 倒计时: {i}秒", end="", flush=True)
+            time.sleep(1)
+        
+        if user_choice[0] is None:
+            print(f"\r⏰ 倒计时结束，自动选择默认模式: {default_text}")
             return default_incremental
+        else:
+            print()  # 换行
+            return user_choice[0]
+    else:
+        # 传统等待模式
+        get_user_input()
+        return user_choice[0] if user_choice[0] is not None else default_incremental
 
 
 def should_do_full_refresh(cfg: Dict[str, Any], state_file: str) -> bool:
@@ -1877,12 +1911,34 @@ def process_all_sfc_data(cfg: Dict[str, Any], force_full_refresh: bool = False) 
 
 
 if __name__ == "__main__":
+    import argparse
+    
+    # 添加命令行参数支持
+    parser = argparse.ArgumentParser(description='SA指标SFC数据清洗ETL脚本')
+    parser.add_argument('--mode', choices=['incremental', 'full'], 
+                       default='incremental', help='刷新模式: incremental(增量) 或 full(全量)')
+    parser.add_argument('--unattended', action='store_true', 
+                       help='无人值守模式，不进行交互式提示')
+    
+    args = parser.parse_args()
+    
     cfg = load_config(CONFIG_PATH)
     setup_logging(cfg)
     
-    # 提示用户选择刷新模式
-    is_incremental = prompt_refresh_mode(default_incremental=True)
-    force_full_refresh = not is_incremental
+    # 根据命令行参数确定刷新模式
+    if args.unattended or args.mode:
+        is_incremental = (args.mode == 'incremental')
+        force_full_refresh = not is_incremental
+        
+        if args.unattended:
+            logging.info("="*60)
+            logging.info("无人值守模式启动")
+            logging.info(f"刷新模式: {'增量刷新' if is_incremental else '全量刷新'}")
+            logging.info("="*60)
+    else:
+        # 提示用户选择刷新模式（原有逻辑）
+        is_incremental = prompt_refresh_mode(default_incremental=True)
+        force_full_refresh = not is_incremental
     
     if force_full_refresh:
         logging.info("="*60)

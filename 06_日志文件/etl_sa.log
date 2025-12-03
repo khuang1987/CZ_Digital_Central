@@ -1,0 +1,30 @@
+2025-12-01 13:14:50,825 - INFO - ============================================================
+2025-12-01 13:14:50,826 - INFO - 开始处理SFC班组合格率数据
+2025-12-01 13:14:50,828 - INFO - ============================================================
+2025-12-01 13:14:50,831 - ERROR - 班组合格率数据处理失败: 未配置班组合格率数据路径
+2025-12-01 13:14:50,835 - ERROR - ETL处理失败: 未配置班组合格率数据路径
+Traceback (most recent call last):
+  File "c:\Users\huangk14\OneDrive - Medtronic PLC\Huangkai Files\B1_Project\250418_MDDAP_project\10-SA指标\13-SA数据清洗\01_核心ETL程序\etl_dataclean_sfc_team_passrate.py", line 316, in main
+    result_df = process_team_passrate_data(config, force_full_refresh=(args.mode == 'full'))
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\huangk14\OneDrive - Medtronic PLC\Huangkai Files\B1_Project\250418_MDDAP_project\10-SA指标\13-SA数据清洗\01_核心ETL程序\etl_dataclean_sfc_team_passrate.py", line 266, in process_team_passrate_data
+    raw_df = read_team_passrate_data(config)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\huangk14\OneDrive - Medtronic PLC\Huangkai Files\B1_Project\250418_MDDAP_project\10-SA指标\13-SA数据清洗\01_核心ETL程序\etl_dataclean_sfc_team_passrate.py", line 30, in read_team_passrate_data
+    raise ValueError("未配置班组合格率数据路径")
+ValueError: 未配置班组合格率数据路径
+2025-12-01 16:43:18,121 - INFO - ============================================================
+2025-12-01 16:43:18,123 - INFO - 开始处理SFC班组合格率数据
+2025-12-01 16:43:18,124 - INFO - ============================================================
+2025-12-01 16:43:18,126 - ERROR - 班组合格率数据处理失败: 未配置班组合格率数据路径
+2025-12-01 16:43:18,127 - ERROR - ETL处理失败: 未配置班组合格率数据路径
+Traceback (most recent call last):
+  File "c:\Users\huangk14\OneDrive - Medtronic PLC\Huangkai Files\B1_Project\250418_MDDAP_project\10-SA指标\13-SA数据清洗\01_核心ETL程序\etl_dataclean_sfc_team_passrate.py", line 521, in main
+    result_df = process_team_passrate_data(config, force_full_refresh=(args.mode == 'full'))
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\huangk14\OneDrive - Medtronic PLC\Huangkai Files\B1_Project\250418_MDDAP_project\10-SA指标\13-SA数据清洗\01_核心ETL程序\etl_dataclean_sfc_team_passrate.py", line 465, in process_team_passrate_data
+    raw_df = read_team_passrate_data(config)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\huangk14\OneDrive - Medtronic PLC\Huangkai Files\B1_Project\250418_MDDAP_project\10-SA指标\13-SA数据清洗\01_核心ETL程序\etl_dataclean_sfc_team_passrate.py", line 30, in read_team_passrate_data
+    raise ValueError("未配置班组合格率数据路径")
+ValueError: 未配置班组合格率数据路径

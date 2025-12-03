@@ -246,9 +246,11 @@ def save_to_excel_for_validation(df: pd.DataFrame, parquet_path: str, cfg: Dict[
         # 不抛出异常，因为Excel输出是可选的
 
 
-def prompt_refresh_mode(default_incremental: bool = True, countdown_seconds: int = None) -> bool:
+def prompt_refresh_mode(default_incremental: bool = True, countdown_seconds: int = 10) -> bool:
     """提示用户选择刷新模式"""
     import msvcrt
+    import threading
+    import time
     
     print("="*60)
     print("请选择数据处理模式：")
@@ -259,34 +261,66 @@ def prompt_refresh_mode(default_incremental: bool = True, countdown_seconds: int
     print()
     
     default_choice = "1" if default_incremental else "2"
-    print(f"默认选择: {default_choice} ({'增量刷新' if default_incremental else '全量刷新'})")
-    print("请输入选择 (1 或 2)，直接回车使用默认选择:")
-    print()
+    default_text = "增量刷新" if default_incremental else "全量刷新"
+    print(f"默认选择: {default_choice} ({default_text})")
     
-    # 等待用户输入，不设置倒计时
-    while True:
+    user_choice = [None]  # 用于存储用户选择
+    
+    def get_user_input():
+        """获取用户输入的线程函数"""
         try:
+            print("请输入选择 (1 或 2)，直接回车使用默认选择:")
             user_input = input().strip()
             
             if user_input == "":
-                # 用户直接回车，使用默认选择
-                print(f"✓ 使用默认选择: {'增量刷新' if default_incremental else '全量刷新'}")
-                return default_incremental
+                user_choice[0] = default_incremental
+                print(f"✓ 使用默认选择: {default_text}")
             elif user_input == "1":
+                user_choice[0] = True
                 print("✓ 用户选择: 增量刷新")
-                return True
             elif user_input == "2":
+                user_choice[0] = False
                 print("✓ 用户选择: 全量刷新")
-                return False
             else:
                 print("输入无效，请输入 1（增量刷新）或 2（全量刷新），或直接回车使用默认选择:")
+                # 递归调用重新获取输入（不使用倒计时）
+                user_choice[0] = prompt_refresh_mode(default_incremental, None)
                 
         except KeyboardInterrupt:
             print("\n用户中断，使用默认选择")
-            return default_incremental
+            user_choice[0] = default_incremental
         except EOFError:
             print("\n输入结束，使用默认选择")
+            user_choice[0] = default_incremental
+    
+    if countdown_seconds is not None:
+        # 使用倒计时模式
+        print(f"⏰ {countdown_seconds}秒后自动选择默认模式...")
+        print()
+        
+        # 创建输入线程
+        input_thread = threading.Thread(target=get_user_input)
+        input_thread.daemon = True
+        input_thread.start()
+        
+        # 倒计时等待
+        for i in range(countdown_seconds, 0, -1):
+            if user_choice[0] is not None:
+                break
+            print(f"\r⏰ 倒计时: {i}秒", end="", flush=True)
+            time.sleep(1)
+        
+        if user_choice[0] is None:
+            print(f"\r⏰ 倒计时结束，自动选择默认模式: {default_text}")
+            print()
             return default_incremental
+        else:
+            print()  # 换行
+            return user_choice[0]
+    else:
+        # 传统等待模式
+        get_user_input()
+        return user_choice[0] if user_choice[0] is not None else default_incremental
 
 
 def update_etl_state(df: pd.DataFrame, state_file: str, cfg: Dict[str, Any]) -> None:
@@ -406,19 +440,19 @@ def read_multi_factory_mes_data(cfg: Dict[str, Any]) -> pd.DataFrame:
                 df = standardize_data_types(df)
                 
                 all_dataframes.append(df)
-                logging.info(f"✅ {factory_name}: 成功读取 {len(df)} 行数据")
+                logging.info(f"[OK] {factory_name}: 成功读取 {len(df)} 行数据")
             else:
-                logging.warning(f"⚠️ {factory_name}: 数据为空")
+                logging.warning(f"[WARNING] {factory_name}: 数据为空")
                 
         except Exception as e:
-            logging.error(f"❌ {factory_name}: 读取失败 - {e}")
+            logging.error(f"[ERROR] {factory_name}: 读取失败 - {e}")
             continue
     
     if all_dataframes:
         # 合并所有工厂数据
         try:
             combined_df = pd.concat(all_dataframes, ignore_index=True)
-            logging.info(f"✅ 多工厂数据合并完成: 总计 {len(combined_df)} 行数据")
+            logging.info(f"[OK] 多工厂数据合并完成: 总计 {len(combined_df)} 行数据")
             
             # 记录各工厂数据统计
             factory_stats = combined_df['factory_source'].value_counts().to_dict()
@@ -427,10 +461,10 @@ def read_multi_factory_mes_data(cfg: Dict[str, Any]) -> pd.DataFrame:
             return combined_df
             
         except Exception as e:
-            logging.error(f"❌ 数据合并失败: {e}")
+            logging.error(f"[ERROR] 数据合并失败: {e}")
             return pd.DataFrame()
     else:
-        logging.error("❌ 没有读取到有效数据")
+        logging.error("[ERROR] 没有读取到有效数据")
         return pd.DataFrame()
 
 

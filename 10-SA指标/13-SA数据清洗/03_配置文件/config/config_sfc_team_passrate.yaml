@@ -1,0 +1,69 @@
+# SFC班组合格率数据清洗配置文件
+
+# 数据源配置
+source:
+  team_passrate_path: "C:/Users/huangk14/OneDrive - Medtronic PLC/CZ Production - 文档/General/POWER BI 数据源 V2/70-SFC导出数据/班组合格率数据/*.xlsx"
+
+# 输出配置
+output:
+  base_dir: "C:/Users/huangk14/OneDrive - Medtronic PLC/CZ Production - 文档/General/POWER BI 数据源 V2/30-MES导出数据/publish"
+  file_name: "SFC_Team_PassRate_latest.parquet"
+  excel_file: "SFC_Team_PassRate_latest.xlsx"
+
+# 数据处理配置
+processing:
+  required_fields:
+    - "批次号"
+    - "产品序号" 
+    - "检验结果"
+    - "班组"
+    - "合格数"
+    - "不合格数"
+  
+  # 数据质量阈值
+  quality_thresholds:
+    max_missing_rate: 5.0  # 最大缺失率(%)
+    min_pass_rate: 0.0     # 最小合格率
+    max_pass_rate: 100.0   # 最大合格率
+
+# 指标计算配置
+metrics:
+  # 产品级指标
+  product_metrics:
+    - "产品合格率"
+    - "总检验数"
+  
+  # 班组级指标
+  team_metrics:
+    - "班组合格率"
+    - "班组排名"
+  
+  # 时间字段
+  time_fields:
+    - "处理时间"
+
+# 日志配置
+logging:
+  level: "INFO"
+  log_file: "sfc_team_passrate.log"
+  log_dir: "../06_日志文件"
+
+# 测试配置
+test:
+  # 是否启用测试模式（仅读取部分数据）
+  enabled: true  # 设置为true启用测试模式，false读取全部数据
+  
+  # 测试模式下文件数量限制
+  max_files: 20  # 测试模式下只处理最近20个文件（按修改时间排序）
+  max_rows: 100000  # 每个文件最大读取行数（可选）
+
+# 增量处理配置
+incremental:
+  # 是否启用增量处理（true=增量更新，false=全量刷新删除现有数据）
+  enabled: false  # 设置为true启用增量处理，false执行全量刷新
+  
+  # 状态文件路径（记录已处理的记录和文件）
+  state_file: "publish/sfc_team_passrate_state.json"
+  
+  # 历史数据文件路径（用于增量合并）
+  history_file: "publish/SFC_Team_PassRate_latest.parquet"

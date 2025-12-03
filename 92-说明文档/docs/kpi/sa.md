@@ -2,6 +2,14 @@
 
 **Schedule Adherence（SA）** 是供应链 KPI 体系中的核心指标，用于衡量生产是否按照既定生产计划执行。
 
+!!! success "多工厂支持"
+    🏭 **当前支持CZM工厂(ERPCode 1303) + CKH工厂(ERPCode 9997)数据统一处理**
+    
+    - **CZM工厂**: 108,992条记录，36个工序
+    - **CKH工厂**: 62,059条记录，38个工序  
+    - **管理区域**: 9个标准化管理区域分类
+    - **数据整合**: 统一的SA指标计算和分析
+
 !!! info "指标归属"
     SA 指标属于 **[供应链部门 KPI](supply-chain.md)** 体系，是评估生产计划执行情况的关键指标。
 
@@ -44,21 +52,30 @@ SA(\%) = \frac{\text{按期完成的批次数}}{\text{总批次数}} \times 100\
 
 ## 数据体系
 
-### 三大数据源
+### 多工厂数据源
 
 ```mermaid
 graph LR
     A[SFC 原始数据] --> D[SFC 处理后数据]
-    B[MES 原始数据] --> E[MES 处理后数据]
+    B1[MES 原始数据<br/>CZM工厂] --> E1[MES 处理后数据<br/>CZM工厂]
+    B2[MES 原始数据<br/>CKH工厂] --> E2[MES 处理后数据<br/>CKH工厂]
     C[标准时间表] --> F[SAP Routing]
-    D --> G[Power BI]
-    E --> G
-    F --> G
+    G[工序管理区域<br/>分类表] --> H[管理区域映射]
+    D --> I[Power BI<br/>多工厂统一视图]
+    E1 --> I
+    E2 --> I
+    F --> I
+    H --> I
 ```
 
 1. **SFC 批次报工记录**：提供 Check In 时间
 2. **MES 批次报工记录**：核心生产数据
+   - **CZM工厂**: Product Output -CZM -FY26.xlsx
+   - **CKH工厂**: Product Output -CKH -FY26.xlsx
 3. **产品标准时间**：计划参数（标准时间、OEE 等）
+4. **工序管理区域分类表**：9个标准化管理区域
+   - 加工中心 MCT、后处理 EOL、外协 OS、无区域 NA
+   - 无菌 STR、纵切 ST、线切割 WED、终检 FI、车削&磨削 TG
 
 ---
 

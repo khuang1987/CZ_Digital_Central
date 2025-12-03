@@ -1,0 +1,7 @@
+{
+  "timestamp": "2025-12-01T09:25:31.975223",
+  "status": "success",
+  "duration_seconds": 327.829153,
+  "return_code": 0,
+  "script": "C:\\Users\\huangk14\\OneDrive - Medtronic PLC\\Huangkai Files\\B1_Project\\250418_MDDAP_project\\10-SA指标\\13-SA数据清洗\\07_工具脚本\\..\\01_核心ETL程序\\etl_dataclean_mes_batch_report.py"
+}

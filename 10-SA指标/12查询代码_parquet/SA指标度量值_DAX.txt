@@ -9,7 +9,7 @@ Power BI SA指标度量值（DAX代码）
 // ============================================
 
 // SA达成率（Schedule Adherence Rate）
-// 定义：按时完成的批次数 / 总批次数
+// 定义：按时完成的批次数 / 有状态的批次数（排除CompletionStatus为空的批次）
 SA达成率 = 
 VAR OnTimeCount = 
     CALCULATE(
@@ -17,13 +17,31 @@ VAR OnTimeCount =
         'MES数据'[CompletionStatus] = "OnTime"
     )
 VAR TotalCount = 
-    COUNTROWS('MES数据')
+    CALCULATE(
+        COUNTROWS('MES数据'),
+        NOT ISBLANK('MES数据'[CompletionStatus])
+    )
 RETURN
     IF(
         TotalCount > 0,
         DIVIDE(OnTimeCount, TotalCount, 0),
         BLANK()
     )
+
+// SA达成率_简化版（直接计算：OnTime行数 ÷ 非空总行数）
+SA达成率_简化版 = 
+VAR OnTimeRows = 
+    CALCULATE(
+        COUNTROWS('MES数据'),
+        'MES数据'[CompletionStatus] = "OnTime"
+    )
+VAR ValidRows = 
+    CALCULATE(
+        COUNTROWS('MES数据'),
+        NOT ISBLANK('MES数据'[CompletionStatus])
+    )
+RETURN
+    DIVIDE(OnTimeRows, ValidRows, 0)
 
 // SA达成率（百分比格式）
 SA达成率_百分比 = 
