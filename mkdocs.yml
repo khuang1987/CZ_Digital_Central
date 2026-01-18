@@ -1,4 +1,4 @@
-site_name: MDDAP 数据平台文档 (V2)
+site_name: 常州园区数据报表平台
 site_description: 数字化数据分析平台技术与用户文档
 site_author: MDDAP Team
 
@@ -13,6 +13,7 @@ theme:
     - navigation.sections
     - navigation.expand
     - navigation.top
+    - toc.integrate
     - search.suggest
     - search.highlight
     - content.code.copy
@@ -57,30 +58,28 @@ markdown_extensions:
 
 nav:
   - 🏠 首页: index.md
-  
-  - 📖 快速入门:
-    - 平台简介: introduction/index.md
 
-  - 💼 业务逻辑 (Business):
+  - 💼 数据聚合 (Data Aggregation):
     - 数据定义与来源: business/data-definitions.md
     - 核心计算逻辑: business/logic.md
-    - KPI 指标体系:
-      - 指标概览: business/kpi/index.md
-      - SA (达成率): business/kpi/sa.md
-      - 生产与质量: business/kpi/quality.md
+
+  - 📈 KPI 指标体系 (KPI Metrics):
+    - 指标概览: business/kpi/index.md
+    - SA (达成率): business/kpi/sa.md
+    - 生产与质量: business/kpi/quality.md
+
+  - 📊 报表看板 (Dashboard):
+    - 报表总览: reports/index.md
+    - 已完成报表: reports/completed/index.md
+    - 报表使用指南: reports/guides/index.md
+    - 报表维护: reports/maintenance/index.md
 
   - 🚨 智能监控 (Monitoring):
     - 监控体系概览: monitoring/overview.md
     - 预警规则 (Rules): monitoring/triggers.md
     - Planner 闭环集成: monitoring/planner-integration.md
 
-  - 📚 知识库 (Knowledge Base):
-    - 知识库首页: knowledge-base/index.md
-    - 操作与运维: knowledge-base/operations.md
-    - 故障排查: knowledge-base/troubleshooting.md
-    - 常见问题 (FAQ): knowledge-base/faq.md
-
-  - 🛠️ 开发者指南 (Developer):
+  - 🛠️ 开发与运维 (Dev & Ops):
     - 架构设计: developer/data-architecture.md
     - 并行调度器: developer/orchestrator.md
     - ETL 流程详解: developer/etl-process.md
@@ -88,8 +87,12 @@ nav:
     - Power Query:
       - 概览: developer/pq/index.md
       - 增量刷新: developer/pq/incremental-refresh.md
+    - 运维知识库 (Operations):
+      - 运维首页: developer/ops/index.md
+      - 操作与运维: developer/ops/operations.md
+      - 故障排查: developer/ops/troubleshooting.md
+      - 常见问题 (FAQ): developer/ops/faq.md
 
-  - 📂 归档文档 (Archive):
-    - archive/legacy_backup/index.md
+
 
 docs_dir: docs
