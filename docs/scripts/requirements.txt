@@ -1,0 +1,13 @@
+# MkDocs 及插件依赖
+
+# 核心
+mkdocs>=1.5.0
+mkdocs-material>=9.4.0
+
+# 插件
+mkdocs-git-revision-date-localized-plugin>=1.2.0
+pymdown-extensions>=10.3.0
+
+# 其他
+Pygments>=2.16.0
+

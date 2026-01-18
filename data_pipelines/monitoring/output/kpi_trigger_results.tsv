@@ -1,0 +1,7 @@
+﻿KPI_Type	Tag	Level	Description	Details	Status	TriggerWeek
+Lead_Time	CZ_Campus	Critical	制造周期连续3周超过24小时	当前值: 190.4小时	ACTIVE	FY25 W32
+Safety_Issue_Rank	其他隐患	Critical	安全隐患类型连续3周排名前3	当前排名: 2.0	ACTIVE	FY26 W16
+Safety_Issue_Rank	滑倒/摔伤	Critical	安全隐患类型连续3周排名前3	当前排名: 1.0	ACTIVE	FY26 W02
+Safety_Issue_Rank	电气伤害	Critical	安全隐患类型连续3周排名前3	当前排名: 1.0	ACTIVE	FY26 W04
+Safety_Issue_Rank	被外力击伤	Critical	安全隐患类型连续3周排名前3	当前排名: 3.0	ACTIVE	FY26 W05
+Safety_Issue_Rank	锋利边缘 (割伤/扎伤/切伤)	Critical	安全隐患类型连续3周排名前3	当前排名: 1.0	ACTIVE	FY26 W09

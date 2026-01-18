@@ -1,0 +1,137 @@
+# SFC数据清洗配置文件
+
+# 数据源路径配置
+# 注意：请填写SharePoint同步到本地的文件路径
+source:
+  # SFC数据路径（支持通配符）
+  sfc_path: "C:\\Users\\huangk14\\OneDrive - Medtronic PLC\\CZ Production - 文档\\General\\POWER BI 数据源 V2\\70-SFC导出数据\\批次报工汇总报表\\LC-*.xlsx"
+  
+  # 合并后的标准时间表路径（可选，用于计算ST(d)等指标）
+  # 支持通配符，例如：publish/SAP_Routing_*.parquet
+  # 如果为空或使用通配符，自动查找publish目录下最新的SAP_Routing_*.parquet文件
+  # 文件名格式：SAP_Routing_yyyymmdd.parquet
+  standard_time_path: "C:\\Users\\huangk14\\OneDrive - Medtronic PLC\\CZ Production - 文档\\General\\POWER BI 数据源 V2\\30-MES导出数据\\publish\\SAP_Routing_*.parquet"
+
+# SFC数据字段映射
+# 将Excel原始列名映射到标准列名
+sfc_mapping:
+  # 基础标识字段
+  "产品号": "CFN"
+  "批次": "BatchNumber"
+  "工序号": "Operation"
+  "工序名称": "Operation description"
+  "Check In 时间": "CheckInTime"
+  "机台号": "machine"
+  "报工时间": "TrackOutTime"
+  "Check In": "CheckIn_User"
+  "上道工序报工时间": "EnterStepTime"
+  
+  # 可选字段
+  "产品类型": "ProductType"
+  "报工人": "TrackOut_User"
+  "合格数量": "TrackOutQuantity"
+  "报废数量": "ScrapQuantity"
+
+# SFC数据类型定义
+sfc_types:
+  # 时间字段
+  CheckInTime: datetime
+  TrackOutTime: datetime
+  EnterStepTime: datetime
+  
+  # 数值字段
+  Operation: string
+  TrackOutQuantity: int
+  ScrapQuantity: int
+  
+  # 文本字段
+  BatchNumber: string
+  CFN: string
+  Operation description: string
+  ResourceCode: string
+  ProductType: string
+  TrackOut_User: string
+  CheckIn_User: string
+
+# 输出配置
+output:
+  # 输出目录（保存到SharePoint同步文件夹）
+  base_dir: "C:\\Users\\huangk14\\OneDrive - Medtronic PLC\\CZ Production - 文档\\General\\POWER BI 数据源 V2\\30-MES导出数据\\publish"
+  
+  # 历史数据文件路径（用于去重合并）
+  history_file: "C:\\Users\\huangk14\\OneDrive - Medtronic PLC\\CZ Production - 文档\\General\\POWER BI 数据源 V2\\30-MES导出数据\\publish\\SFC_batch_report_latest.parquet"
+  
+  # 输出格式
+  format: "parquet"
+  
+  # Parquet压缩配置
+  parquet:
+    compression: "snappy"  # 可选: snappy, gzip, brotli, zstd
+  
+  # Excel输出配置（用于数据完整性检查）
+  excel:
+    enabled: true  # 是否启用Excel输出
+    max_rows: 100000  # Excel文件最大行数（避免文件过大）
+    include_stats: true  # 是否包含统计信息工作表
+
+# 日志配置
+logging:
+  level: "INFO"  # DEBUG, INFO, WARNING, ERROR
+  file: "../06_日志文件/etl_sfc.log"
+
+# 去重配置
+deduplicate:
+  # 是否启用去重
+  enabled: true  # 设置为true以启用去重
+  
+  # 用于判断重复的关键字段（列表）
+  # 当多个文件中有相同关键字段组合的记录时，新数据会覆盖旧数据
+  key_fields:
+    - "BatchNumber"
+    - "Operation"
+    - "TrackOutTime"
+  
+  # 用于判断"最新"的排序字段
+  sort_field: "TrackOutTime"  # 通常使用报工时间
+  
+  # 排序方向：false表示降序（保留最大值/最新值），true表示升序（保留最小值/最早值）
+  sort_ascending: false
+
+# 测试配置
+test:
+  # 是否启用测试模式（仅读取部分数据）
+  enabled: true  # 设置为true启用测试模式，false读取全部数据
+  
+  # 测试模式下SFC文件数量限制
+  max_sfc_files: 100  # 测试模式下只处理最近N个SFC文件（按修改时间排序）
+
+# 增量处理配置
+incremental:
+  # 是否启用增量处理
+  enabled: true  # 设置为true启用增量处理
+  
+  # 状态文件路径（记录已处理的记录和文件）
+  state_file: "data_pipelines\\sources\\sfc\\state\\etl_sfc_state.json"
+  
+  # 用于生成唯一记录标识的字段（复合键）
+  # 注意：hash计算时不包含文件名，因为相邻日期的文件中有90%的数据行是重复的
+  # 文件级别跳过：通过文件名和修改时间快速判断文件是否已处理
+  # 记录级别过滤：通过业务字段（BatchNumber + Operation + Checkin_SFC）进行hash匹配
+  unique_key_fields:
+    - "BatchNumber"
+    - "Operation"
+    - "TrackOutTime"
+  
+  # 时间窗口（天）：只处理TrackOutTime在此时间窗口内的数据
+  # 设置为0或null表示不限制时间窗口
+  time_window_days: null  # 例如：30 表示只处理最近30天的数据
+  
+  # 全量刷新阈值（天）：如果距离上次处理时间超过此值，执行全量刷新
+  # 设置为0或null表示不限制
+  full_refresh_threshold_days: 90  # 90天未刷新则全量处理
+
+# 运行时配置
+runtime:
+  # 处理失败时的行为
+  on_error: "continue"  # continue 或 stop
+

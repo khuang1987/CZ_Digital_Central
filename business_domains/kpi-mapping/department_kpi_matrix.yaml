@@ -1,0 +1,560 @@
+# 部门-KPI映射矩阵
+# 基于实际KPI规范文档的完整映射
+
+department_kpi_matrix:
+  production-dept:
+    name: "生产部门"
+    description: "负责生产执行和效率管理"
+    kpis:
+      oee_overall_equipment_effectiveness:
+        name: "整体设备效率"
+        description: "综合衡量设备生产效率的关键指标"
+        owner: "生产经理"
+        frequency: "daily"
+        priority: "high"
+        calculation_method: "availability * performance * quality"
+        target_value: 85
+        unit: "%"
+      
+      pcp_production_completion_rate:
+        name: "生产完成率"
+        description: "实际完成产量与计划产量的比率"
+        owner: "生产主管"
+        frequency: "daily"
+        priority: "high"
+        calculation_method: "SUM(actual_quantity) / SUM(planned_quantity) * 100"
+        target_value: 95
+        unit: "%"
+      
+      cur_capacity_utilization_rate:
+        name: "产能利用率"
+        description: "实际产能与理论产能的利用率"
+        owner: "生产计划员"
+        frequency: "daily"
+        priority: "medium"
+        calculation_method: "actual_output / theoretical_capacity * 100"
+        target_value: 80
+        unit: "%"
+      
+      ct_cycle_time:
+        name: "生产周期时间"
+        description: "从投料到成品产出的时间"
+        owner: "工艺工程师"
+        frequency: "daily"
+        priority: "medium"
+        calculation_method: "product_output_time - material_input_time"
+        target_value: 120
+        unit: "minutes"
+      
+      manufacturing_variances:
+        name: "制造成本差异"
+        description: "实际成本与标准成本的差异"
+        owner: "成本会计"
+        frequency: "monthly"
+        priority: "high"
+        calculation_method: "actual_cost - standard_cost"
+        target_value: 0
+        unit: "CNY"
+      
+      period_expense:
+        name: "期间费用"
+        description: "SOGL + 闲置设施费用 + 制造支持费用 + 人工分配费用"
+        owner: "财务经理"
+        frequency: "monthly"
+        priority: "medium"
+        calculation_method: "SOGL + idle_facility_cost + manufacturing_support_cost + labor_allocation_cost"
+        target_value: 1000000
+        unit: "CNY"
+      
+      labor_efficiency:
+        name: "人工效率"
+        description: "标准工时与实际工时的比率"
+        owner: "人力资源经理"
+        frequency: "daily"
+        priority: "medium"
+        calculation_method: "standard_hours / actual_hours * 100"
+        target_value: 90
+        unit: "%"
+
+  quality-dept:
+    name: "质量部门"
+    description: "负责质量控制和质量管理"
+    kpis:
+      fpy_first_pass_yield:
+        name: "首次通过率"
+        description: "产品首次检验通过的比例"
+        owner: "质量经理"
+        frequency: "daily"
+        priority: "high"
+        calculation_method: "first_pass_quantity / total_quantity * 100"
+        target_value: 98
+        unit: "%"
+      
+      ncr_non_conformance_rate:
+        name: "不合格品率"
+        description: "不合格品数量与总产量的比率"
+        owner: "质量工程师"
+        frequency: "daily"
+        priority: "high"
+        calculation_method: "ncr_quantity / total_quantity * 100"
+        target_value: 2
+        unit: "%"
+      
+      capa_completion_rate:
+        name: "CAPA完成率"
+        description: "按时完成的纠正预防措施比例"
+        owner: "质量主管"
+        frequency: "weekly"
+        priority: "medium"
+        calculation_method: "on_time_completed / total_capa * 100"
+        target_value: 95
+        unit: "%"
+      
+      ccr_customer_complaint_rate:
+        name: "客户投诉率"
+        description: "客户投诉数量与发货数量的比率"
+        owner: "客户质量经理"
+        frequency: "monthly"
+        priority: "high"
+        calculation_method: "complaint_quantity / total_shipped_quantity * 100"
+        target_value: 0.5
+        unit: "%"
+      
+      rework_rate:
+        name: "返工率"
+        description: "需要返工的产品比例"
+        owner: "生产质量工程师"
+        frequency: "daily"
+        priority: "medium"
+        calculation_method: "rework_quantity / total_quantity * 100"
+        target_value: 3
+        unit: "%"
+      
+      ncmr_reduction_rate:
+        name: "NCMR降低率"
+        description: "不合格品报告的降低比例"
+        owner: "质量改进工程师"
+        frequency: "monthly"
+        priority: "medium"
+        calculation_method: "(baseline_ncmr - current_ncmr) / baseline_ncmr * 100"
+        target_value: 20
+        unit: "%"
+      
+      manufacturing_escapes:
+        name: "制造逃逸"
+        description: "Level 1和Level 2逃逸事件数量"
+        owner: "质量体系经理"
+        frequency: "monthly"
+        priority: "high"
+        calculation_method: "COUNT(escape_records) WHERE escape_level IN ('Level 1', 'Level 2')"
+        target_value: 0
+        unit: "count"
+      
+      breakthrough_escape:
+        name: "重大逃逸"
+        description: "重大质量逃逸事件数量"
+        owner: "质量总监"
+        frequency: "quarterly"
+        priority: "high"
+        calculation_method: "COUNT(breakthrough_escape_records)"
+        target_value: 0
+        unit: "count"
+      
+      change_control_effectiveness:
+        name: "变更控制有效性"
+        description: "有效变更的比例"
+        owner: "变更控制经理"
+        frequency: "monthly"
+        priority: "medium"
+        calculation_method: "effective_changes / total_changes * 100"
+        target_value: 90
+        unit: "%"
+      
+      yielded_scrap_rate:
+        name: "报废率"
+        description: "报废产品与总产量的比率"
+        owner: "质量工程师"
+        frequency: "daily"
+        priority: "medium"
+        calculation_method: "scrap_quantity / total_quantity * 100"
+        target_value: 1
+        unit: "%"
+
+  ci-dept:
+    name: "持续改进部门"
+    description: "负责持续改进和项目管理"
+    kpis:
+      ci_project_completion_rate:
+        name: "CI项目完成率"
+        description: "按时完成的改善项目比例"
+        owner: "CI经理"
+        frequency: "monthly"
+        priority: "high"
+        calculation_method: "on_time_completed_projects / total_projects * 100"
+        target_value: 85
+        unit: "%"
+      
+      cost_savings:
+        name: "成本节约"
+        description: "改善项目实现的成本节约"
+        owner: "财务分析师"
+        frequency: "quarterly"
+        priority: "high"
+        calculation_method: "baseline_cost - actual_cost"
+        target_value: 500000
+        unit: "CNY"
+      
+      employee_engagement:
+        name: "员工参与度"
+        description: "参与改善活动的员工比例"
+        owner: "人力资源经理"
+        frequency: "quarterly"
+        priority: "medium"
+        calculation_method: "participating_employees / total_employees * 100"
+        target_value: 70
+        unit: "%"
+      
+      standardization_rate:
+        name: "标准化率"
+        description: "完成标准化的流程比例"
+        owner: "标准化工程师"
+        frequency: "monthly"
+        priority: "medium"
+        calculation_method: "completed_standardizations / planned_standardizations * 100"
+        target_value: 80
+        unit: "%"
+      
+      ohs_engagement_dl:
+        name: "直接员工安全参与度"
+        description: "参与安全活动的直接员工比例"
+        owner: "安全经理"
+        frequency: "quarterly"
+        priority: "medium"
+        calculation_method: "participating_dl_employees / total_dl_employees * 100"
+        target_value: 75
+        unit: "%"
+      
+      ohs_innovation_idl:
+        name: "间接员工安全创新参与度"
+        description: "参与安全创新的间接员工比例"
+        owner: "安全经理"
+        frequency: "quarterly"
+        priority: "medium"
+        calculation_method: "participating_idl_employees / total_idl_employees * 100"
+        target_value: 60
+        unit: "%"
+      
+      yb_certification_rate:
+        name: "黄带认证率"
+        description: "获得黄带认证的员工比例"
+        owner: "培训经理"
+        frequency: "quarterly"
+        priority: "medium"
+        calculation_method: "yb_certified_employees / total_employees * 100"
+        target_value: 50
+        unit: "%"
+      
+      gb_certification_rate:
+        name: "绿带认证率"
+        description: "获得绿带认证的员工比例"
+        owner: "培训经理"
+        frequency: "quarterly"
+        priority: "medium"
+        calculation_method: "gb_certified_employees / total_employees * 100"
+        target_value: 25
+        unit: "%"
+      
+      bb_certification_rate:
+        name: "黑带认证率"
+        description: "获得黑带认证的员工比例"
+        owner: "培训经理"
+        frequency: "yearly"
+        priority: "low"
+        calculation_method: "bb_certified_employees / total_employees * 100"
+        target_value: 10
+        unit: "%"
+      
+      programmatic_savings:
+        name: "系统性节约"
+        description: "系统性改善实现的成本节约"
+        owner: "财务分析师"
+        frequency: "quarterly"
+        priority: "high"
+        calculation_method: "SUM(indirect_expense_savings + labor_savings + material_savings + other_cost_savings)"
+        target_value: 1000000
+        unit: "CNY"
+
+  supply-chain-dept:
+    name: "供应链部门"
+    description: "负责供应链管理和物流"
+    kpis:
+      inventory_turns:
+        name: "库存周转率"
+        description: "库存周转次数"
+        owner: "库存经理"
+        frequency: "monthly"
+        priority: "high"
+        calculation_method: "cogs_amount / average_inventory_value"
+        target_value: 12
+        unit: "times/year"
+      
+      on_time_delivery:
+        name: "准时交付率"
+        description: "按时交付的订单比例"
+        owner: "物流经理"
+        frequency: "monthly"
+        priority: "high"
+        calculation_method: "on_time_deliveries / total_deliveries * 100"
+        target_value: 95
+        unit: "%"
+      
+      procurement_savings:
+        name: "采购节约"
+        description: "采购谈判实现的成本节约"
+        owner: "采购经理"
+        frequency: "quarterly"
+        priority: "high"
+        calculation_method: "original_price - negotiated_price"
+        target_value: 300000
+        unit: "CNY"
+      
+      supplier_performance:
+        name: "供应商绩效"
+        description: "综合供应商评分"
+        owner: "供应商管理经理"
+        frequency: "quarterly"
+        priority: "medium"
+        calculation_method: "(quality_score * 0.4 + delivery_score * 0.3 + price_score * 0.3) * 100"
+        target_value: 85
+        unit: "score"
+      
+      backlog_value:
+        name: "积压订单价值"
+        description: "未交付订单的总价值"
+        owner: "订单管理经理"
+        frequency: "weekly"
+        priority: "medium"
+        calculation_method: "SUM(order_value) WHERE delivery_status = 'PENDING'"
+        target_value: 5000000
+        unit: "CNY"
+      
+      backlog_weeks:
+        name: "积压周数"
+        description: "积压订单的生产周数"
+        owner: "生产计划经理"
+        frequency: "weekly"
+        priority: "medium"
+        calculation_method: "SUM(production_weeks_required) WHERE order_status = 'BACKLOG'"
+        target_value: 4
+        unit: "weeks"
+      
+      total_inventory:
+        name: "总库存价值"
+        description: "WIP + 成品 + 原材料总价值"
+        owner: "库存经理"
+        frequency: "monthly"
+        priority: "high"
+        calculation_method: "wip_value + fg_value + rm_value"
+        target_value: 10000000
+        unit: "CNY"
+      
+      inventory_turnover_rate:
+        name: "库存周转速度"
+        description: "库存周转的效率指标"
+        owner: "库存分析师"
+        frequency: "monthly"
+        priority: "medium"
+        calculation_method: "cogs_amount / average_inventory_value"
+        target_value: 0.08
+        unit: "times/month"
+
+  finance-dept:
+    name: "财务部门"
+    description: "负责财务管理和成本控制"
+    kpis:
+      operating_cost:
+        name: "运营成本"
+        description: "直接成本 + 间接成本"
+        owner: "财务总监"
+        frequency: "monthly"
+        priority: "high"
+        calculation_method: "direct_cost + indirect_cost"
+        target_value: 5000000
+        unit: "CNY"
+      
+      return_on_investment:
+        name: "投资回报率"
+        description: "投资回报与投资成本的比率"
+        owner: "投资分析师"
+        frequency: "quarterly"
+        priority: "high"
+        calculation_method: "(investment_return - investment_cost) / investment_cost * 100"
+        target_value: 15
+        unit: "%"
+      
+      cash_flow:
+        name: "现金流"
+        description: "现金流入 - 现金流出"
+        owner: "现金管理经理"
+        frequency: "monthly"
+        priority: "high"
+        calculation_method: "cash_inflow - cash_outflow"
+        target_value: 1000000
+        unit: "CNY"
+      
+      budget_execution_rate:
+        name: "预算执行率"
+        description: "实际支出与预算的比率"
+        owner: "预算经理"
+        frequency: "monthly"
+        priority: "medium"
+        calculation_method: "actual_spent / budgeted_amount * 100"
+        target_value: 95
+        unit: "%"
+
+  equipment-dept:
+    name: "设备部门"
+    description: "负责设备管理和维护"
+    kpis:
+      equipment_availability:
+        name: "设备可用率"
+        description: "设备实际运行时间与计划时间的比率"
+        owner: "设备经理"
+        frequency: "hourly"
+        priority: "high"
+        calculation_method: "actual_run_time / scheduled_time * 100"
+        target_value: 90
+        unit: "%"
+      
+      pm_completion_rate:
+        name: "预防性维护完成率"
+        description: "按时完成的预防性维护比例"
+        owner: "维护主管"
+        frequency: "weekly"
+        priority: "medium"
+        calculation_method: "on_time_completed_pm / total_scheduled_pm * 100"
+        target_value: 95
+        unit: "%"
+      
+      equipment_failure_rate:
+        name: "设备故障率"
+        description: "设备故障次数与总运行时间的比率"
+        owner: "设备工程师"
+        frequency: "daily"
+        priority: "high"
+        calculation_method: "failure_count / total_runtime"
+        target_value: 0.01
+        unit: "failures/hour"
+      
+      maintenance_cost:
+        name: "维护成本"
+        description: "预防性维护成本 + 纠正性维护成本"
+        owner: "维护成本分析师"
+        frequency: "monthly"
+        priority: "medium"
+        calculation_method: "preventive_maintenance_cost + corrective_maintenance_cost"
+        target_value: 200000
+        unit: "CNY"
+
+  facilities-dept:
+    name: "设施部门"
+    description: "负责设施管理和环境安全"
+    kpis:
+      energy_consumption:
+        name: "能源消耗"
+        description: "单位产量的能源消耗"
+        owner: "设施经理"
+        frequency: "daily"
+        priority: "medium"
+        calculation_method: "total_energy_consumption / production_quantity"
+        target_value: 100
+        unit: "kWh/unit"
+      
+      facility_maintenance_cost:
+        name: "设施维护成本"
+        description: "日常维护成本 + 修理成本"
+        owner: "设施维护主管"
+        frequency: "monthly"
+        priority: "medium"
+        calculation_method: "routine_maintenance_cost + repair_cost"
+        target_value: 150000
+        unit: "CNY"
+      
+      safety_incident_rate:
+        name: "安全事故率"
+        description: "安全事故数量与总工时的比率"
+        owner: "安全经理"
+        frequency: "monthly"
+        priority: "high"
+        calculation_method: "safety_incident_count / total_work_hours"
+        target_value: 0.001
+        unit: "incidents/hour"
+      
+      environmental_compliance:
+        name: "环境合规率"
+        description: "合规项目与总检查项目的比率"
+        owner: "环境经理"
+        frequency: "quarterly"
+        priority: "medium"
+        calculation_method: "compliant_items / total_checked_items * 100"
+        target_value: 100
+        unit: "%"
+
+  safety-dept:
+    name: "安全部门"
+    description: "负责安全管理和事故预防"
+    kpis:
+      trir_total_recordable_incident_rate:
+        name: "总可记录事故率"
+        description: "可记录事故率 (200,000工时基准)"
+        owner: "安全总监"
+        frequency: "monthly"
+        priority: "high"
+        calculation_method: "recordable_incidents * 200,000 / total_work_hours"
+        target_value: 2
+        unit: "TRIR"
+      
+      recordable_incidents:
+        name: "可记录事故数"
+        description: "可记录安全事故总数"
+        owner: "安全经理"
+        frequency: "monthly"
+        priority: "high"
+        calculation_method: "COUNT(incidents) WHERE recordable_flag = 'YES'"
+        target_value: 0
+        unit: "count"
+      
+      hazard_findings:
+        name: "隐患发现数"
+        description: "识别的安全隐患数量"
+        owner: "安全工程师"
+        frequency: "monthly"
+        priority: "medium"
+        calculation_method: "COUNT(hazard_records) WHERE status = 'IDENTIFIED'"
+        target_value: 10
+        unit: "count"
+
+# 统计信息
+summary:
+  total_departments: 8
+  total_kpis: 50
+  kpi_distribution:
+    production-dept: 7
+    quality-dept: 10
+    ci-dept: 10
+    supply-chain-dept: 8
+    finance-dept: 4
+    equipment-dept: 4
+    facilities-dept: 4
+    safety-dept: 3
+  priority_distribution:
+    high: 25
+    medium: 22
+    low: 3
+  frequency_distribution:
+    hourly: 2
+    daily: 18
+    weekly: 6
+    monthly: 18
+    quarterly: 5
+    yearly: 1

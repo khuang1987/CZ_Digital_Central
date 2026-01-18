@@ -1,0 +1,855 @@
+# KPI-数据源依赖映射
+# 基于实际业务系统和技术数据源的完整映射
+
+kpi_source_dependencies:
+  # 生产部门KPI数据源依赖
+  oee_overall_equipment_effectiveness:
+    primary_sources: ["mes", "oee"]
+    secondary_sources: ["sfc"]
+    data_flow:
+      - source: "mes"
+        table: "production_execution"
+        fields: ["production_date", "line_id", "equipment_id", "actual_run_time", "planned_run_time"]
+        refresh_frequency: "hourly"
+      - source: "oee"
+        table: "equipment_performance"
+        fields: ["equipment_id", "availability", "performance", "quality", "timestamp"]
+        refresh_frequency: "hourly"
+      - source: "sfc"
+        table: "product_inspection"
+        fields: ["inspection_date", "product_code", "inspection_result", "quantity"]
+        refresh_frequency: "daily"
+    calculation_logic: "availability * performance * quality"
+    business_systems: ["生产执行系统(MES)", "质量管理系统(QMS)", "设备管理系统(EMS)"]
+    technical_sources: ["mes", "oee", "sfc"]
+
+  pcp_production_completion_rate:
+    primary_sources: ["mes", "sap"]
+    secondary_sources: []
+    data_flow:
+      - source: "mes"
+        table: "production_execution"
+        fields: ["production_date", "product_code", "actual_quantity", "line_id"]
+        refresh_frequency: "daily"
+      - source: "sap"
+        table: "production_plan"
+        fields: ["plan_date", "product_code", "planned_quantity", "priority"]
+        refresh_frequency: "daily"
+    calculation_logic: "SUM(actual_quantity) / SUM(planned_quantity) * 100"
+    business_systems: ["生产执行系统(MES)", "企业资源计划(ERP)"]
+    technical_sources: ["mes", "sap"]
+
+  cur_capacity_utilization_rate:
+    primary_sources: ["mes"]
+    secondary_sources: ["sap"]
+    data_flow:
+      - source: "mes"
+        table: "production_output"
+        fields: ["production_date", "actual_output", "line_id"]
+        refresh_frequency: "daily"
+      - source: "sap"
+        table: "capacity_planning"
+        fields: ["line_id", "theoretical_capacity", "effective_capacity"]
+        refresh_frequency: "monthly"
+    calculation_logic: "actual_output / theoretical_capacity * 100"
+    business_systems: ["生产执行系统(MES)", "产能规划系统"]
+    technical_sources: ["mes", "sap"]
+
+  ct_cycle_time:
+    primary_sources: ["mes"]
+    secondary_sources: ["sap"]
+    data_flow:
+      - source: "mes"
+        table: "production_tracking"
+        fields: ["work_order_id", "start_time", "end_time", "material_input_time", "product_output_time"]
+        refresh_frequency: "daily"
+      - source: "sap"
+        table: "work_order"
+        fields: ["order_id", "product_code", "quantity", "routing"]
+        refresh_frequency: "daily"
+    calculation_logic: "product_output_time - material_input_time"
+    business_systems: ["生产执行系统(MES)", "工单管理系统"]
+    technical_sources: ["mes", "sap"]
+
+  manufacturing_variances:
+    primary_sources: ["sap"]
+    secondary_sources: ["mes"]
+    data_flow:
+      - source: "sap"
+        table: "cost_accounting"
+        fields: ["cost_element", "actual_cost", "standard_cost", "variance_amount", "period"]
+        refresh_frequency: "monthly"
+      - source: "mes"
+        table: "production_consumption"
+        fields: ["production_date", "material_consumption", "resource_usage"]
+        refresh_frequency: "monthly"
+    calculation_logic: "actual_cost - standard_cost"
+    business_systems: ["SAP成本核算系统", "生产执行系统(MES)"]
+    technical_sources: ["sap", "mes"]
+
+  period_expense:
+    primary_sources: ["sap"]
+    secondary_sources: ["sap"]
+    data_flow:
+      - source: "sap"
+        table: "cost_center_accounting"
+        fields: ["cost_center", "expense_type", "amount", "period"]
+        refresh_frequency: "monthly"
+      - source: "sap"
+        table: "labor_allocation"
+        fields: ["employee_id", "department", "hours_worked", "labor_cost"]
+        refresh_frequency: "monthly"
+    calculation_logic: "SOGL + 闲置设施费用 + 制造支持费用 + 人工分配费用"
+    business_systems: ["SAP财务系统", "人力资源系统", "预算系统"]
+    technical_sources: ["sap", "sap"]
+
+  labor_efficiency:
+    primary_sources: ["sap", "mes"]
+    secondary_sources: []
+    data_flow:
+      - source: "sap"
+        table: "attendance_records"
+        fields: ["employee_id", "attendance_date", "actual_hours", "department"]
+        refresh_frequency: "daily"
+      - source: "mes"
+        table: "production_output"
+        fields: ["production_date", "standard_hours", "actual_output", "line_id"]
+        refresh_frequency: "daily"
+    calculation_logic: "standard_hours / actual_hours * 100"
+    business_systems: ["人力资源系统", "生产执行系统(MES)", "考勤记录"]
+    technical_sources: ["sap", "mes"]
+
+  # 质量部门KPI数据源依赖
+  fpy_first_pass_yield:
+    primary_sources: ["sfc"]
+    secondary_sources: ["mes"]
+    data_flow:
+      - source: "sfc"
+        table: "inspection_results"
+        fields: ["inspection_date", "product_code", "inspection_result", "quantity_inspected"]
+        refresh_frequency: "daily"
+      - source: "mes"
+        table: "production_output"
+        fields: ["production_date", "total_quantity", "product_code"]
+        refresh_frequency: "daily"
+    calculation_logic: "first_pass_quantity / total_quantity * 100"
+    business_systems: ["质量管理系统(QMS)", "检验记录系统"]
+    technical_sources: ["sfc", "mes"]
+
+  ncr_non_conformance_rate:
+    primary_sources: ["sfc"]
+    secondary_sources: ["mes"]
+    data_flow:
+      - source: "sfc"
+        table: "non_conformance_records"
+        fields: ["ncr_date", "defect_type", "ncr_quantity", "product_code"]
+        refresh_frequency: "daily"
+      - source: "mes"
+        table: "production_output"
+        fields: ["production_date", "total_quantity", "product_code"]
+        refresh_frequency: "daily"
+    calculation_logic: "ncr_quantity / total_quantity * 100"
+    business_systems: ["质量管理系统(QMS)", "不合格品记录系统"]
+    technical_sources: ["sfc", "mes"]
+
+  capa_completion_rate:
+    primary_sources: ["sfc"]
+    secondary_sources: []
+    data_flow:
+      - source: "sfc"
+        table: "capa_tracking"
+        fields: ["capa_id", "creation_date", "due_date", "completion_date", "status"]
+        refresh_frequency: "weekly"
+    calculation_logic: "on_time_completed / total_capa * 100"
+    business_systems: ["质量管理系统(QMS)", "CAPA跟踪系统"]
+    technical_sources: ["sfc"]
+
+  ccr_customer_complaint_rate:
+    primary_sources: ["sharepoint"]
+    secondary_sources: ["sap"]
+    data_flow:
+      - source: "sharepoint"
+        table: "customer_complaints"
+        fields: ["complaint_date", "complaint_type", "product_code", "quantity_affected"]
+        refresh_frequency: "monthly"
+      - source: "sap"
+        table: "shipment_records"
+        fields: ["shipment_date", "product_code", "quantity_shipped"]
+        refresh_frequency: "monthly"
+    calculation_logic: "complaint_quantity / total_shipped_quantity * 100"
+    business_systems: ["客户关系管理系统(CRM)", "投诉记录系统", "发货记录"]
+    technical_sources: ["sharepoint", "sap"]
+
+  rework_rate:
+    primary_sources: ["sfc", "mes"]
+    secondary_sources: []
+    data_flow:
+      - source: "sfc"
+        table: "rework_records"
+        fields: ["rework_date", "product_code", "rework_quantity", "rework_reason"]
+        refresh_frequency: "daily"
+      - source: "mes"
+        table: "production_output"
+        fields: ["production_date", "total_quantity", "product_code"]
+        refresh_frequency: "daily"
+    calculation_logic: "rework_quantity / total_quantity * 100"
+    business_systems: ["质量管理系统(QMS)", "生产系统", "返工记录"]
+    technical_sources: ["sfc", "mes"]
+
+  ncmr_reduction_rate:
+    primary_sources: ["sfc"]
+    secondary_sources: []
+    data_flow:
+      - source: "sfc"
+        table: "ncmr_trends"
+        fields: ["report_date", "ncmr_count", "baseline_ncmr", "reduction_percentage"]
+        refresh_frequency: "monthly"
+    calculation_logic: "(baseline_ncmr - current_ncmr) / baseline_ncmr * 100"
+    business_systems: ["质量管理系统(QMS)", "不合格品报告系统"]
+    technical_sources: ["sfc"]
+
+  manufacturing_escapes:
+    primary_sources: ["sfc"]
+    secondary_sources: []
+    data_flow:
+      - source: "sfc"
+        table: "escape_records"
+        fields: ["escape_date", "escape_level", "product_code", "escape_count"]
+        refresh_frequency: "monthly"
+    calculation_logic: "COUNT(escape_records) WHERE escape_level IN ('Level 1', 'Level 2')"
+    business_systems: ["质量管理系统(QMS)", "逃逸记录系统"]
+    technical_sources: ["sfc"]
+
+  breakthrough_escape:
+    primary_sources: ["sfc"]
+    secondary_sources: []
+    data_flow:
+      - source: "sfc"
+        table: "breakthrough_escapes"
+        fields: ["escape_date", "impact_type", "production_line_affected", "batch_isolated"]
+        refresh_frequency: "quarterly"
+    calculation_logic: "COUNT(breakthrough_escape_records)"
+    business_systems: ["质量管理系统(QMS)", "重大逃逸记录系统"]
+    technical_sources: ["sfc"]
+
+  change_control_effectiveness:
+    primary_sources: ["sfc"]
+    secondary_sources: ["sharepoint"]
+    data_flow:
+      - source: "sfc"
+        table: "change_control"
+        fields: ["change_id", "implementation_date", "effectiveness_score", "validation_result"]
+        refresh_frequency: "monthly"
+      - source: "sharepoint"
+        table: "change_documentation"
+        fields: ["change_id", "approval_status", "completion_date"]
+        refresh_frequency: "monthly"
+    calculation_logic: "effective_changes / total_changes * 100"
+    business_systems: ["质量管理系统(QMS)", "变更控制系统"]
+    technical_sources: ["sfc", "sharepoint"]
+
+  yielded_scrap_rate:
+    primary_sources: ["sfc", "mes"]
+    secondary_sources: ["sap"]
+    data_flow:
+      - source: "sfc"
+        table: "scrap_records"
+        fields: ["scrap_date", "scrap_quantity", "scrap_reason", "product_code"]
+        refresh_frequency: "daily"
+      - source: "mes"
+        table: "production_output"
+        fields: ["production_date", "total_quantity", "product_code"]
+        refresh_frequency: "daily"
+      - source: "sap"
+        table: "material_costs"
+        fields: ["material_code", "unit_cost", "scrap_cost"]
+        refresh_frequency: "monthly"
+    calculation_logic: "scrap_quantity / total_quantity * 100"
+    business_systems: ["质量管理系统(QMS)", "生产系统", "成本核算系统"]
+    technical_sources: ["sfc", "mes", "sap"]
+
+  # CI部门KPI数据源依赖
+  ci_project_completion_rate:
+    primary_sources: ["sharepoint"]
+    secondary_sources: ["sharepoint"]
+    data_flow:
+      - source: "sharepoint"
+        table: "improvement_projects"
+        fields: ["project_id", "start_date", "planned_end_date", "actual_end_date", "status"]
+        refresh_frequency: "monthly"
+      - source: "sharepoint"
+        table: "project_management"
+        fields: ["project_id", "project_type", "completion_percentage", "milestone_status"]
+        refresh_frequency: "monthly"
+    calculation_logic: "on_time_completed_projects / total_projects * 100"
+    business_systems: ["项目管理工具", "改善项目跟踪系统", "SharePoint项目库"]
+    technical_sources: ["sharepoint", "sharepoint"]
+
+  cost_savings:
+    primary_sources: ["sharepoint", "sap"]
+    secondary_sources: ["mes"]
+    data_flow:
+      - source: "sharepoint"
+        table: "savings_tracking"
+        fields: ["project_id", "savings_type", "baseline_cost", "actual_cost", "savings_amount"]
+        refresh_frequency: "quarterly"
+      - source: "sap"
+        table: "cost_accounting"
+        fields: ["cost_center", "period", "actual_expense", "budgeted_expense"]
+        refresh_frequency: "quarterly"
+      - source: "mes"
+        table: "efficiency_metrics"
+        fields: ["efficiency_improvement", "waste_reduction", "productivity_gain"]
+        refresh_frequency: "quarterly"
+    calculation_logic: "baseline_cost - actual_cost"
+    business_systems: ["财务系统", "项目收益报告系统", "成本核算系统"]
+    technical_sources: ["sharepoint", "sap", "mes"]
+
+  employee_engagement:
+    primary_sources: ["sap", "sharepoint"]
+    secondary_sources: []
+    data_flow:
+      - source: "sap"
+        table: "employee_records"
+        fields: ["employee_id", "department", "participation_status"]
+        refresh_frequency: "quarterly"
+      - source: "sharepoint"
+        table: "improvement_activities"
+        fields: ["activity_id", "participant_list", "activity_date", "activity_type"]
+        refresh_frequency: "quarterly"
+    calculation_logic: "participating_employees / total_employees * 100"
+    business_systems: ["人力资源系统", "改善活动记录系统", "员工参与度调查"]
+    technical_sources: ["sap", "sharepoint"]
+
+  standardization_rate:
+    primary_sources: ["sharepoint"]
+    secondary_sources: ["sfc"]
+    data_flow:
+      - source: "sharepoint"
+        table: "standardization_projects"
+        fields: ["process_id", "standardization_status", "completion_date", "target_date"]
+        refresh_frequency: "monthly"
+      - source: "sfc"
+        table: "process_documentation"
+        fields: ["process_code", "document_status", "approval_date"]
+        refresh_frequency: "monthly"
+    calculation_logic: "completed_standardizations / planned_standardizations * 100"
+    business_systems: ["标准化管理系统", "流程文档系统", "标准化状态报告"]
+    technical_sources: ["sharepoint", "sfc"]
+
+  ohs_engagement_dl:
+    primary_sources: ["sap", "sharepoint"]
+    secondary_sources: []
+    data_flow:
+      - source: "sap"
+        table: "employee_classification"
+        fields: ["employee_id", "employee_type", "department", "participation_activities"]
+        refresh_frequency: "quarterly"
+      - source: "sharepoint"
+        table: "safety_training_records"
+        fields: ["training_id", "participant_list", "training_date", "training_type"]
+        refresh_frequency: "quarterly"
+    calculation_logic: "participating_dl_employees / total_dl_employees * 100"
+    business_systems: ["人力资源系统", "安全培训记录", "员工参与度调查"]
+    technical_sources: ["sap", "sharepoint"]
+
+  ohs_innovation_idl:
+    primary_sources: ["sap", "sharepoint"]
+    secondary_sources: []
+    data_flow:
+      - source: "sap"
+        table: "employee_classification"
+        fields: ["employee_id", "employee_type", "department", "innovation_projects"]
+        refresh_frequency: "quarterly"
+      - source: "sharepoint"
+        table: "safety_innovation_projects"
+        fields: ["project_id", "participant_list", "project_date", "innovation_type"]
+        refresh_frequency: "quarterly"
+    calculation_logic: "participating_idl_employees / total_idl_employees * 100"
+    business_systems: ["人力资源系统", "安全创新活动记录", "员工参与度调查"]
+    technical_sources: ["sap", "sharepoint"]
+
+  yb_certification_rate:
+    primary_sources: ["sap", "sharepoint"]
+    secondary_sources: []
+    data_flow:
+      - source: "sap"
+        table: "employee_certification"
+        fields: ["employee_id", "certification_type", "certification_date", "certification_status"]
+        refresh_frequency: "quarterly"
+      - source: "sharepoint"
+        table: "training_records"
+        fields: ["training_id", "participant_list", "completion_status", "certification_awarded"]
+        refresh_frequency: "quarterly"
+    calculation_logic: "yb_certified_employees / total_employees * 100"
+    business_systems: ["人力资源系统", "认证记录系统", "培训系统"]
+    technical_sources: ["sap", "sharepoint"]
+
+  gb_certification_rate:
+    primary_sources: ["sap", "sharepoint"]
+    secondary_sources: []
+    data_flow:
+      - source: "sap"
+        table: "employee_certification"
+        fields: ["employee_id", "certification_type", "certification_date", "certification_status"]
+        refresh_frequency: "quarterly"
+      - source: "sharepoint"
+        table: "training_records"
+        fields: ["training_id", "participant_list", "completion_status", "certification_awarded"]
+        refresh_frequency: "quarterly"
+    calculation_logic: "gb_certified_employees / total_employees * 100"
+    business_systems: ["人力资源系统", "认证记录系统", "培训系统"]
+    technical_sources: ["sap", "sharepoint"]
+
+  bb_certification_rate:
+    primary_sources: ["sap", "sharepoint"]
+    secondary_sources: []
+    data_flow:
+      - source: "sap"
+        table: "employee_certification"
+        fields: ["employee_id", "certification_type", "certification_date", "certification_status"]
+        refresh_frequency: "yearly"
+      - source: "sharepoint"
+        table: "training_records"
+        fields: ["training_id", "participant_list", "completion_status", "certification_awarded"]
+        refresh_frequency: "yearly"
+    calculation_logic: "bb_certified_employees / total_employees * 100"
+    business_systems: ["人力资源系统", "认证记录系统", "培训系统"]
+    technical_sources: ["sap", "sharepoint"]
+
+  programmatic_savings:
+    primary_sources: ["sharepoint", "sap"]
+    secondary_sources: ["mes"]
+    data_flow:
+      - source: "sharepoint"
+        table: "programmatic_savings"
+        fields: ["project_id", "savings_category", "baseline_cost", "actual_cost", "savings_amount"]
+        refresh_frequency: "quarterly"
+      - source: "sap"
+        table: "cost_centers"
+        fields: ["cost_center", "indirect_expense", "labor_cost", "material_cost", "other_cost"]
+        refresh_frequency: "quarterly"
+      - source: "mes"
+        table: "production_efficiency"
+        fields: ["efficiency_improvement", "waste_reduction", "yield_improvement"]
+        refresh_frequency: "quarterly"
+    calculation_logic: "SUM(indirect_expense_savings + labor_savings + material_savings + other_cost_savings)"
+    business_systems: ["财务系统", "项目收益报告系统", "成本核算系统"]
+    technical_sources: ["sharepoint", "sap", "mes"]
+
+  # 供应链部门KPI数据源依赖
+  inventory_turns:
+    primary_sources: ["sap", "sap"]
+    secondary_sources: []
+    data_flow:
+      - source: "sap"
+        table: "inventory_ledger"
+        fields: ["material_code", "inventory_value", "movement_type", "transaction_date"]
+        refresh_frequency: "monthly"
+      - source: "sap"
+        table: "cost_of_goods_sold"
+        fields: ["period", "cogs_amount", "product_category"]
+        refresh_frequency: "monthly"
+    calculation_logic: "cogs_amount / average_inventory_value"
+    business_systems: ["库存管理系统", "财务系统", "销售数据系统"]
+    technical_sources: ["sap", "sap"]
+
+  on_time_delivery:
+    primary_sources: ["sap"]
+    secondary_sources: ["sap"]
+    data_flow:
+      - source: "sap"
+        table: "sales_orders"
+        fields: ["order_id", "order_date", "requested_delivery_date", "actual_delivery_date"]
+        refresh_frequency: "monthly"
+      - source: "sap"
+        table: "shipment_tracking"
+        fields: ["shipment_id", "dispatch_date", "delivery_date", "carrier_performance"]
+        refresh_frequency: "monthly"
+    calculation_logic: "on_time_deliveries / total_deliveries * 100"
+    business_systems: ["订单管理系统", "物流系统", "交付记录系统"]
+    technical_sources: ["sap", "sap"]
+
+  procurement_savings:
+    primary_sources: ["sap"]
+    secondary_sources: ["sap"]
+    data_flow:
+      - source: "sap"
+        table: "procurement_contracts"
+        fields: ["contract_id", "original_price", "negotiated_price", "savings_amount", "supplier_id"]
+        refresh_frequency: "quarterly"
+      - source: "sap"
+        table: "purchasing_analysis"
+        fields: ["material_code", "cost_reduction", "volume_discount", "term_improvement"]
+        refresh_frequency: "quarterly"
+    calculation_logic: "original_price - negotiated_price"
+    business_systems: ["采购系统", "财务系统", "成本核算系统"]
+    technical_sources: ["sap", "sap"]
+
+  supplier_performance:
+    primary_sources: ["sap"]
+    secondary_sources: ["sfc", "sap"]
+    data_flow:
+      - source: "sap"
+        table: "supplier_evaluation"
+        fields: ["supplier_id", "quality_score", "delivery_score", "price_score", "evaluation_date"]
+        refresh_frequency: "quarterly"
+      - source: "sfc"
+        table: "supplier_quality"
+        fields: ["supplier_id", "defect_rate", "quality_issues", "compliance_score"]
+        refresh_frequency: "quarterly"
+      - source: "sap"
+        table: "supplier_delivery"
+        fields: ["supplier_id", "on_time_delivery", "delivery_accuracy", "lead_time"]
+        refresh_frequency: "quarterly"
+    calculation_logic: "(quality_score * 0.4 + delivery_score * 0.3 + price_score * 0.3) * 100"
+    business_systems: ["供应商评估系统", "质量记录", "交付记录"]
+    technical_sources: ["sap", "sfc", "sap"]
+
+  backlog_value:
+    primary_sources: ["sap"]
+    secondary_sources: ["sap"]
+    data_flow:
+      - source: "sap"
+        table: "sales_orders"
+        fields: ["order_id", "order_date", "order_value", "delivery_status", "customer_id"]
+        refresh_frequency: "weekly"
+      - source: "sap"
+        table: "order_valuation"
+        fields: ["order_id", "current_value", "currency", "valuation_date"]
+        refresh_frequency: "weekly"
+    calculation_logic: "SUM(order_value) WHERE delivery_status = 'PENDING'"
+    business_systems: ["订单管理系统", "财务系统", "销售数据"]
+    technical_sources: ["sap", "sap"]
+
+  backlog_weeks:
+    primary_sources: ["sap", "mes"]
+    secondary_sources: []
+    data_flow:
+      - source: "sap"
+        table: "production_orders"
+        fields: ["order_id", "order_date", "requested_delivery_date", "production_weeks_required"]
+        refresh_frequency: "weekly"
+      - source: "mes"
+        table: "production_capacity"
+        fields: ["week_number", "available_capacity", "scheduled_production", "capacity_utilization"]
+        refresh_frequency: "weekly"
+    calculation_logic: "SUM(production_weeks_required) WHERE order_status = 'BACKLOG'"
+    business_systems: ["订单管理系统", "生产计划系统", "生产执行系统"]
+    technical_sources: ["sap", "mes"]
+
+  total_inventory:
+    primary_sources: ["sap"]
+    secondary_sources: ["sap", "mes"]
+    data_flow:
+      - source: "sap"
+        table: "inventory_balance"
+        fields: ["material_code", "wip_value", "fg_value", "rm_value", "storage_location"]
+        refresh_frequency: "monthly"
+      - source: "sap"
+        table: "inventory_valuation"
+        fields: ["material_code", "total_value", "valuation_method", "currency"]
+        refresh_frequency: "monthly"
+      - source: "mes"
+        table: "wip_tracking"
+        fields: ["work_order_id", "wip_quantity", "completion_percentage", "estimated_value"]
+        refresh_frequency: "monthly"
+    calculation_logic: "wip_value + fg_value + rm_value"
+    business_systems: ["库存管理系统", "财务系统", "生产数据"]
+    technical_sources: ["sap", "sap", "mes"]
+
+  inventory_turnover_rate:
+    primary_sources: ["sap", "sap"]
+    secondary_sources: []
+    data_flow:
+      - source: "sap"
+        table: "inventory_movements"
+        fields: ["material_code", "movement_type", "quantity", "value", "transaction_date"]
+        refresh_frequency: "monthly"
+      - source: "sap"
+        table: "cost_analysis"
+        fields: ["period", "cogs_amount", "average_inventory", "turnover_ratio"]
+        refresh_frequency: "monthly"
+    calculation_logic: "cogs_amount / average_inventory_value"
+    business_systems: ["库存管理系统", "财务系统", "销售数据"]
+    technical_sources: ["sap", "sap"]
+
+  # 财务部门KPI数据源依赖
+  operating_cost:
+    primary_sources: ["sap"]
+    secondary_sources: ["sap", "sap"]
+    data_flow:
+      - source: "sap"
+        table: "cost_center_accounting"
+        fields: ["cost_center", "direct_cost", "indirect_cost", "period", "cost_element"]
+        refresh_frequency: "monthly"
+      - source: "sap"
+        table: "operational_expenses"
+        fields: ["expense_type", "amount", "department", "expense_date"]
+        refresh_frequency: "monthly"
+      - source: "sap"
+        table: "labor_costs"
+        fields: ["department", "salary_cost", "benefit_cost", "overtime_cost"]
+        refresh_frequency: "monthly"
+    calculation_logic: "direct_cost + indirect_cost"
+    business_systems: ["财务系统", "成本核算系统", "预算系统"]
+    technical_sources: ["sap", "sap", "sap"]
+
+  return_on_investment:
+    primary_sources: ["sap"]
+    secondary_sources: ["sap"]
+    data_flow:
+      - source: "sap"
+        table: "investment_tracking"
+        fields: ["investment_id", "investment_cost", "return_amount", "calculation_period"]
+        refresh_frequency: "quarterly"
+      - source: "sap"
+        table: "project_returns"
+        fields: ["project_id", "project_cost", "project_revenue", "completion_date"]
+        refresh_frequency: "quarterly"
+    calculation_logic: "(investment_return - investment_cost) / investment_cost * 100"
+    business_systems: ["财务系统", "投资记录", "收益记录"]
+    technical_sources: ["sap", "sap"]
+
+  cash_flow:
+    primary_sources: ["sap"]
+    secondary_sources: ["sap"]
+    data_flow:
+      - source: "sap"
+        table: "cash_flow_statement"
+        fields: ["cash_inflow", "cash_outflow", "net_cash_flow", "period", "flow_type"]
+        refresh_frequency: "monthly"
+      - source: "sap"
+        table: "bank_transactions"
+        fields: ["transaction_date", "transaction_amount", "transaction_type", "account_id"]
+        refresh_frequency: "monthly"
+    calculation_logic: "cash_inflow - cash_outflow"
+    business_systems: ["财务系统", "银行账户", "现金日记账"]
+    technical_sources: ["sap", "sap"]
+
+  budget_execution_rate:
+    primary_sources: ["sap"]
+    secondary_sources: ["sap"]
+    data_flow:
+      - source: "sap"
+        table: "budget_control"
+        fields: ["budget_item", "budgeted_amount", "actual_spent", "variance", "period"]
+        refresh_frequency: "monthly"
+      - source: "sap"
+        table: "expense_tracking"
+        fields: ["expense_category", "planned_budget", "actual_expense", "remaining_budget"]
+        refresh_frequency: "monthly"
+    calculation_logic: "actual_spent / budgeted_amount * 100"
+    business_systems: ["预算系统", "财务系统", "支出记录"]
+    technical_sources: ["sap", "sap"]
+
+  # 设备部门KPI数据源依赖
+  equipment_availability:
+    primary_sources: ["oee", "mes"]
+    secondary_sources: ["mes"]
+    data_flow:
+      - source: "oee"
+        table: "equipment_status"
+        fields: ["equipment_id", "status", "timestamp", "duration", "downtime_reason"]
+        refresh_frequency: "hourly"
+      - source: "mes"
+        table: "equipment_schedule"
+        fields: ["equipment_id", "scheduled_time", "actual_run_time", "setup_time"]
+        refresh_frequency: "hourly"
+      - source: "mes"
+        table: "maintenance_log"
+        fields: ["equipment_id", "maintenance_type", "start_time", "end_time", "reason"]
+        refresh_frequency: "daily"
+    calculation_logic: "actual_run_time / scheduled_time * 100"
+    business_systems: ["设备管理系统(EMS)", "运行记录系统", "维护记录系统"]
+    technical_sources: ["oee", "mes", "mes"]
+
+  pm_completion_rate:
+    primary_sources: ["mes"]
+    secondary_sources: []
+    data_flow:
+      - source: "mes"
+        table: "preventive_maintenance"
+        fields: ["pm_id", "equipment_id", "scheduled_date", "completed_date", "status"]
+        refresh_frequency: "weekly"
+    calculation_logic: "on_time_completed_pm / total_scheduled_pm * 100"
+    business_systems: ["维护管理系统", "维护计划系统", "维护记录系统"]
+    technical_sources: ["mes"]
+
+  equipment_failure_rate:
+    primary_sources: ["oee", "mes"]
+    secondary_sources: ["mes"]
+    data_flow:
+      - source: "oee"
+        table: "equipment_failures"
+        fields: ["equipment_id", "failure_date", "failure_type", "downtime_duration", "failure_count"]
+        refresh_frequency: "daily"
+      - source: "mes"
+        table: "equipment_runtime"
+        fields: ["equipment_id", "run_date", "total_runtime", "production_time"]
+        refresh_frequency: "daily"
+      - source: "mes"
+        table: "failure_analysis"
+        fields: ["failure_id", "equipment_id", "failure_cause", "repair_time", "failure_classification"]
+        refresh_frequency: "monthly"
+    calculation_logic: "failure_count / total_runtime"
+    business_systems: ["设备管理系统", "故障记录", "运行记录"]
+    technical_sources: ["oee", "mes", "mes"]
+
+  maintenance_cost:
+    primary_sources: ["sap", "mes"]
+    secondary_sources: ["mes"]
+    data_flow:
+      - source: "sap"
+        table: "maintenance_accounting"
+        fields: ["maintenance_type", "labor_cost", "material_cost", "external_service_cost", "period"]
+        refresh_frequency: "monthly"
+      - source: "mes"
+        table: "maintenance_work_orders"
+        fields: ["work_order_id", "equipment_id", "maintenance_cost", "completion_date", "maintenance_type"]
+        refresh_frequency: "monthly"
+      - source: "mes"
+        table: "equipment_downtime"
+        fields: ["equipment_id", "downtime_cost", "production_loss", "repair_cost"]
+        refresh_frequency: "monthly"
+    calculation_logic: "preventive_maintenance_cost + corrective_maintenance_cost"
+    business_systems: ["财务系统", "维护记录", "成本核算系统"]
+    technical_sources: ["sap", "mes", "mes"]
+
+  # 设施部门KPI数据源依赖
+  energy_consumption:
+    primary_sources: ["sharepoint"]
+    secondary_sources: ["mes"]
+    data_flow:
+      - source: "sharepoint"
+        table: "energy_metering"
+        fields: ["meter_id", "consumption_kwh", "reading_date", "energy_type", "cost_center"]
+        refresh_frequency: "daily"
+      - source: "mes"
+        table: "production_output"
+        fields: ["production_date", "production_quantity", "line_id", "product_code"]
+        refresh_frequency: "daily"
+    calculation_logic: "total_energy_consumption / production_quantity"
+    business_systems: ["能源管理系统", "电表读数", "能源账单"]
+    technical_sources: ["sharepoint", "mes"]
+
+  facility_maintenance_cost:
+    primary_sources: ["sap", "sharepoint"]
+    secondary_sources: []
+    data_flow:
+      - source: "sap"
+        table: "facility_expenses"
+        fields: ["expense_type", "cost_amount", "facility_area", "maintenance_date"]
+        refresh_frequency: "monthly"
+      - source: "sharepoint"
+        table: "maintenance_records"
+        fields: ["maintenance_id", "facility_area", "maintenance_cost", "completion_date"]
+        refresh_frequency: "monthly"
+    calculation_logic: "routine_maintenance_cost + repair_cost"
+    business_systems: ["财务系统", "维护记录", "成本核算系统"]
+    technical_sources: ["sap", "sharepoint"]
+
+  safety_incident_rate:
+    primary_sources: ["sharepoint", "sap"]
+    secondary_sources: []
+    data_flow:
+      - source: "sharepoint"
+        table: "safety_incidents"
+        fields: ["incident_date", "incident_type", "severity_level", "affected_area"]
+        refresh_frequency: "monthly"
+      - source: "sap"
+        table: "work_hours"
+        fields: ["department", "total_hours", "employee_count", "period"]
+        refresh_frequency: "monthly"
+    calculation_logic: "safety_incident_count / total_work_hours"
+    business_systems: ["安全管理系统", "事故报告", "工时记录"]
+    technical_sources: ["sharepoint", "sap"]
+
+  environmental_compliance:
+    primary_sources: ["sharepoint"]
+    secondary_sources: ["sharepoint"]
+    data_flow:
+      - source: "sharepoint"
+        table: "compliance_monitoring"
+        fields: ["compliance_item", "check_result", "check_date", "regulation_reference"]
+        refresh_frequency: "quarterly"
+      - source: "sharepoint"
+        table: "environmental_reports"
+        fields: ["report_date", "emission_levels", "waste_disposal", "compliance_status"]
+        refresh_frequency: "quarterly"
+    calculation_logic: "compliant_itmes / total_checked_itmes * 100"
+    business_systems: ["环境监测系统", "合规检查记录", "环境报告"]
+    technical_sources: ["sharepoint", "sharepoint"]
+
+  # 安全部门KPI数据源依赖
+  trir_total_recordable_incident_rate:
+    primary_sources: ["sharepoint", "sap"]
+    secondary_sources: []
+    data_flow:
+      - source: "sharepoint"
+        table: "recordable_incidents"
+        fields: ["incident_date", "incident_type", "severity", "days_lost", "restricted_days"]
+        refresh_frequency: "monthly"
+      - source: "sap"
+        table: "work_hours_summary"
+        fields: ["period", "total_work_hours", "employee_count", "department"]
+        refresh_frequency: "monthly"
+    calculation_logic: "recordable_incidents * 200,000 / total_work_hours"
+    business_systems: ["安全管理系统", "事故报告", "工时记录"]
+    technical_sources: ["sharepoint", "sap"]
+
+  recordable_incidents:
+    primary_sources: ["sharepoint"]
+    secondary_sources: []
+    data_flow:
+      - source: "sharepoint"
+        table: "incident_tracking"
+        fields: ["incident_id", "incident_date", "incident_category", "recordable_flag", "severity"]
+        refresh_frequency: "monthly"
+    calculation_logic: "COUNT(incidents) WHERE recordable_flag = 'YES'"
+    business_systems: ["安全管理系统", "事故报告"]
+    technical_sources: ["sharepoint"]
+
+  hazard_findings:
+    primary_sources: ["sharepoint"]
+    secondary_sources: []
+    data_flow:
+      - source: "sharepoint"
+        table: "hazard_inspections"
+        fields: ["inspection_date", "hazard_id", "hazard_type", "risk_level", "status"]
+        refresh_frequency: "monthly"
+    calculation_logic: "COUNT(hazard_records) WHERE status = 'IDENTIFIED'"
+    business_systems: ["安全管理系统", "隐患检查记录"]
+    technical_sources: ["sharepoint"]
+
+# 数据源使用统计
+source_usage_summary:
+  sfc:
+    kpi_count: 12
+    primary_for: ["fpy_first_pass_yield", "ncr_non_conformance_rate", "capa_completion_rate"]
+    refresh_patterns: ["daily", "weekly", "monthly"]
+  
+  mes:
+    kpi_count: 18
+    primary_for: ["oee_overall_equipment_effectiveness", "pcp_production_completion_rate", "equipment_availability"]
+    refresh_patterns: ["hourly", "daily", "weekly"]
+  
+  sap:
+    kpi_count: 20
+    primary_for: ["manufacturing_variances", "operating_cost", "inventory_turns"]
+    refresh_patterns: ["monthly", "quarterly", "yearly"]
+  
+  sharepoint:
+    kpi_count: 15
+    primary_for: ["ci_project_completion_rate", "cost_savings", "employee_engagement"]
+    refresh_patterns: ["monthly", "quarterly", "yearly"]
+  
+  oee:
+    kpi_count: 4
+    primary_for: ["oee_overall_equipment_effectiveness", "equipment_availability"]
+    refresh_patterns: ["hourly", "daily"]
+  
+  powerbi:
+    kpi_count: 1
+    primary_for: ["所有KPI的最终展示"]
+    refresh_patterns: ["on_demand"]

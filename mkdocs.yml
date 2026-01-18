@@ -1,0 +1,95 @@
+site_name: MDDAP 数据平台文档 (V2)
+site_description: 数字化数据分析平台技术与用户文档
+site_author: MDDAP Team
+
+repo_url: https://github.com/khuang1987/250418_MDDAP_project
+repo_name: MDDAP Project
+
+theme:
+  name: material
+  language: zh
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.expand
+    - navigation.top
+    - search.suggest
+    - search.highlight
+    - content.code.copy
+  palette:
+    # Light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to dark mode
+    # Dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/weather-night
+        name: Switch to light mode
+
+plugins:
+  - search
+  - git-revision-date-localized:
+      enable_creation_date: true
+      type: timeago
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - attr_list
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tabbed:
+      alternate_style: true
+  - tables
+  - toc:
+      permalink: true
+
+nav:
+  - 🏠 首页: index.md
+  
+  - 📖 快速入门:
+    - 平台简介: introduction/index.md
+
+  - 💼 业务逻辑 (Business):
+    - 数据定义与来源: business/data-definitions.md
+    - 核心计算逻辑: business/logic.md
+    - KPI 指标体系:
+      - 指标概览: business/kpi/index.md
+      - SA (达成率): business/kpi/sa.md
+      - 生产与质量: business/kpi/quality.md
+
+  - 🚨 智能监控 (Monitoring):
+    - 监控体系概览: monitoring/overview.md
+    - 预警规则 (Rules): monitoring/triggers.md
+    - Planner 闭环集成: monitoring/planner-integration.md
+
+  - 📚 知识库 (Knowledge Base):
+    - 知识库首页: knowledge-base/index.md
+    - 操作与运维: knowledge-base/operations.md
+    - 故障排查: knowledge-base/troubleshooting.md
+    - 常见问题 (FAQ): knowledge-base/faq.md
+
+  - 🛠️ 开发者指南 (Developer):
+    - 架构设计: developer/data-architecture.md
+    - 并行调度器: developer/orchestrator.md
+    - ETL 流程详解: developer/etl-process.md
+    - 代码规范: developer/standards/index.md
+    - Power Query:
+      - 概览: developer/pq/index.md
+      - 增量刷新: developer/pq/incremental-refresh.md
+
+  - 📂 归档文档 (Archive):
+    - archive/legacy_backup/index.md
+
+docs_dir: docs

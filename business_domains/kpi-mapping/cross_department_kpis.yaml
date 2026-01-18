@@ -1,0 +1,290 @@
+# 跨部门KPI定义
+# 定义需要多个部门协作计算的复合KPI
+
+cross_department_kpis:
+  overall_equipment_effectiveness:
+    name: "整体设备效率"
+    description: "综合衡量设备生产效率的关键指标"
+    primary_department: "equipment-dept"
+    contributing_departments:
+      - "production-dept"  # 提供生产数据
+      - "quality-dept"     # 提供质量数据
+      - "equipment-dept"   # 提供维护数据
+    data_sources: ["oee", "mes", "sfc"]
+    calculation_formula: "availability * performance * quality"
+    reporting_frequency: "daily"
+    stakeholders:
+      - "设备经理"
+      - "生产经理"
+      - "质量经理"
+      - "工厂厂长"
+    data_flow:
+      - source: "oee"
+        department: "equipment-dept"
+        metrics: ["availability", "performance"]
+        refresh_frequency: "hourly"
+      - source: "mes"
+        department: "production-dept"
+        metrics: ["production_time", "downtime"]
+        refresh_frequency: "hourly"
+      - source: "sfc"
+        department: "quality-dept"
+        metrics: ["quality_rate", "defect_count"]
+        refresh_frequency: "daily"
+    kpi_dependencies:
+      - "equipment_availability"
+      - "labor_efficiency"
+      - "fpy_first_pass_yield"
+
+  total_cost_of_ownership:
+    name: "总拥有成本"
+    description: "设备全生命周期成本分析"
+    primary_department: "finance-dept"
+    contributing_departments:
+      - "equipment-dept"   # 设备采购成本
+      - "facilities-dept"  # 设施运营成本
+      - "ci-dept"          # 改进节约成本
+    data_sources: ["sap", "sharepoint", "mes"]
+    calculation_formula: "acquisition_cost + operating_cost - savings_achieved"
+    reporting_frequency: "monthly"
+    stakeholders:
+      - "财务总监"
+      - "设备经理"
+      - "设施经理"
+      - "CI经理"
+    data_flow:
+      - source: "sap"
+        department: "finance-dept"
+        metrics: ["acquisition_cost", "depreciation", "operating_cost"]
+        refresh_frequency: "monthly"
+      - source: "sharepoint"
+        department: "ci-dept"
+        metrics: ["cost_savings", "efficiency_improvements"]
+        refresh_frequency: "quarterly"
+      - source: "mes"
+        department: "equipment-dept"
+        metrics: ["maintenance_cost", "energy_consumption"]
+        refresh_frequency: "monthly"
+    kpi_dependencies:
+      - "maintenance_cost"
+      - "cost_savings"
+      - "operating_cost"
+
+  production_quality_index:
+    name: "生产质量指数"
+    description: "综合生产质量和效率指标"
+    primary_department: "quality-dept"
+    contributing_departments:
+      - "production-dept"  # 生产效率数据
+      - "equipment-dept"   # 设备状态数据
+      - "supply-chain-dept" # 物料质量数据
+    data_sources: ["sfc", "mes", "oee", "sap"]
+    calculation_formula: "(first_pass_yield * 0.4 + production_efficiency * 0.3 + equipment_availability * 0.2 + material_quality * 0.1) * 100"
+    reporting_frequency: "daily"
+    stakeholders:
+      - "质量总监"
+      - "生产经理"
+      - "设备经理"
+      - "供应链经理"
+    data_flow:
+      - source: "sfc"
+        department: "quality-dept"
+        metrics: ["first_pass_yield", "defect_rate"]
+        refresh_frequency: "daily"
+      - source: "mes"
+        department: "production-dept"
+        metrics: ["production_completion_rate", "cycle_time"]
+        refresh_frequency: "daily"
+      - source: "oee"
+        department: "equipment-dept"
+        metrics: ["equipment_availability", "performance_rate"]
+        refresh_frequency: "hourly"
+      - source: "sap"
+        department: "supply-chain-dept"
+        metrics: ["material_quality_score", "supplier_performance"]
+        refresh_frequency: "monthly"
+    kpi_dependencies:
+      - "fpy_first_pass_yield"
+      - "pcp_production_completion_rate"
+      - "equipment_availability"
+      - "supplier_performance"
+
+  operational_excellence_score:
+    name: "运营卓越评分"
+    description: "综合运营效率和质量表现评分"
+    primary_department: "ci-dept"
+    contributing_departments:
+      - "production-dept"  # 生产效率
+      - "quality-dept"     # 质量表现
+      - "equipment-dept"   # 设备效率
+      - "safety-dept"      # 安全表现
+    data_sources: ["sharepoint", "sfc", "mes", "oee", "sap"]
+    calculation_formula: "weighted_sum(production_score, quality_score, equipment_score, safety_score, ci_score)"
+    reporting_frequency: "monthly"
+    stakeholders:
+      - "工厂厂长"
+      - "CI总监"
+      - "各部门经理"
+    data_flow:
+      - source: "sharepoint"
+        department: "ci-dept"
+        metrics: ["project_completion_rate", "employee_engagement", "cost_savings"]
+        refresh_frequency: "monthly"
+      - source: "sfc"
+        department: "quality-dept"
+        metrics: ["quality_score", "complaint_rate"]
+        refresh_frequency: "monthly"
+      - source: "mes"
+        department: "production-dept"
+        metrics: ["production_efficiency", "capacity_utilization"]
+        refresh_frequency: "daily"
+      - source: "oee"
+        department: "equipment-dept"
+        metrics: ["equipment_performance", "availability"]
+        refresh_frequency: "hourly"
+      - source: "sap"
+        department: "safety-dept"
+        metrics: ["safety_incident_rate", "trir_score"]
+        refresh_frequency: "monthly"
+    kpi_dependencies:
+      - "ci_project_completion_rate"
+      - "fpy_first_pass_yield"
+      - "oee_overall_equipment_effectiveness"
+      - "trir_total_recordable_incident_rate"
+
+  supply_chain_resilience:
+    name: "供应链韧性指数"
+    description: "衡量供应链稳定性和抗风险能力"
+    primary_department: "supply-chain-dept"
+    contributing_departments:
+      - "production-dept"  # 生产需求
+      - "quality-dept"     # 供应商质量
+      - "finance-dept"     # 成本控制
+    data_sources: ["sap", "sharepoint", "sfc"]
+    calculation_formula: "(inventory_turnover * 0.3 + supplier_performance * 0.3 + on_time_delivery * 0.2 + cost_stability * 0.2) * 100"
+    reporting_frequency: "monthly"
+    stakeholders:
+      - "供应链总监"
+      - "采购经理"
+      - "库存经理"
+      - "财务经理"
+    data_flow:
+      - source: "sap"
+        department: "supply-chain-dept"
+        metrics: ["inventory_turns", "on_time_delivery", "procurement_cost"]
+        refresh_frequency: "monthly"
+      - source: "sharepoint"
+        department: "supply-chain-dept"
+        metrics: ["supplier_risk_assessment", "disaster_recovery_score"]
+        refresh_frequency: "quarterly"
+      - source: "sfc"
+        department: "quality-dept"
+        metrics: ["supplier_quality_performance", "incoming_inspection_rate"]
+        refresh_frequency: "monthly"
+    kpi_dependencies:
+      - "inventory_turns"
+      - "on_time_delivery"
+      - "supplier_performance"
+
+  sustainability_index:
+    name: "可持续发展指数"
+    description: "综合环境、安全、能源效率指标"
+    primary_department: "facilities-dept"
+    contributing_departments:
+      - "safety-dept"      # 安全表现
+      - "equipment-dept"   # 能源效率
+      - "production-dept"  # 生产优化
+    data_sources: ["sharepoint", "sap", "mes", "oee"]
+    calculation_formula: "(environmental_compliance * 0.3 + energy_efficiency * 0.3 + safety_performance * 0.2 + waste_reduction * 0.2) * 100"
+    reporting_frequency: "quarterly"
+    stakeholders:
+      - "设施总监"
+      - "环境经理"
+      - "安全经理"
+      - "设备经理"
+    data_flow:
+      - source: "sharepoint"
+        department: "facilities-dept"
+        metrics: ["environmental_compliance", "energy_consumption", "waste_management"]
+        refresh_frequency: "quarterly"
+      - source: "sap"
+        department: "safety-dept"
+        metrics: ["safety_incident_rate", "compliance_score"]
+        refresh_frequency: "monthly"
+      - source: "mes"
+        department: "production-dept"
+        metrics: ["production_efficiency", "resource_utilization"]
+        refresh_frequency: "daily"
+      - source: "oee"
+        department: "equipment-dept"
+        metrics: ["energy_efficiency", "equipment_performance"]
+        refresh_frequency: "hourly"
+    kpi_dependencies:
+      - "environmental_compliance"
+      - "energy_consumption"
+      - "safety_incident_rate"
+      - "oee_overall_equipment_effectiveness"
+
+# 跨部门KPI统计信息
+cross_kpi_summary:
+  total_cross_department_kpis: 6
+  department_participation:
+    production-dept: 5
+    quality-dept: 4
+    equipment-dept: 5
+    ci-dept: 3
+    supply-chain-dept: 3
+    finance-dept: 2
+    facilities-dept: 2
+    safety-dept: 3
+  data_source_complexity:
+    single_source: 0
+    dual_source: 1
+    multi_source: 5
+  reporting_frequency:
+    daily: 2
+    monthly: 3
+    quarterly: 1
+
+# 协作规则定义
+collaboration_rules:
+  data_sharing:
+    - "主要部门负责数据汇总和计算"
+    - "贡献部门按时提供基础数据"
+    - "数据质量由数据提供部门负责"
+    - "跨部门数据异常需要联合调查"
+  
+  responsibility_matrix:
+    primary_department:
+      - "负责KPI计算和报告生成"
+      - "协调数据收集时间表"
+      - "处理数据异常和缺失"
+    contributing_departments:
+      - "按时提供准确的基础数据"
+      - "配合数据质量验证"
+      - "参与KPI分析和改进"
+  
+  escalation_process:
+    level_1: "部门间数据协调问题"
+    level_2: "KPI计算方法争议"
+    level_3: "跨部门战略目标调整"
+
+# 技术实现要求
+technical_requirements:
+  orchestration:
+    - "支持跨数据源的依赖解析"
+    - "实现数据收集的自动调度"
+    - "提供数据质量监控机制"
+    - "支持异常情况的自动通知"
+  
+  data_consistency:
+    - "统一时间戳格式"
+    - "统一数据精度标准"
+    - "统一计算周期定义"
+    - "统一异常处理规则"
+  
+  performance:
+    - "跨部门KPI计算延迟不超过30分钟"
+    - "支持增量数据更新"
+    - "提供数据血缘追溯"
+    - "支持历史数据重算"

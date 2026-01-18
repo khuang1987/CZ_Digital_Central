@@ -1,0 +1,239 @@
+﻿==========================================================================================
+SQL Server vs ETL 引用对照报告
+==========================================================================================
+SQL Server: localhost\SQLEXPRESS / DB: mddap_v2
+Scanned python files: 106
+-
+SQL objects: tables=24, views=1
+Referenced table/view tokens in code: 81
+
+==========================================================================================
+A) SQL Server 存在但代码未引用（可疑多余/历史遗留候选）
+==========================================================================================
+- table: dbo.raw_calendar rows=0
+- table: dbo.KPI_Definition rows=3
+- table: dbo.TriggerCaseRegistry rows=5
+- table: dbo.etl_run_log rows=8
+- table: dbo.KPI_Data rows=364
+- table: dbo.etl_file_state rows=509
+- table: dbo.planned_labor_hours rows=510
+
+==========================================================================================
+B) 代码引用但 SQL Server 中不存在（ETL/命名/迁移可能缺失）
+==========================================================================================
+- mes_metrics_current (refs=1):
+    - scripts\_refresh_mes_metrics_materialized.py
+- mes_metrics_YYYYMM (refs=1):
+    - scripts\_export_mes_to_parquet.py
+- planner_path (refs=1):
+    - data_pipelines\sources\planner\etl\etl_planner_tasks_raw.py
+- planner_task_id (refs=1):
+    - data_pipelines\monitoring\etl\etl_alert_engine.py
+- Planner_task_labels_latest (refs=1):
+    - scripts\export_core_to_a1.py
+- Planner_tasks_latest (refs=1):
+    - scripts\export_core_to_a1.py
+- raw_cnt (refs=3):
+    - scripts\_clear_sqlserver_mes.py
+    - scripts\_temp_purge_all_mes.py
+    - scripts\purge_mes_raw_by_year.py
+- raw_cnt_after (refs=1):
+    - scripts\_clear_sqlserver_mes.py
+- raw_count (refs=1):
+    - scripts\_verify_2025_data.py
+- raw_df (refs=2):
+    - data_pipelines\sources\sfc\etl\etl_dataclean_sfc_product_inspection.py
+    - scripts\test_mes_raw_etl.py
+- raw_labels (refs=1):
+    - data_pipelines\sources\planner\etl\etl_planner_tasks_raw.py
+- raw_labels_str (refs=1):
+    - data_pipelines\sources\planner\etl\etl_planner_tasks_raw.py
+- raw_mes_rows (refs=1):
+    - scripts\refresh_mes_full.py
+- raw_mes_rows_after (refs=1):
+    - scripts\refresh_mes_full.py
+- raw_results (refs=1):
+    - data_pipelines\monitoring\etl\etl_alert_engine.py
+- raw_status (refs=1):
+    - data_pipelines\monitoring\etl\etl_alert_engine.py
+- raw_total (refs=2):
+    - scripts\_refresh_mes_metrics_materialized.py
+    - scripts\_verify_filtered_data.py
+- SAP_EH_labor (refs=1):
+    - scripts\update_db_view.py
+- SAP_EH_machine (refs=1):
+    - scripts\update_db_view.py
+- sap_labor_hours (refs=1):
+    - scripts\export_core_to_a1.py
+- SAP_OEE (refs=1):
+    - scripts\update_db_view.py
+- SAP_Quantity (refs=1):
+    - scripts\update_db_view.py
+- sap_routing (refs=5):
+    - data_pipelines\sources\sap\etl\etl_dataclean_sap_routing.py
+    - scripts\debug\debug_paths.py
+    - scripts\debug\debug_sap_config.py
+    - scripts\export_core_to_a1.py
+    - scripts\validation\etl_validate_sa_results.py
+- sap_routing_dedup (refs=2):
+    - scripts\_diagnose_routing_issue.py
+    - scripts\update_db_view.py
+- sap_routing_dedup_by_product (refs=1):
+    - scripts\update_db_view.py
+- sap_routing_latest (refs=4):
+    - data_pipelines\sources\mes\etl\etl_dataclean_mes_batch_report.py
+    - data_pipelines\sources\sap\etl\etl_dataclean_sap_routing.py
+    - data_pipelines\sources\sfc\etl\etl_dataclean_sfc_batch_report.py
+    - scripts\export_core_to_a1.py
+- SAP_Routing_latest (refs=3):
+    - data_pipelines\sources\sap\etl\etl_dataclean_sap_routing.py
+    - scripts\export_core_to_a1.py
+    - scripts\validation\etl_validate_sa_results.py
+- sap_routing_raw (refs=1):
+    - data_pipelines\sources\sap\etl\etl_sap_routing_raw.py
+- sap_routing_raw_ (refs=1):
+    - data_pipelines\sources\sap\etl\etl_sap_routing_raw.py
+- SAP_SetupTime (refs=1):
+    - scripts\update_db_view.py
+- sfc_agg (refs=1):
+    - scripts\update_db_view.py
+- sfc_batch_output_raw (refs=1):
+    - data_pipelines\sources\sfc\etl\etl_sfc_batch_output_raw.py
+- sfc_batch_report (refs=2):
+    - data_pipelines\sources\sfc\etl\etl_dataclean_sfc_batch_report.py
+    - scripts\export_core_to_a1.py
+- SFC_batch_report_latest (refs=4):
+    - data_pipelines\sources\mes\etl\etl_dataclean_mes_batch_report.py
+    - data_pipelines\sources\sfc\etl\etl_dataclean_sfc_batch_report.py
+    - scripts\export_core_to_a1.py
+    - scripts\validation\etl_validate_sa_results.py
+- sfc_batch_report_latest (refs=2):
+    - data_pipelines\sources\sfc\etl\etl_dataclean_sfc_batch_report.py
+    - scripts\export_core_to_a1.py
+- sfc_batches (refs=1):
+    - scripts\debug\debug_batch_matching.py
+- sfc_col (refs=1):
+    - data_pipelines\sources\sfc\etl\etl_dataclean_sfc_batch_report.py
+- sfc_config (refs=1):
+    - scripts\validation\etl_validate_sa_results.py
+- sfc_df (refs=6):
+    - data_pipelines\sources\mes\etl\etl_dataclean_mes_batch_report.py
+    - data_pipelines\sources\sfc\etl\etl_dataclean_sfc_batch_report.py
+    - scripts\debug\debug_batch_matching.py
+    - scripts\debug\debug_data_matching.py
+    - scripts\debug\debug_operation_format.py
+    - scripts\validation\etl_validate_sa_results.py
+- sfc_df_before_filter (refs=1):
+    - data_pipelines\sources\sfc\etl\etl_dataclean_sfc_batch_report.py
+- sfc_files (refs=1):
+    - data_pipelines\sources\sfc\etl\etl_dataclean_sfc_batch_report.py
+- sfc_formats (refs=1):
+    - scripts\debug\debug_batch_matching.py
+- sfc_inspection_raw (refs=1):
+    - data_pipelines\sources\sfc\etl\etl_sfc_inspection_raw.py
+- sfc_join_cols (refs=1):
+    - data_pipelines\sources\mes\etl\etl_dataclean_mes_batch_report.py
+- sfc_keys (refs=1):
+    - scripts\debug\debug_data_matching.py
+- sfc_latest_file (refs=5):
+    - data_pipelines\sources\mes\etl\etl_dataclean_mes_batch_report.py
+    - data_pipelines\sources\sfc\etl\etl_dataclean_sfc_batch_report.py
+    - scripts\debug\debug_batch_matching.py
+    - scripts\debug\debug_data_matching.py
+    - scripts\debug\debug_operation_format.py
+- sfc_mapping (refs=1):
+    - data_pipelines\sources\sfc\etl\etl_dataclean_sfc_batch_report.py
+- sfc_only_batches (refs=1):
+    - scripts\debug\debug_batch_matching.py
+- sfc_only_keys (refs=1):
+    - scripts\debug\debug_data_matching.py
+- sfc_operations (refs=1):
+    - scripts\debug\debug_operation_format.py
+- sfc_ops_set (refs=1):
+    - scripts\debug\debug_operation_format.py
+- sfc_path (refs=2):
+    - data_pipelines\sources\sfc\etl\etl_dataclean_sfc_batch_report.py
+    - data_pipelines\sources\sfc\etl\etl_sfc_batch_output_raw.py
+- sfc_product_inspection (refs=2):
+    - data_pipelines\sources\sfc\etl\etl_dataclean_sfc_product_inspection.py
+    - scripts\export_core_to_a1.py
+- SFC_Product_Inspection_ (refs=1):
+    - data_pipelines\sources\sfc\etl\etl_dataclean_sfc_product_inspection.py
+- SFC_Product_Inspection_latest (refs=2):
+    - data_pipelines\sources\sfc\etl\etl_dataclean_sfc_product_inspection.py
+    - scripts\export_core_to_a1.py
+- sfc_product_inspection_latest (refs=2):
+    - data_pipelines\sources\sfc\etl\etl_dataclean_sfc_product_inspection.py
+    - scripts\export_core_to_a1.py
+- sfc_repair (refs=1):
+    - scripts\export_core_to_a1.py
+- sfc_result_df (refs=1):
+    - data_pipelines\sources\sfc\etl\etl_dataclean_sfc_batch_report.py
+- sfc_results (refs=1):
+    - scripts\validation\etl_validate_sa_results.py
+- sfc_str_ops (refs=1):
+    - scripts\debug\debug_operation_format.py
+- sfc_types (refs=1):
+    - data_pipelines\sources\sfc\etl\etl_dataclean_sfc_batch_report.py
+- sfc_validation (refs=1):
+    - scripts\validation\etl_validate_sa_results.py
+- sfc_wip_czm (refs=1):
+    - scripts\export_core_to_a1.py
+
+==========================================================================================
+C) SQL Server 表存在但行数为 0（可能 ETL 没跑/写入目标不对）
+==========================================================================================
+- dbo.mes_metrics_snapshot_b rows=0 refs_in_code=1
+    - scripts\_refresh_mes_metrics_materialized.py
+- dbo.raw_calendar rows=0 refs_in_code=0
+- dbo.raw_sfc_inspection rows=0 refs_in_code=2
+    - data_pipelines\sources\sfc\etl\etl_sfc_inspection_raw.py
+    - scripts\validation\compare_row_counts_dual_db.py
+
+==========================================================================================
+D) 仍明显依赖 SQLite/DualDatabaseManager 的脚本（需要确认是否已纯 SQL Server 写入）
+==========================================================================================
+- data_pipelines\monitoring\etl\etl_alert_engine.py
+- data_pipelines\monitoring\etl\etl_kpi_aggregation.py
+- data_pipelines\sources\dimension\etl\etl_calendar.py
+- data_pipelines\sources\dimension\etl\etl_holidays.py
+- data_pipelines\sources\dimension\etl\etl_operation_cleaning.py
+- data_pipelines\sources\dimension\etl\etl_operation_mapping.py
+- data_pipelines\sources\mes\etl\etl_mes_batch_output_raw.py
+- data_pipelines\sources\sap\etl\etl_planned_labor_hours.py
+- data_pipelines\sources\sap\etl\etl_sap_labor_hours.py
+- data_pipelines\sources\sap\etl\etl_sap_routing_raw.py
+- data_pipelines\sources\sap\etl\etl_update_planned_workday.py
+- data_pipelines\sources\sfc\etl\etl_sfc_batch_output_raw.py
+- data_pipelines\sources\sfc\etl\etl_sfc_inspection_raw.py
+- data_pipelines\sources\sfc\etl\etl_sfc_nc.py
+- data_pipelines\sources\sfc\etl\etl_sfc_repair.py
+- data_pipelines\sources\sfc\etl\etl_sfc_wip_czm.py
+- scripts\_clear_sqlite_routing.py
+- scripts\_force_reimport_routing.py
+- scripts\_temp_check_routing_fields.py
+- scripts\_temp_check_routing_match.py
+- scripts\_temp_purge_all_mes.py
+- scripts\_temp_test_routing_match_fixed.py
+- scripts\check_tables.py
+- scripts\debug\inspect_db_view.py
+- scripts\mes_raw_audit.py
+- scripts\migrate\migrate_sqlite_to_sqlserver.py
+- scripts\purge_mes_raw_by_year.py
+- scripts\refresh_mes_full.py
+- scripts\test_mes_raw_etl.py
+- scripts\update_db_view.py
+- scripts\validation\backfill_sqlserver_from_sqlite.py
+- scripts\validation\compare_row_counts_dual_db.py
+- scripts\validation\inventory_sqlserver_vs_etl.py
+- scripts\validation\verify_sa_calculation.py
+
+==========================================================================================
+E) 重点关注（现状推断）
+==========================================================================================
+- 如果某 raw_/dim_ 表在 SQL Server 行数为 0，同时对应 ETL 脚本仍在用 Dual/SQLite 状态逻辑，通常意味着：
+  - ETL 可能写入 SQL Server 失败被吞掉；或
+  - ETL 仍以 SQLite 为主，SQL Server 只是 best-effort；或
+  - 实际写入表名与 SQL Server 表名不一致（大小写/前缀/历史表）
+-
+下一步建议：对每个 raw_ 表执行一次对应 ETL，并在 SQL Server 侧检查行数变化，以确认写入链路。

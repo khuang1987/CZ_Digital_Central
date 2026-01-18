@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SA & LT 指标计算说明</title>
+    <style>
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #34495e;
+            margin-top: 30px;
+            border-left: 4px solid #3498db;
+            padding-left: 15px;
+        }
+        h3 {
+            color: #2980b9;
+            margin-top: 25px;
+        }
+        .formula {
+            background-color: #ecf0f1;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+            font-family: 'Courier New', monospace;
+            border-left: 4px solid #e74c3c;
+        }
+        .example {
+            background-color: #e8f5e8;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            border-left: 4px solid #27ae60;
+        }
+        .warning {
+            background-color: #fff3cd;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            border-left: 4px solid #f39c12;
+        }
+        .info {
+            background-color: #d1ecf1;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            border-left: 4px solid #17a2b8;
+        }
+        .error {
+            background-color: #f8d7da;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            border-left: 4px solid #dc3545;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background-color: #3498db;
+            color: white;
+        }
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        .highlight {
+            background-color: #ffffcc;
+            padding: 2px 4px;
+            border-radius: 3px;
+        }
+        .toc {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 5px;
+            margin-bottom: 30px;
+        }
+        .toc ul {
+            list-style-type: none;
+        }
+        .toc li {
+            margin: 5px 0;
+        }
+        .toc a {
+            text-decoration: none;
+            color: #3498db;
+        }
+        .toc a:hover {
+            text-decoration: underline;
+        }
+        .step {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 10px 0;
+        }
+        .step h4 {
+            margin-top: 0;
+            color: #495057;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>SA & LT 指标计算说明</h1>
+        <p><strong>文档版本:</strong> v2.0</p>
+        <p><strong>更新日期:</strong> 2025-11-26</p>
+        <p><strong>适用范围:</strong> CZM工厂(1303) + CKH工厂(9997)</p>
+
+        <div class="info">
+            <strong>� 说明:</strong> 本文档详细说明SA & LT指标的计算方法和业务逻辑
+        </div>
+
+        <div class="toc">
+            <h3>📋 目录</h3>
+            <ul>
+                <li><a href="#lt-indicators">1. LT相关指标</a></li>
+                <li><a href="#pt-indicators">2. PT相关指标</a></li>
+                <li><a href="#st-indicators">3. ST相关指标</a></li>
+                <li><a href="#sa-indicators">4. SA相关指标</a></li>
+                <li><a href="#calculation-examples">5. 计算示例</a></li>
+                <li><a href="#data-sources">6. 数据源说明</a></li>
+                <li><a href="#notes">7. 重要说明</a></li>
+            </ul>
+        </div>
+
+        <section id="lt-indicators">
+            <h2>📊 LT相关指标</h2>
+            
+            <h3>1.1 LT(d) - 生产周期 (天)</h3>
+            <div class="formula">
+                LT(d) = (TrackOutTime - EnterStepTime) ÷ 24
+            </div>
+            <div class="info">
+                <strong>说明:</strong> 从进入工序到完成工序的实际生产时间，单位为天
+            </div>
+            <div class="example">
+                <strong>示例:</strong> 2025-01-01 08:00 进入 → 2025-01-03 16:00 完成 = 2.33天
+            </div>
+        </section>
+
+        <section id="pt-indicators">
+            <h2>🔧 PT相关指标</h2>
+            
+            <h3>2.1 PT(d) - 实际加工时间 (天)</h3>
+            
+            <div class="info">
+                <strong>定义:</strong> PT(d)指从实际开始加工到完成加工的时间，排除设备停产等待时间，反映真实的生产效率。
+            </div>
+            
+            <div class="formula">
+                <strong>计算公式:</strong><br>
+                PT(d) = (TrackOutTime - StartTime) ÷ 24<br>
+                其中：<br>
+                StartTime = {<br>
+                &nbsp;&nbsp;PreviousBatchEndTime, 如果 EnterStepTime ≤ PreviousBatchEndTime (无停产期)<br>
+                &nbsp;&nbsp;TrackInTime, 如果 EnterStepTime > PreviousBatchEndTime (有停产期)<br>
+                }
+            </div>
+            
+            <div class="example">
+                <strong>计算示例 (K25L2127数控铣):</strong><br>
+                <strong>输入数据:</strong><br>
+                • PreviousBatchEndTime: 2025-11-17 16:04:20<br>
+                • TrackInTime: 2025-11-17 22:21:06<br>
+                • TrackOutTime: 2025-11-24 21:34:59<br>
+                • EnterStepTime: 2025-11-13 08:52:54<br>
+                <br>
+                <strong>计算过程:</strong><br>
+                1. 判断: EnterStepTime (11-13) < PreviousBatchEndTime (11-17) → 无停产期<br>
+                2. StartTime = PreviousBatchEndTime = 2025-11-17 16:04:20<br>
+                3. 实际加工时间 = TrackOutTime - StartTime = 7.1875天<br>
+                4. <strong>PT(d) = 7.23天</strong>
+            </div>
+        </section>
+
+        <section id="st-indicators">
+            <h2>📐 ST相关指标</h2>
+            
+            <h3>3.1 ST(d) - 标准加工时间 (天)</h3>
+            
+            <div class="info">
+                <strong>定义:</strong> ST(d)指基于SAP标准工艺数据计算的理论加工时间，包含调试时间、生产时间和换批时间，用于评估生产效率基准。
+            </div>
+            
+            <div class="formula">
+                <strong>计算公式:</strong><br>
+                ST(d) = (SetupTime + ProductionTime + ChangeoverTime) ÷ 24<br>
+                其中：<br>
+                • SetupTime = Setup Time (h), 如果Setup="Yes"<br>
+                • ProductionTime = (TotalQuantity × UnitTime ÷ OEE)<br>
+                • ChangeoverTime = 0.5小时 (固定换批时间)<br>
+                • TotalQuantity = TrackOutQuantity + ScrapQuantity<br>
+                • UnitTime = EH_machine(s) 或 EH_labor(s) (优先使用机器时间)
+            </div>
+            
+            <div class="example">
+                <strong>计算示例 (K25L2127数控铣):</strong><br>
+                <strong>输入数据:</strong><br>
+                • TrackOutQuantity: 15件<br>
+                • ScrapQuantity: 0件<br>
+                • OEE: 0.8<br>
+                • Setup: "Yes"<br>
+                • Setup Time (h): 3.5小时<br>
+                • EH_machine(s): 1380秒/件<br>
+                <br>
+                <strong>计算过程:</strong><br>
+                1. TotalQuantity = 15 + 0 = 15件<br>
+                2. UnitTime = 1380秒 = 0.383小时<br>
+                3. ProductionTime = (15 × 0.383 ÷ 0.8) = 7.188小时<br>
+                4. SetupTime = 3.5小时 (Setup="Yes")<br>
+                5. ChangeoverTime = 0.5小时<br>
+                6. 总时间 = 3.5 + 7.188 + 0.5 = 11.188小时<br>
+                7. <strong>ST(d) = 11.188 ÷ 24 = 0.47天</strong>
+            </div>
+        </section>
+
+        <section id="sa-indicators">
+            <h2>📈 SA相关指标</h2>
+            
+            <h3>4.1 CompletionStatus - 完成状态</h3>
+            
+            <div class="info">
+                <strong>定义:</strong> CompletionStatus是基于实际加工时间与标准加工时间的比较，结合容差时间和非工作日因素，判断生产完成状态的核心指标。
+            </div>
+            
+            <div class="formula">
+                <strong>计算公式:</strong><br>
+                CompletionStatus = {<br>
+                &nbsp;&nbsp;"Overdue", 如果 PT(d) > ST(d) + Tolerance(d) + NonWorkday(d)<br>
+                &nbsp;&nbsp;"OnTime", 如果 PT(d) ≤ ST(d) + Tolerance(d) + NonWorkday(d)<br>
+                }<br>
+                其中：<br>
+                • Tolerance(d) = Tolerance(h) ÷ 24 (容差时间)<br>
+                • NonWorkday(d) = 非工作日天数
+            </div>
+            
+            <div class="warning">
+                <strong>非工作日定义:</strong> 非工作日指工厂日历中定义的非生产日期，包括：<br>
+                • 周末（周六、周日）<br>
+                • 法定节假日<br>
+                • 工厂特定的停产日期<br>
+                <br>
+                <strong>计算方式:</strong> 根据生产时间段与工厂日历对比，统计期间的非工作日天数。
+            </div>
+            
+            <div class="example">
+                <strong>计算示例 (K25L2127数控铣):</strong><br>
+                <strong>输入数据:</strong><br>
+                • PT(d): 7.23天<br>
+                • ST(d): 0.47天<br>
+                • Tolerance(h): 8小时<br>
+                • 生产期间: 2025-11-17 至 2025-11-24<br>
+                <br>
+                <strong>计算过程:</strong><br>
+                1. Tolerance(d) = 8 ÷ 24 = 0.33天<br>
+                2. 统计非工作日: 期间包含周末 → NonWorkday(d) = 4天<br>
+                3. 阈值时间 = ST(d) + Tolerance(d) + NonWorkday(d)<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= 0.47 + 0.33 + 4 = 4.8天<br>
+                4. 比较: PT(d) (7.23天) > 阈值时间 (4.8天)<br>
+                5. <strong>CompletionStatus = "Overdue"</strong>
+            </div>
+            
+            <h3>4.2 SA - 准时率 (Service Accuracy)</h3>
+            <div class="info">
+                <strong>定义:</strong> SA指准时完成生产的批次比例，是衡量生产交付准确性的核心指标。
+            </div>
+            
+            <div class="formula">
+                <strong>计算公式:</strong><br>
+                SA = (CompletionStatus = "OnTime"的记录数 / 总记录数) × 100%
+            </div>
+            
+            <div class="example">
+                <strong>计算示例:</strong><br>
+                <strong>输入数据:</strong><br>
+                • 总批次记录数: 100批<br>
+                • CompletionStatus = "OnTime": 85批<br>
+                • CompletionStatus = "Overdue": 15批<br>
+                <br>
+                <strong>计算过程:</strong><br>
+                SA = (85 ÷ 100) × 100% = 85%
+            </div>
+        </section>
+
+        <section id="calculation-examples">
+            <h2>🔢 计算示例</h2>
+            
+            <h3>5.1 完整计算示例 (K25L2127数控铣工序)</h3>
+            <table>
+                <tr>
+                    <th>指标</th>
+                    <th>计算公式</th>
+                    <th>结果</th>
+                    <th>说明</th>
+                </tr>
+                <tr>
+                    <td>LT(d)</td>
+                    <td>(TrackOutTime - EnterStepTime) ÷ 24</td>
+                    <td>11.53天</td>
+                    <td>从进入到完成的总时间</td>
+                </tr>
+                <tr>
+                    <td>PT(d)</td>
+                    <td>(TrackOutTime - PreviousBatchEndTime) ÷ 24</td>
+                    <td>7.23天</td>
+                    <td>实际加工时间(排除停产)</td>
+                </tr>
+                <tr>
+                    <td>ST(d)</td>
+                    <td>(3.5 + (15×0.383÷0.8) + 0.5) ÷ 24</td>
+                    <td>0.47天</td>
+                    <td>标准加工时间(含调试)</td>
+                </tr>
+                <tr>
+                    <td>完成状态</td>
+                    <td>7.23 > 0.47 + 0.33 + 4?</td>
+                    <td>Overdue</td>
+                    <td>超期完成</td>
+                </tr>
+            </table>
+            
+            <div class="warning">
+                <strong>关键发现:</strong> 该工序实际加工时间(7.23天)远超标准时间(0.47天)，需要重点关注生产效率问题！
+            </div>
+        </section>
+
+        <section id="data-sources">
+            <h2>📁 数据源说明</h2>
+            
+            <h3>6.1 MES数据源</h3>
+            <ul>
+                <li><strong>CZM工厂:</strong> Product Output -CZM -FY26.xlsx</li>
+                <li><strong>CKH工厂:</strong> Product Output -CKH -FY26.xlsx</li>
+                <li><strong>更新频率:</strong> 每日自动更新</li>
+                <li><strong>数据范围:</strong> 包含实际生产记录和时间戳</li>
+            </ul>
+
+            <h3>6.2 SAP标准工艺数据</h3>
+            <ul>
+                <li><strong>数据源:</strong> SAP工艺路线Excel文件</li>
+                <li><strong>用途:</strong> 提供EH_machine(s)、EH_labor(s)、Setup Time等标准工艺参数</li>
+                <li><strong>更新方式:</strong> ETL自动处理多工厂数据</li>
+            </ul>
+
+            <h3>6.3 工序管理区域分类</h3>
+            <ul>
+                <li><strong>文件:</strong> 工序管理区域分类_最终版.csv</li>
+                <li><strong>用途:</strong> 9个标准管理区域划分</li>
+                <li><strong>覆盖范围:</strong> CZM(1303) + CKH(9997) 工厂</li>
+            </ul>
+        </section>
+
+        <section id="notes">
+            <h2>⚠️ 重要说明</h2>
+            
+            <h3>7.1 数据清洗规则</h3>
+            <div class="info">
+                <ul>
+                    <li><strong>工序名称标准化:</strong> 去除"CZM "和"CKH "前缀，统一4位编码</li>
+                    <li><strong>批次号过滤:</strong> 保留CKH数据，支持多工厂批次号格式</li>
+                    <li><strong>多工厂支持:</strong> 同时支持CZM(1303)和CKH(9997)工厂数据</li>
+                    <li><strong>时间戳处理:</strong> 所有时间戳使用unit='ms'参数正确转换</li>
+                </ul>
+            </div>
+
+            <h3>7.2 计算注意事项</h3>
+            <div class="warning">
+                <ul>
+                    <li><strong>时间计算:</strong> 所有时间基于24小时制连续生产，不区分工作日</li>
+                    <li><strong>PT计算升级:</strong> 排除停产期，更准确反映实际加工时间</li>
+                    <li><strong>ST计算复杂化:</strong> 包含调试、生产、换批三个时间要素</li>
+                    <li><strong>数据质量:</strong> 时间戳转换问题已修复，PT和CompletionStatus不再为null</li>
+                </ul>
+            </div>
+
+            <h3>7.3 指标监控建议</h3>
+            <div class="info">
+                <ul>
+                    <li><strong>重点关注:</strong> PT(d) vs ST(d)的比值，识别效率异常</li>
+                    <li><strong>趋势分析:</strong> 按工序、机器、工厂分析效率变化</li>
+                    <li><strong>异常预警:</strong> PT/ST比值 > 3.0 需要重点关注</li>
+                    <li><strong>完成状态:</strong> Overdue率 > 30% 需要生产改进</li>
+                </ul>
+            </div>
+
+            <h3>7.4 技术支持</h3>
+            <div class="info">
+                <p><strong>ETL脚本位置:</strong> 13-SA数据清洗/01_核心ETL程序/</p>
+                <p><strong>配置文件:</strong> config_mes_batch_report.yaml</p>
+                <p><strong>数据验证:</strong> 02_测试验证脚本/</p>
+                <p><strong>自动化脚本:</strong> etl_all_incremental.bat (一键更新)</p>
+            </div>
+            
+            <h3>7.3 常见问题解答</h3>
+            <div class="info">
+                <ul>
+                    <li><strong>Q: 为什么PT(d)比LT(d)小?</strong><br>
+                    A: PT排除停产等待时间，只计算实际加工时间</li>
+                    <li><strong>Q: 为什么ST(d)很小但PT(d)很大?</strong><br>
+                    A: 可能是设备效率低、调试时间长、或生产异常</li>
+                    <li><strong>Q: CompletionStatus为null?</strong><br>
+                    A: 时间戳转换问题已修复，重新运行ETL即可</li>
+                </ul>
+            </div>
+        </section>
+
+        <footer style="margin-top: 50px; padding-top: 20px; border-top: 1px solid #ddd; text-align: center; color: #666;">
+            <p>© 2025 Medtronic PLC - SA指标数据清洗系统 v2.0</p>
+            <p>如有问题请联系数据团队 | 最后更新: 2025-11-26</p>
+        </footer>
+    </div>
+</body>
+</html>

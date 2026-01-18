@@ -1,0 +1,79 @@
+
+# Planner 任务数据 ETL 配置文件
+
+source:
+  # Planner 导出文件路径
+  planner_path: "C:\\Users\\huangk14\\OneDrive - Medtronic PLC\\CZ Production - 文档\\General\\POWER BI 数据源 V2\\B1_Planner 导出数据"
+  file_pattern: "*.xlsx"
+
+# 字段映射: Excel列名 -> 数据库列名
+mapping:
+  '任务 ID': 'TaskId'
+  '任务名称': 'TaskName'
+  '存储桶名称': 'BucketName'
+  '进度': 'Status'
+  '优先级': 'Priority'
+  '分配对象': 'Assignees'
+  '创建者': 'CreatedBy'
+  '创建日期': 'CreatedDate'
+  '开始日期': 'StartDate'
+  '截止日期': 'DueDate'
+  '是定期的': 'IsRecurring'
+  '延迟': 'IsLate'
+  '完成日期': 'CompletedDate'
+  '完成者': 'CompletedBy'
+  '已完成的清单项': 'CompletedChecklistItemCount'
+  '清单项': 'ChecklistItemCount'
+  '标签': 'Labels'
+  '说明': 'Description'
+
+# 数据类型定义 (用于清洗和验证)
+types:
+  TaskId: string
+  TaskName: string
+  BucketName: string
+  Status: string
+  Priority: string
+  Assignees: string
+  CreatedBy: string
+  CreatedDate: date
+  StartDate: date
+  DueDate: date
+  IsRecurring: boolean
+  IsLate: boolean
+  CompletedDate: date
+  CompletedBy: string
+  CompletedChecklistItemCount: int
+  ChecklistItemCount: int
+  Labels: string
+  Description: string
+
+# 日志配置
+logging:
+  level: "INFO"
+  file: "shared_infrastructure/logs/etl_planner.log"
+
+# 测试配置
+test:
+  enabled: false
+  max_rows: 1000
+
+# 标签清洗配置
+label_cleaning:
+  # Mappings: Normalize variations to a standard term
+  # Format: Standard_Term: [List of variations]
+  mappings:
+    "滑倒/摔伤": 
+      - "滑到/摔伤"
+      - "滑倒/摔伤"
+    "Gemba Walk":
+      - "Gemba  walk"
+      - "Gemba Walk"
+      - "Gemba Work"
+  
+  # Exclusions: Labels to ignore in statistics
+  exclusions:
+    - "升级Tier4(请勿修改）"
+    - "无存储桶"
+    - "长期关注"  # Usually not a specific hazard type
+    - "问题模板"  # Template task

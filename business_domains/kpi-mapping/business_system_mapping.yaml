@@ -1,0 +1,184 @@
+# 业务系统到数据源映射
+# 解决业务系统名称与技术数据源之间的映射关系
+
+business_system_mapping:
+  # 核心业务系统映射
+  qms:                    # 质量管理系统
+    technical_source: "sfc"
+    access_method: "API接口"
+    data_tables: ["product_inspection", "defect_records", "ncmr_records", "capa_tracking"]
+    refresh_frequency: "daily"
+    notes: "通过SFC系统获取质量检验和不合格品数据"
+  
+  erp:                    # 企业资源计划系统
+    technical_source: "sap"
+    access_method: "SAP RFC接口"
+    data_tables: ["production_plan", "sales_orders", "inventory_ledger", "procurement_contracts"]
+    refresh_frequency: "daily"
+    notes: "通过SAP系统获取生产计划、订单和库存数据"
+  
+  crm:                    # 客户关系管理系统
+    technical_source: "sharepoint"
+    access_method: "SharePoint列表"
+    data_tables: ["customer_complaints", "customer_feedback"]
+    refresh_frequency: "monthly"
+    notes: "客户投诉数据存储在SharePoint列表中"
+  
+  hr_system:              # 人力资源系统
+    technical_source: "sap"
+    access_method: "SAP HR模块"
+    data_tables: ["employee_records", "attendance_records", "labor_costs", "certification_records"]
+    refresh_frequency: "daily"
+    notes: "HR数据通过SAP HR模块获取"
+  
+  ems:                    # 设备管理系统
+    technical_source: "mes"
+    access_method: "MES设备模块"
+    data_tables: ["maintenance_log", "preventive_maintenance", "equipment_status"]
+    refresh_frequency: "daily"
+    notes: "设备维护数据通过MES系统获取"
+  
+  facility_system:        # 设施管理系统
+    technical_source: "sharepoint"
+    access_method: "SharePoint表单"
+    data_tables: ["energy_metering", "maintenance_records", "environmental_reports"]
+    refresh_frequency: "daily"
+    notes: "设施管理数据存储在SharePoint表单中"
+  
+  safety_system:          # 安全管理系统
+    technical_source: "sharepoint"
+    access_method: "SharePoint列表"
+    data_tables: ["safety_incidents", "hazard_inspections", "incident_tracking"]
+    refresh_frequency: "monthly"
+    notes: "安全管理数据存储在SharePoint列表中"
+  
+  environmental_system:   # 环境监测系统
+    technical_source: "sharepoint"
+    access_method: "SharePoint文档库"
+    data_tables: ["compliance_monitoring", "environmental_reports"]
+    refresh_frequency: "quarterly"
+    notes: "环境合规报告存储在SharePoint文档库"
+  
+  logistics_system:       # 物流系统
+    technical_source: "sap"
+    access_method: "SAP物流模块"
+    data_tables: ["shipment_tracking", "supplier_delivery", "delivery_performance"]
+    refresh_frequency: "monthly"
+    notes: "物流数据通过SAP物流模块获取"
+  
+  project_system:         # 项目管理系统
+    technical_source: "sharepoint"
+    access_method: "SharePoint项目网站"
+    data_tables: ["improvement_projects", "project_management", "training_records"]
+    refresh_frequency: "monthly"
+    notes: "项目管理数据存储在SharePoint项目网站"
+  
+  oee_system:             # OEE设备效率系统
+    technical_source: "oee"
+    access_method: "REST API"
+    data_tables: ["equipment_performance", "equipment_status", "equipment_failures"]
+    refresh_frequency: "hourly"
+    notes: "OEE数据通过专用API获取，实时设备性能监控"
+
+  # 数据源汇总映射
+  data_source_summary:
+    sfc:
+      business_systems: ["qms"]
+      primary_kpis: ["fpy_first_pass_yield", "ncr_non_conformance_rate", "capa_completion_rate"]
+      data_types: ["质量检验", "不合格品记录", "CAPA跟踪"]
+      access_complexity: "medium"
+    
+    mes:
+      business_systems: ["ems", "production_system"]
+      primary_kpis: ["oee_overall_equipment_effectiveness", "pcp_production_completion_rate", "equipment_availability"]
+      data_types: ["生产执行", "设备状态", "生产跟踪"]
+      access_complexity: "high"
+    
+    sap:
+      business_systems: ["erp", "hr_system", "logistics_system", "financial_system"]
+      primary_kpis: ["manufacturing_variances", "operating_cost", "inventory_turns"]
+      data_types: ["财务成本", "人力资源", "物流", "库存"]
+      access_complexity: "high"
+    
+    sharepoint:
+      business_systems: ["crm", "facility_system", "safety_system", "environmental_system", "project_system"]
+      primary_kpis: ["ci_project_completion_rate", "cost_savings", "employee_engagement"]
+      data_types: ["改善项目", "培训记录", "安全事件", "环境合规"]
+      access_complexity: "low"
+    
+    oee:
+      business_systems: ["oee_system"]
+      primary_kpis: ["oee_overall_equipment_effectiveness", "equipment_availability"]
+      data_types: ["设备性能", "OEE数据", "设备可用率"]
+      access_complexity: "medium"
+    
+    powerbi:
+      business_systems: ["reporting_system"]
+      primary_kpis: ["所有KPI的最终展示"]
+      data_types: ["报表展示", "数据可视化", "仪表板"]
+      access_complexity: "low"
+
+# 系统访问配置
+system_access_config:
+  sfc:
+    connection_type: "API"
+    endpoint: "https://sfc.company.com/api"
+    authentication: "API Key"
+    rate_limit: "1000 requests/hour"
+    data_format: "JSON"
+    reliability: "high"
+    
+  mes:
+    connection_type: "Database"
+    server: "mes-db.company.com"
+    database: "MES_Production"
+    authentication: "Windows Integrated"
+    query_language: "SQL"
+    reliability: "high"
+    
+  sap:
+    connection_type: "SAP RFC"
+    system_id: "PRD"
+    client: "100"
+    authentication: "SAP User"
+    modules: ["MM", "PP", "FI", "HR", "SD"]
+    reliability: "high"
+    
+  sharepoint:
+    connection_type: "SharePoint REST API"
+    site_url: "https://company.sharepoint.com"
+    authentication: "OAuth 2.0"
+    libraries: ["Documents", "Lists", "Forms"]
+    reliability: "medium"
+    
+  oee:
+    connection_type: "API"
+    endpoint: "https://oee.company.com/api/v2"
+    authentication: "Bearer Token"
+    data_format: "JSON"
+    refresh_interval: "5 minutes"
+    reliability: "high"
+    
+  powerbi:
+    connection_type: "Power BI REST API"
+    workspace: "MDDAP Production"
+    authentication: "Service Principal"
+    datasets: ["Production_OEE_Dataset", "Quality_Metrics_Dataset"]
+    reliability: "medium"
+
+# 映射验证规则
+validation_rules:
+  completeness_check:
+    - "每个业务系统必须有对应的技术数据源"
+    - "每个技术数据源必须至少支持一个业务系统"
+    - "所有KPI必须通过业务系统映射到技术数据源"
+  
+  consistency_check:
+    - "刷新频率在业务系统和技术数据源间必须一致"
+    - "数据表名称必须在对应的数据源中存在"
+    - "访问方法必须与数据源类型匹配"
+  
+  dependency_check:
+    - "跨部门KPI的数据源依赖必须完整"
+    - "主要数据源和次要数据源的优先级必须明确"
+    - "数据流路径必须可追溯"

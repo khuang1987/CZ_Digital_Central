@@ -1,0 +1,74 @@
+# 项目路径配置映射
+# 定义各模块的相对路径，避免硬编码
+
+# 基础路径配置
+base_paths:
+  project_root: "../../../"
+  shared_infrastructure: "../../../shared_infrastructure"
+  business_domains: "../../../business_domains"
+  data_pipelines: ".."
+
+# 共享基础设施路径
+shared_infrastructure_paths:
+  config: "../../../shared_infrastructure/config"
+  utils: "../../../shared_infrastructure/utils"
+  logs: "../../../shared_infrastructure/logs"
+  templates: "../../../shared_infrastructure/templates"
+  tests: "../../../shared_infrastructure/tests"
+
+# 数据源特定路径（相对于 data_pipelines/sources/{source}/etl/）
+data_source_paths:
+  # 通用数据源路径
+  config: "../config"
+  state: "../state"
+  tests: "../tests"
+  docs: "../docs"
+  
+  # 输出数据路径
+  output_data: "../../../business_domains/{department}/test-data"
+  
+  # 临时文件路径
+  temp: "../../../shared_infrastructure/temp"
+
+# 部门映射（数据源到业务部门）
+source_to_department:
+  sfc: "quality-dept"
+  mes: "production-dept"
+  sap: ["finance-dept", "production-dept", "supply-chain-dept"]
+  sharepoint: ["ci-dept", "facilities-dept", "safety-dept"]
+  oee: "equipment-dept"
+  powerbi: "all"
+
+# 日志文件配置
+logging_paths:
+  default: "../../../shared_infrastructure/logs/etl.log"
+  sfc: "../../../shared_infrastructure/logs/etl_sfc.log"
+  mes: "../../../shared_infrastructure/logs/etl_mes.log"
+  sap: "../../../shared_infrastructure/logs/etl_sap.log"
+  sharepoint: "../../../shared_infrastructure/logs/etl_sharepoint.log"
+  oee: "../../../shared_infrastructure/logs/etl_oee.log"
+  powerbi: "../../../shared_infrastructure/logs/etl_powerbi.log"
+
+# 状态文件配置
+state_paths:
+  sfc_product_inspection: "../state/sfc_product_inspection_state.json"
+  sfc_batch_report: "../state/sfc_batch_report_state.json"
+  sfc_team_passrate: "../state/sfc_team_passrate_state.json"
+  mes_batch_report: "../state/mes_batch_report_state.json"
+  sap_routing: "../state/sap_routing_state.json"
+
+# 配置文件配置
+config_paths:
+  sfc_product_inspection: "../config/config_sfc_product_inspection.yaml"
+  sfc_batch_report: "../config/config_sfc_batch_report.yaml"
+  sfc_team_passrate: "../config/config_sfc_team_passrate.yaml"
+  mes_batch_report: "../config/config_mes_batch_report.yaml"
+  sap_routing: "../config/config_sap_routing.yaml"
+
+# 测试数据路径
+test_data_paths:
+  sfc: "../../../business_domains/quality-dept/test-data"
+  mes: "../../../business_domains/production-dept/test-data"
+  sap: "../../../business_domains/finance-dept/test-data"
+  sharepoint: "../../../business_domains/ci-dept/test-data"
+  oee: "../../../business_domains/equipment-dept/test-data"
