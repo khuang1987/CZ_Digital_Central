@@ -190,7 +190,7 @@ def clean_inspection_data(df: pd.DataFrame, cfg: Dict[str, Any]) -> pd.DataFrame
         'BatchNumber', 'SerialNumber', 'Operation', 'OperationDesc',
         'Team', 'Machine', 'InspectionResult',
         'PassQty', 'ScrapQty', 'Operator',
-        'ReportDate', 'source_file', 'record_hash'
+        'ReportDate', 'record_hash'
     ]
     
     existing_columns = [c for c in target_columns if c in result.columns]

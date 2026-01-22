@@ -8,3 +8,5 @@ if exist ".venv\Scripts\python.exe" (
 ) else (
     python "scripts\orchestration\run_etl_parallel.py"
 )
+
+pause

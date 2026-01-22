@@ -43,6 +43,37 @@ def get_fiscal_year_start(calendar_year):
     return last_saturday
 
 
+# 中国法定节假日 (静态定义，每年需更新)
+# 格式: (月, 日): 节假日名称
+CHINESE_HOLIDAYS = {
+    # 元旦
+    (1, 1): "元旦",
+    (1, 2): "元旦假期",
+    (1, 3): "元旦假期",
+    # 春节 (大约时间，实际日期每年不同)
+    # 清明节
+    (4, 4): "清明节",
+    (4, 5): "清明节假期",
+    (4, 6): "清明节假期",
+    # 劳动节
+    (5, 1): "劳动节",
+    (5, 2): "劳动节假期",
+    (5, 3): "劳动节假期",
+    (5, 4): "劳动节假期",
+    (5, 5): "劳动节假期",
+    # 端午节
+    # 中秋节
+    # 国庆节
+    (10, 1): "国庆节",
+    (10, 2): "国庆节假期",
+    (10, 3): "国庆节假期",
+    (10, 4): "国庆节假期",
+    (10, 5): "国庆节假期",
+    (10, 6): "国庆节假期",
+    (10, 7): "国庆节假期",
+}
+
+
 def generate_fiscal_calendar(start_fy=21, end_fy=30):
     """生成财历日历数据"""
     records = []
@@ -80,8 +111,14 @@ def generate_fiscal_calendar(start_fy=21, end_fy=30):
                     weekday_en = WEEKDAY_NAMES_EN[current_date.weekday()]
                     weekday_cn = WEEKDAY_NAMES_CN[current_date.weekday()]
                     
-                    # 默认工作日判断（周六日为休息日）
-                    is_workday = 0 if current_date.weekday() >= 5 else 1
+                    # 检查是否为法定节假日
+                    holiday_key = (current_date.month, current_date.day)
+                    holiday_name = CHINESE_HOLIDAYS.get(holiday_key)
+                    
+                    # 工作日判断：周末或法定假日为休息日
+                    is_weekend = current_date.weekday() >= 5
+                    is_holiday = holiday_name is not None
+                    is_workday = 0 if (is_weekend or is_holiday) else 1
                     
                     record = {
                         'date': current_date.strftime('%Y-%m-%d'),
@@ -96,12 +133,13 @@ def generate_fiscal_calendar(start_fy=21, end_fy=30):
                         'fiscal_month_short': month_name_short,
                         'fiscal_month_order': fiscal_month_order,
                         'is_workday': is_workday,
-                        'holiday_name': None
+                        'holiday_name': holiday_name
                     }
                     records.append(record)
                     current_date += timedelta(days=1)
     
     return pd.DataFrame(records)
+
 
 
 def get_db_manager() -> SQLServerOnlyManager:

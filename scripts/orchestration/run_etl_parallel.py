@@ -215,23 +215,56 @@ def run_stage(stage: Dict[str, Any], pool: concurrent.futures.ProcessPoolExecuto
     logging.info(f"=== STAGE {stage_name} COMPLETED. Success: {not failed} ===")
     return not failed, stage_results
 
-def print_execution_summary(all_results: List[Dict]):
+def get_db_stats() -> List[Dict]:
+    """Fetches the latest table statistics from the database."""
+    server = os.getenv("MDDAP_SQL_SERVER", r"localhost\SQLEXPRESS")
+    database = os.getenv("MDDAP_SQL_DATABASE", "mddap_v2")
+    driver = os.getenv("MDDAP_SQL_DRIVER", "ODBC Driver 17 for SQL Server")
+    
+    conn_str = (
+        f"DRIVER={{{driver}}};"
+        f"SERVER={server};"
+        f"DATABASE={database};"
+        "Trusted_Connection=yes;"
+        "Encrypt=no;"
+        "TrustServerCertificate=yes;"
+    )
+    
+    try:
+        with pyodbc.connect(conn_str, timeout=5) as conn:
+            cursor = conn.cursor()
+            # Get latest stats for today (snapshot_date is in local time usually)
+            sql = """
+            SELECT table_name, today_inserted, today_updated, row_count, last_updated_at
+            FROM dbo.meta_table_stats_daily
+            WHERE snapshot_date = CAST(GETDATE() AS DATE)
+            ORDER BY row_count DESC
+            """
+            cursor.execute(sql)
+            columns = [column[0] for column in cursor.description]
+            results = []
+            for row in cursor.fetchall():
+                results.append(dict(zip(columns, row)))
+            return results
+    except Exception as e:
+        # Don't fail the orchestrator just because stats collection failed
+        return []
+
+def print_execution_summary(all_results: List[Dict], total_duration: float):
     """
-    Prints a summary table of the execution.
-    For simplicity in this consolidated version, we use the returned results 
-    rather than querying the DB, as the return structure contains success/duration.
-    To match the prompt's request for 'Read/Inserted/Skipped', we would typically 
-    need to parse the logs or query the DB. Here we provide a high-level summary.
+    Prints a beautiful summary table of the execution and data stats.
     """
     logging.info("")
     logging.info("==========================================================================================")
-    logging.info("EXECUTION SUMMARY REPORT")
+    logging.info("              MDDAP DATA PLATFORM - EXECUTION SUMMARY REPORT")
     logging.info("==========================================================================================")
-    logging.info(f"{'Task Name':<30} | {'Status':<10} | {'Time(s)':>10}")
-    logging.info("-" * 56)
     
-    total_time = 0
+    # 1. Script Execution Status
+    logging.info(f"{'Task Name':<35} | {'Status':<10} | {'Time(s)':>10}")
+    logging.info("-" * 62)
+    
     success_count = 0
+    failed_tasks = []
     
     # Sort results by execution order (approximate) or name
     all_results.sort(key=lambda x: x['name'])
@@ -239,14 +272,42 @@ def print_execution_summary(all_results: List[Dict]):
     for res in all_results:
         status = "SUCCESS" if res['success'] else "FAILED"
         duration = res.get('duration', 0)
-        total_time += duration
-        if res['success']: success_count += 1
+        if res['success']: 
+            success_count += 1
+        else:
+            failed_tasks.append(res['name'])
         
-        logging.info(f"{res['name']:<30} | {status:<10} | {duration:>10.2f}")
+        # Color-coded feel in logs (though plain text)
+        logging.info(f"{res['name']:<35} | {status:<10} | {duration:>10.2f}")
 
-    logging.info("-" * 56)
-    logging.info(f"TOTAL: {len(all_results)} tasks, {success_count} success, {len(all_results)-success_count} failed")
+    logging.info("-" * 62)
+    logging.info(f"TASKS: {len(all_results)} processed, {success_count} succeeded, {len(all_results)-success_count} failed")
+    logging.info(f"TOTAL REFRESH TIME: {total_duration:.2f}s")
+    
+    if failed_tasks:
+        logging.info(f"FAILED TASKS: {', '.join(failed_tasks)}")
+    
+    # 2. Data Record Statistics (Fetched from DB)
+    stats = get_db_stats()
+    if stats:
+        logging.info("")
+        logging.info("==========================================================================================")
+        logging.info("              DATA RECORD STATISTICS (Today's Activity)")
+        logging.info("==========================================================================================")
+        logging.info(f"{'Table Name':<35} | {'Inserted':<10} | {'Updated':<10} | {'Total Rows':>12}")
+        logging.info("-" * 75)
+        for s in stats:
+            ins = s.get('today_inserted', 0) or 0
+            upd = s.get('today_updated', 0) or 0
+            total = s.get('row_count', 0) or 0
+            logging.info(f"{s['table_name']:<35} | {ins:<10,} | {upd:<10,} | {total:>12,}")
+        logging.info("-" * 75)
+    else:
+        logging.info("")
+        logging.info("NOTE: Detailed record statistics not available yet (meta_table_health might have failed).")
+
     logging.info("==========================================================================================")
+    logging.info("")
 
 
 # ============================================================
@@ -274,11 +335,10 @@ def main():
                 workflow_success = False
                 break
     
-    print_execution_summary(all_results)
-    
     total_duration = time.time() - start_total
-    logging.info(f"Total Workflow Duration: {total_duration:.2f}s")
-    logging.info("Done.")
+    print_execution_summary(all_results, total_duration)
+    
+    logging.info("Orchestration workflow completed.")
     
     sys.exit(0 if workflow_success else 1)
 
