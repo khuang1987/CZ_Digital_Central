@@ -2,19 +2,20 @@
 
 本文档列出了当前系统中配置的所有自动监控规则。
 
+> 📖 **相关文档**: [A3 Trigger 系统技术架构](./a3_trigger_architecture.md) - 完整的系统架构、数据流和开发路线图
+
 ## 1. 规则汇总表
 
 规则配置文件位于: `data_pipelines/monitoring/config/kpi_rules.csv`
 
-| 规则代码 | 监控指标 | 触发条件 | 连续周数 | 级别 | 处置动作 |
-|:---------|:---------|:---------|:--------:|:-----|:---------|
-| **LT_GLOBAL_WARNING** | Lead Time (周期) | > 24 小时 | 2 | 🟡 Warning | 发送邮件 |
-| **LT_GLOBAL_CRITICAL** | Lead Time (周期) | > 24 小时 | **3** | 🔴 Critical | **创建 A3 案卷** |
-| **SA_GLOBAL_WARNING** | SA (达成率) | < 95% | 2 | 🟡 Warning | 发送邮件 |
-| **SA_GLOBAL_CRITICAL** | SA (达成率) | < 95% | **3** | 🔴 Critical | **创建 A3 案卷** |
-| **SAFETY_RANK_CRITICAL** | 安全隐患 (Safety) | 排名前 3 | 3 | 🔴 Critical | **创建 A3 案卷** |
+| 规则代码 | 监控指标 | 触发条件 | 连续周数 | 级别 | 处置动作 | 状态 |
+|:---------|:---------|:---------|:--------:|:-----|:---------|:-----|
+| **SA_GLOBAL_CRITICAL** | SA (达成率) | < 92% | **4** | 🔴 Critical | **创建 A3 案卷** | ✅ Active |
+| **SAFETY_RANK_CRITICAL** | 安全排名 (Safety) | 排名前 3 | 3 | 🔴 Critical | **创建 A3 案卷 (2026起)** | ✅ Active |
+| *其他规则* | - | - | - | - | - | ⚪ Inactive |
 
-> *注: 不同厂区 (如 CZM, CKH) 可能有独立的规则配置，逻辑同上。*
+> *注: 目前仅启用以上两项核心规则。其他规则（如 Warning 级别或工厂级规则）暂时处于非激活状态。*
+> *注: 安全排名规则仅针对 '安全' 储存桶中的任务，起始于 2026-01-01。*
 
 ## 2. 规则详解
 

@@ -67,7 +67,7 @@ def aggregate_lead_time(conn, run_date=None):
     SELECT 
         CONVERT(varchar(10), EndTime, 23) as CreatedDate,
         CFN as Tag,
-        AVG(CAST(DATEDIFF_BIG(SECOND, StartTime, EndTime) AS FLOAT) / 3600.0) as AvgDurationHours
+        AVG(CAST(DATEDIFF_BIG(SECOND, StartTime, EndTime) AS FLOAT) / 3600.0 / 24.0) as AvgDurationDays
     FROM BatchStats
     WHERE StartTime < EndTime
     GROUP BY CONVERT(varchar(10), EndTime, 23), CFN
@@ -82,12 +82,12 @@ def aggregate_lead_time(conn, run_date=None):
         cursor = conn.cursor()
         count = 0
         for _, row in df.iterrows():
-            if pd.isna(row['AvgDurationHours']): continue
+            if pd.isna(row['AvgDurationDays']): continue
             
             cursor.execute("""
                 INSERT INTO dbo.KPI_Data (KPI_Id, Tag, CreatedDate, Progress)
                 VALUES (1, ?, ?, ?)
-            """, (row['Tag'], row['CreatedDate'], row['AvgDurationHours']))
+            """, (row['Tag'], row['CreatedDate'], row['AvgDurationDays']))
             count += 1
         
         logger.info(f"  KPI #1 (Lead Time): 已插入 {count} 条记录。")
@@ -185,7 +185,7 @@ def aggregate_schedule_attainment(conn, run_date=None):
             cursor.execute("""
                 INSERT INTO dbo.KPI_Data (KPI_Id, Tag, CreatedDate, Progress)
                 VALUES (2, ?, ?, ?)
-            """, (row['Plant'], row['CreatedDate'], row['SA_Percent']))
+            """, (row['Plant'], row['CreatedDate'], round(row['SA_Percent'], 2)))
             count += 1
             
         logger.info(f"  KPI #2 (SA): 已插入 {count} 条工厂记录。")
@@ -247,7 +247,7 @@ def aggregate_global_lead_time_weekly(conn):
     ),
     BatchWithFiscal AS (
         SELECT
-            bs.DurationHours,
+            bs.DurationDays,
             bs.BatchNumber,
             bp.Plant as Plant,
             cal.fiscal_year,
@@ -256,7 +256,7 @@ def aggregate_global_lead_time_weekly(conn):
         FROM (
             SELECT 
                 BatchNumber,
-                CAST(DATEDIFF_BIG(SECOND, StartTime, EndTime) AS FLOAT) / 3600.0 as DurationHours,
+                CAST(DATEDIFF_BIG(SECOND, StartTime, EndTime) AS FLOAT) / 3600.0 / 24.0 as DurationDays,
                 CONVERT(varchar(10), EndTime, 23) as EndDate
             FROM BatchStats
             WHERE StartTime < EndTime
@@ -267,7 +267,7 @@ def aggregate_global_lead_time_weekly(conn):
     SELECT
         MIN(cal_date) as CreatedDate,
         '{CAMPUS_TAG}' as Tag,
-        AVG(DurationHours) as AvgDurationHours
+        AVG(DurationDays) as AvgDurationDays
     FROM BatchWithFiscal
     GROUP BY fiscal_year, fiscal_week
 
@@ -276,7 +276,7 @@ def aggregate_global_lead_time_weekly(conn):
     SELECT
         MIN(cal_date) as CreatedDate,
         Plant as Tag,
-        AVG(DurationHours) as AvgDurationHours
+        AVG(DurationDays) as AvgDurationDays
     FROM BatchWithFiscal
     WHERE Plant IN ('CKH', 'CZM')
     GROUP BY Plant, fiscal_year, fiscal_week
@@ -291,11 +291,11 @@ def aggregate_global_lead_time_weekly(conn):
         cursor = conn.cursor()
         count = 0
         for _, row in df.iterrows():
-            if pd.isna(row['AvgDurationHours']): continue
+            if pd.isna(row['AvgDurationDays']): continue
             cursor.execute("""
                 INSERT INTO dbo.KPI_Data (KPI_Id, Tag, CreatedDate, Progress)
                 VALUES (1, ?, ?, ?)
-            """, (row['Tag'], row['CreatedDate'], row['AvgDurationHours']))
+            """, (row['Tag'], row['CreatedDate'], row['AvgDurationDays']))
             count += 1
         logger.info(f"  KPI #1 Global: 已插入 {count} 条周记录。")
     except Exception as e:
@@ -404,10 +404,12 @@ def aggregate_safety_issue_rank_weekly(conn):
     logger.info("正在聚合 KPI #3 Global Weekly (Safety Issue Rank)...")
     
     # Query cleaned labels directly from planner_task_labels
+    # Filter by fiscal week start date >= 2026-01-01, not task creation date
     query = """
     WITH WeekStarts AS (
         SELECT fiscal_year, fiscal_week, MIN(date) as week_start
         FROM dbo.dim_calendar
+        WHERE date >= '2026-01-01'
         GROUP BY fiscal_year, fiscal_week
     )
     SELECT 
@@ -419,9 +421,8 @@ def aggregate_safety_issue_rank_weekly(conn):
     JOIN dbo.planner_tasks t ON l.TaskId = t.TaskId
     JOIN dbo.dim_calendar cal ON CONVERT(varchar(10), t.CreatedDate, 23) = cal.date
     JOIN WeekStarts ws ON cal.fiscal_year = ws.fiscal_year AND cal.fiscal_week = ws.fiscal_week
-    WHERE t.BucketName = '安全' 
+    WHERE t.BucketName = N'安全' 
       AND l.IsExcluded = 0
-      AND t.CreatedDate IS NOT NULL
     """
     
     try:
@@ -459,7 +460,7 @@ def aggregate_safety_issue_rank_weekly(conn):
             cursor.execute("""
                 INSERT INTO dbo.KPI_Data (KPI_Id, Tag, CreatedDate, Progress)
                 VALUES (?, ?, ?, ?)
-            """, (kpi_id, row['Label'], row['week_start_date'], row['Rank']))
+            """, (kpi_id, row['Label'], row['week_start_date'], round(row['Rank'], 2)))
             count += 1
             
         logger.info(f"  KPI #3 Safety: 已插入 {count} 条排名记录。")
@@ -497,13 +498,13 @@ def generate_reports(conn):
         columns='KPI_Id',
         values='Progress'
     ).rename(columns={
-        1: 'Lead_Time',
+        1: 'Lead_Time (d)',
         2: 'Schedule_Attainment'
     }).reset_index()
     
     # 格式化
-    if 'Lead_Time' in global_matrix.columns:
-        global_matrix['Lead_Time'] = global_matrix['Lead_Time'].round(2)
+    if 'Lead_Time (d)' in global_matrix.columns:
+        global_matrix['Lead_Time (d)'] = global_matrix['Lead_Time (d)'].round(2)
     if 'Schedule_Attainment' in global_matrix.columns:
         global_matrix['Schedule_Attainment'] = global_matrix['Schedule_Attainment'].round(2)
     

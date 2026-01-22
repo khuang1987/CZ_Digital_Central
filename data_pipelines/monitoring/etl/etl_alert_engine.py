@@ -138,6 +138,33 @@ def _normalize_status(value: str) -> str:
     if value is None: return ''
     return str(value).strip().upper()
 
+def _safe_strftime(dt, fmt='%Y-%m-%d'):
+    """Safely format a date/datetime object or string."""
+    if dt is None:
+        return ""
+    if isinstance(dt, str):
+        # Already a string, return first 10 chars if it looks like a date
+        s = dt.strip()
+        if len(s) >= 10 and re.match(r'\d{4}-\d{2}-\d{2}', s):
+            return s[:10]
+        return s
+    try:
+        return dt.strftime(fmt)
+    except AttributeError:
+        return str(dt)
+
+def _format_ordinal(n):
+    """Format integer as English ordinal (1st, 2nd, 3rd, etc.)"""
+    try:
+        n = int(float(n))
+        if 11 <= (n % 100) <= 13:
+            suffix = 'th'
+        else:
+            suffix = {1: 'st', 2: 'nd', 3: 'rd'}.get(n % 10, 'th')
+        return f"{n}{suffix}"
+    except (ValueError, TypeError):
+        return str(n)
+
 def _effective_case_status(raw_status: str, opened_at, closed_at, as_of_date):
     status = _normalize_status(raw_status)
     if as_of_date is None:
@@ -363,6 +390,12 @@ def _load_rules_from_csv():
                 # Basic validation
                 if not row_dict.get('RuleCode') or not row_dict.get('KPI_Id'):
                     continue
+                
+                # Filter by Active column
+                is_active = row_dict.get('Active', 'Yes').strip().lower() == 'yes'
+                if not is_active:
+                    continue
+                    
                 rules.append(row_dict)
     except Exception as e:
         logger.error(f"读取规则文件失败: {e}")
@@ -497,6 +530,7 @@ def check_generic_rule(cursor, rule):
             ? AS TriggerType,
             ? AS TriggerLevel,
             CONCAT(?, ' (当前: ', FORMAT(d.Progress, '0.0'), ', 阈值: ', CAST(? AS varchar(64)), ')') AS TriggerDesc,
+            d.Progress AS CurrentValue,
             l.ConsecCount AS ConsecutiveWeeks,
             l.Details AS WeeklyDetails,
             'TRIGGER' AS TriggerStatus,
@@ -575,6 +609,60 @@ def suppress_redundant_triggers(triggers, rules_map):
             final_triggers.append(row)
             
     return final_triggers
+
+def _refine_trigger_row(row, rule_code, threshold_val):
+    """
+    Refine the trigger row for better display visibility.
+    Original row: (Tag, TriggerType, Level, Desc, Value, ConsecutiveWeeks, Details, Status, Update)
+    """
+    tag, trigger_type, level, desc, val_raw, consec_weeks, details, status, update = row
+    
+    val_float = float(val_raw) if val_raw else 0.0
+    
+    if rule_code == 'SAFETY_RANK_CRITICAL':
+        # Format "1.0" as "1st"
+        current_rank_str = _format_ordinal(val_float)
+        threshold_str = f"Top {int(float(threshold_val))}"
+        
+        # Refine Description
+        refined_desc = f"Latest Week Rank: {current_rank_str}, Threshold: {threshold_str}"
+        
+        # Refine Details (FY26 W39(1.0) -> FY26 W39(1st))
+        refined_details = details
+        # Match digits with optional decimals
+        matches = re.findall(r'(\d+(?:\.\d+)?)\)', details)
+        for m in matches:
+            refined_details = refined_details.replace(f"({m})", f"({_format_ordinal(m)})")
+        
+        # Truncate to last 4 weeks
+        detail_parts = [p.strip() for p in refined_details.split(',') if p.strip()]
+        if len(detail_parts) > 4:
+            refined_details = ', '.join(detail_parts[-4:])
+            
+        return (tag, trigger_type, level, refined_desc, current_rank_str, consec_weeks, refined_details, status, update)
+        
+    elif 'SA_' in rule_code:
+        # Format SA as percentage
+        sa_val_str = f"{val_float:.1f}%"
+        threshold_str = f"< {threshold_val}%"
+        
+        # Refine Description
+        refined_desc = f"Latest Week SA: {sa_val_str}, Threshold: {threshold_str}"
+        
+        # Refine Details (FY26 W39(88.0) -> FY26 W39(88.0%))
+        refined_details = details
+        matches = re.findall(r'(\d+(?:\.\d+)?)\)', details)
+        for m in matches:
+            refined_details = refined_details.replace(f"({m})", f"({m}%)")
+        
+        # Truncate to last 4 weeks
+        detail_parts = [p.strip() for p in refined_details.split(',') if p.strip()]
+        if len(detail_parts) > 4:
+            refined_details = ', '.join(detail_parts[-4:])
+            
+        return (tag, trigger_type, level, refined_desc, sa_val_str, consec_weeks, refined_details, status, update)
+
+    return row
 
 def export_kpi_history(conn):
     """导出 KPI 历史数据 (Pivot Table: Fiscal Week x KPI)"""
@@ -689,7 +777,11 @@ def run_alert_engine(conn):
         for rule in rules:
             # logger.info(f"正在检查规则: {rule['RuleCode']} ({rule['KPI_Name']})")
             rows = check_generic_rule(cursor, rule)
-            raw_results.extend(rows)
+            # Refine rows immediately
+            refined_rows = []
+            for r in rows:
+                refined_rows.append(_refine_trigger_row(r, rule['RuleCode'], rule['ThresholdValue']))
+            raw_results.extend(refined_rows)
         
         # 抑制冗余触发 (Critical supersedes Warning)
         results = suppress_redundant_triggers(raw_results, rules_map)
@@ -701,7 +793,7 @@ def run_alert_engine(conn):
         for row in results:
             category = row[0]
             trigger_type = row[1]
-            details = row[5]
+            details = row[6] # Shifted from 5 to 6
             trigger_start = _extract_min_date_from_details(details)
 
             # 获取规则配置
@@ -712,7 +804,7 @@ def run_alert_engine(conn):
             if existing is not None and existing.get('A3Id'):
                 a3_id = str(existing.get('A3Id'))
                 opened_at = existing.get('OpenedAt')
-                opened_at_str = opened_at.strftime('%Y-%m-%d') if opened_at is not None else (trigger_start.strftime('%Y-%m-%d') if trigger_start else datetime.now().strftime('%Y-%m-%d'))
+                opened_at_str = _safe_strftime(opened_at) if opened_at is not None else (_safe_strftime(trigger_start) if trigger_start else datetime.now().strftime('%Y-%m-%d'))
                 planner_task_id = (existing.get('PlannerTaskId') or '').strip()
                 notes = (existing.get('Notes') or '').strip() or f"Auto Triggered ({action_type})"
                 _upsert_case_registry_row(
@@ -727,19 +819,23 @@ def run_alert_engine(conn):
                     notes=notes,
                     original_level=row[2],
                     original_desc=row[3],
-                    original_details=row[5],
-                    original_value=str(row[4]),
+                    original_details=row[6], # Shifted
+                    original_value=str(row[4]), # Progress
                     source='AUTO'
                 )
                 results_with_id.append((a3_id,) + tuple(row))
                 used_a3_ids.add(a3_id)
             else:
-                a3_id = _alloc_a3_id(trigger_start, conn, used_a3_ids)
+                # Fallback date for ID generation if trigger_start is missing
+                id_date = _safe_strftime(trigger_start) if trigger_start else datetime.now().strftime('%Y%m%d').replace('-', '')
+                if '-' in id_date: id_date = id_date.replace('-', '')
+                
+                a3_id = _alloc_a3_id(id_date, conn, used_a3_ids)
                 results_with_id.append((a3_id,) + tuple(row))
                 used_a3_ids.add(a3_id)
                 created_count += 1
 
-                opened_at = trigger_start.strftime('%Y-%m-%d') if trigger_start else datetime.now().strftime('%Y-%m-%d')
+                opened_at = _safe_strftime(trigger_start) if trigger_start else datetime.now().strftime('%Y-%m-%d')
 
                 cursor.execute(
                     "SELECT TOP 1 A3Id "
@@ -766,11 +862,12 @@ def run_alert_engine(conn):
                     notes=notes,
                     original_level=row[2],
                     original_desc=row[3],
-                    original_details=row[5],
-                    original_value=str(row[4]),
+                    original_details=row[6], # Shifted
+                    original_value=str(row[4]), # Progress
                     source='AUTO'
                 )
         
+        conn.commit() # Commit all upserts
         logger.info(f"监控完成: 新增触发 {created_count} 个。")
         
         # 导出结果 CSV/TSV (兼容旧 guide 的字段顺序，且额外保留 Owner/ActionType/DataSource)
