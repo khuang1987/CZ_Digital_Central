@@ -37,16 +37,18 @@ def get_db_connection():
         return None
 
 
-def apply_dark_theme():
+def apply_theme():
+    """Apply minimal styling that works with both light and dark themes"""
     st.markdown(
         """
         <style>
         .block-container { padding-top: 1.2rem; padding-bottom: 2rem; }
-        [data-testid="stSidebar"] { background: #0B1220; }
-        html, body, [class*="css"]  { background-color: #070B14; color: #E6EEF8; }
-        .stApp { background: linear-gradient(180deg, #070B14 0%, #070B14 100%); }
-        div[data-testid="stMetric"] { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); padding: 14px 16px; border-radius: 14px; }
-        div[data-testid="stDataFrame"] { background: rgba(255,255,255,0.02); }
+        div[data-testid="stMetric"] { 
+            background: rgba(128,128,128,0.1); 
+            border: 1px solid rgba(128,128,128,0.2); 
+            padding: 14px 16px; 
+            border-radius: 14px; 
+        }
         </style>
         """,
         unsafe_allow_html=True,
@@ -91,7 +93,7 @@ def load_overview(snapshot_date: str) -> pd.DataFrame:
 
 # 主界面
 def main():
-    apply_dark_theme()
+    apply_theme()
 
     st.title("数据库数据健康总览")
 

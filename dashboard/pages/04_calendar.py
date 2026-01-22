@@ -107,25 +107,7 @@ def regenerate_calendar():
 st.title("📅 日历管理")
 st.markdown("查看和编辑工作日/非工作日标记。")
 
-# Manual regeneration section
-with st.expander("🔄 手动重新生成日历", expanded=False):
-    st.markdown("""
-    点击下方按钮可重新生成整个日历表（FY21-FY30）。
-    - 这将重新应用法定节假日规则
-    - 适用于每年初更新日历或修复错误数据
-    """)
-    if st.button("🔄 重新生成日历表", type="secondary"):
-        with st.spinner("正在重新生成日历表..."):
-            success, output = regenerate_calendar()
-            if success:
-                st.success("✅ 日历表已重新生成！")
-                st.code(output)
-                st.rerun()
-            else:
-                st.error("❌ 生成失败")
-                st.code(output)
 
-st.markdown("---")
 
 # Date selection
 col1, col2 = st.columns(2)
@@ -246,5 +228,20 @@ if conn:
                     st.rerun()
                 else:
                     st.warning("未找到该日期，请确认日期存在于日历表中")
+        
+        # Manual regeneration section (at bottom)
+        st.markdown("---")
+        st.subheader("🔄 重新生成日历")
+        st.markdown("点击下方按钮可重新生成整个日历表（FY21-FY30），应用最新的法定节假日规则。")
+        if st.button("🔄 重新生成日历表", type="secondary"):
+            with st.spinner("正在重新生成日历表..."):
+                success, output = regenerate_calendar()
+                if success:
+                    st.success("✅ 日历表已重新生成！")
+                    st.code(output)
+                    st.rerun()
+                else:
+                    st.error("❌ 生成失败")
+                    st.code(output)
     
     conn.close()

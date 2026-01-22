@@ -261,11 +261,11 @@ def clean_routing_data(df: pd.DataFrame) -> pd.DataFrame:
         valid_count = (result['StandardTime'] > 0).sum()
         logging.info(f"计算 StandardTime: {valid_count} 条有效记录（> 0）")
     
-    # OEE 处理：当 OEE 为 0 时，使用默认值 77%
+    # OEE 处理：当 OEE 为 0 时，使用默认值 77%，保留2位小数
     if 'OEE' in result.columns:
         result['OEE'] = pd.to_numeric(result['OEE'], errors='coerce')
-        result['OEE'] = result['OEE'].where(result['OEE'] > 0, 0.77)
-        logging.info(f"OEE 字段处理完成，0 值已替换为默认 77%")
+        result['OEE'] = result['OEE'].where(result['OEE'] > 0, 0.77).round(2)
+        logging.info(f"OEE 字段处理完成，0 值已替换为默认 77%，保留2位小数")
     
     # SetupTime 保留1位小数
     if 'SetupTime' in result.columns:
