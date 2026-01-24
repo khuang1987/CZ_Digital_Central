@@ -45,7 +45,7 @@ def apply_theme():
 
 
 @st.cache_data(ttl=120)
-def load_overview(snapshot_date: str) -> pd.DataFrame:
+def load_catalog(snapshot_date: str) -> pd.DataFrame:
     conn = get_db_connection()
     if conn is None:
         return pd.DataFrame()
@@ -67,7 +67,7 @@ def load_overview(snapshot_date: str) -> pd.DataFrame:
      AND d.table_schema = s.table_schema
      AND d.table_name = s.table_name
     WHERE s.snapshot_date = ?
-      AND s.table_schema = 'dbo'
+    ORDER BY ISNULL(s.today_inserted, 0) DESC, ISNULL(s.today_updated, 0) DESC, ISNULL(s.row_count, 0) DESC
     """
 
     df = pd.read_sql_query(sql, conn, params=(snapshot_date,))
@@ -82,73 +82,51 @@ def load_overview(snapshot_date: str) -> pd.DataFrame:
 
 
 def main():
-    st.set_page_config(page_title="数据库健康总览", layout="wide")
+    st.set_page_config(page_title="数据表目录", layout="wide")
     apply_theme()
 
-    st.title("数据库数据健康总览")
+    st.title("数据表目录 (Data Catalog)")
 
     today = date.today()
     snapshot = st.sidebar.date_input("选择日期", value=today)
     snapshot_str = snapshot.isoformat()
 
-    # Filters from catalog page
-    only_active = st.sidebar.checkbox("仅显示今日有变更的表", value=False)
+    only_active = st.sidebar.checkbox("仅显示今日有变更的表", value=True)
     dq_threshold = st.sidebar.slider("DQ 风险阈值", min_value=0, max_value=100, value=85)
     q = st.sidebar.text_input("搜索表名", value="")
 
-    with st.spinner("正在加载 meta 汇总..."):
-        df = load_overview(snapshot_str)
+    with st.spinner("正在加载目录..."):
+        df = load_catalog(snapshot_str)
 
     if df.empty:
         st.warning("未找到 meta 统计数据。请先运行 meta 汇总 ETL：data_pipelines/monitoring/etl/etl_meta_table_health.py")
         return
 
-    # Apply filters
     if only_active:
         df = df[(df["today_inserted"].fillna(0) > 0) | (df["today_updated"].fillna(0) > 0)].copy()
 
     if q.strip():
         df = df[df["table_name"].astype(str).str.contains(q.strip(), case=False, na=False)].copy()
 
-    df["dq_score"] = df["dq_score"].fillna(0)
-    df["today_inserted"] = df["today_inserted"].fillna(0)
-    df["today_updated"] = df["today_updated"].fillna(0)
-    df["row_count"] = df["row_count"].fillna(0)
+    df["risk_flag"] = (
+        (df["dq_score"].fillna(0) < float(dq_threshold))
+        | (df["issues_summary"].fillna("").astype(str).str.startswith("ERROR:"))
+    )
 
-    df["risk_flag"] = (df["dq_score"] < float(dq_threshold)) | df["issues_summary"].fillna("").astype(str).str.startswith("ERROR:")
-
-    total_tables = int(df.shape[0])
-    total_rows = int(df["row_count"].sum())
-    total_ins = int(df["today_inserted"].sum())
-    total_upd = int(df["today_updated"].sum())
-    risk_tables = int(df["risk_flag"].sum())
-    healthy_tables = int((~df["risk_flag"]).sum())
-    health_ratio = 0 if total_tables == 0 else (healthy_tables / total_tables) * 100
-
-    # Metrics
-    c1, c2, c3, c4, c5, c6 = st.columns(6)
-    with c1:
-        st.metric("表数量", total_tables)
-    with c2:
-        st.metric("总行数", f"{total_rows:,}")
-    with c3:
-        st.metric("今日新增", f"{total_ins:,}")
-    with c4:
-        st.metric("今日更新", f"{total_upd:,}")
-    with c5:
-        st.metric("健康表占比", f"{health_ratio:.1f}%")
-    with c6:
-        st.metric("风险表数", risk_tables)
+    col1, col2, col3, col4 = st.columns(4)
+    with col1:
+        st.metric("表数量", int(df.shape[0]))
+    with col2:
+        st.metric("今日新增合计", int(df["today_inserted"].fillna(0).sum()))
+    with col3:
+        st.metric("今日更新合计", int(df["today_updated"].fillna(0).sum()))
+    with col4:
+        st.metric("风险表数", int(df["risk_flag"].sum()))
 
     st.markdown("---")
 
-    # Main content: Table list + Visualizations
-    left, right = st.columns([2.2, 1])
-
+    left, right = st.columns([2, 1])
     with left:
-        st.subheader("📋 数据表详情列表")
-        
-        # Detailed table list
         view_cols = [
             "table_name",
             "row_count",
@@ -161,43 +139,39 @@ def main():
         show_df = df[view_cols].copy()
         show_df = show_df.rename(
             columns={
-                "table_name": "表名",
-                "row_count": "总行数",
-                "today_inserted": "今日新增",
-                "today_updated": "今日更新",
-                "last_updated_at": "最后更新时间",
-                "dq_score": "DQ分数",
-                "issues_summary": "问题摘要",
+                "table_name": "table_name",
+                "row_count": "row_count",
+                "today_inserted": "today_inserted",
+                "today_updated": "today_updated",
+                "last_updated_at": "last_updated_at",
+                "dq_score": "dq_score",
+                "issues_summary": "issues_summary",
             }
         )
-        st.dataframe(show_df, use_container_width=True, height=500)
+        st.dataframe(show_df, use_container_width=True, height=520)
 
     with right:
-        # Top 10 charts
-        top_ins = df.sort_values(["today_inserted", "today_updated"], ascending=False).head(10)
-        if not top_ins.empty:
-            fig = px.bar(top_ins, x="today_inserted", y="table_name", orientation="h", title="今日新增 Top10")
+        top = df.sort_values(["today_inserted", "today_updated"], ascending=False).head(10)
+        if not top.empty:
+            fig = px.bar(
+                top,
+                x="today_inserted",
+                y="table_name",
+                orientation="h",
+                title="今日新增 Top10",
+                height=420,
+            )
             fig.update_layout(
                 paper_bgcolor="rgba(0,0,0,0)",
                 plot_bgcolor="rgba(0,0,0,0)",
+                # font_color="#E6EEF8", # REMOVED
                 margin=dict(l=10, r=10, t=40, b=10),
             )
             st.plotly_chart(fig, use_container_width=True)
 
-        # DQ Score distribution
-        if not df.empty:
-            fig3 = px.histogram(df, x="dq_score", nbins=20, title="DQ Score 分布")
-            fig3.update_layout(
-                paper_bgcolor="rgba(0,0,0,0)",
-                plot_bgcolor="rgba(0,0,0,0)",
-                margin=dict(l=10, r=10, t=40, b=10),
-            )
-            st.plotly_chart(fig3, use_container_width=True)
-
-        # Risk table list
         risk = df[df["risk_flag"]].sort_values(["dq_score"], ascending=True).head(10)
         if not risk.empty:
-            st.write("⚠️ 风险表 Top10")
+            st.write("风险表 Top10")
             st.dataframe(risk[["table_name", "dq_score", "issues_summary"]], use_container_width=True, height=260)
 
 

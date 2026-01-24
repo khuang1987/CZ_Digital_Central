@@ -78,3 +78,7 @@ A1_ETL_Output/
 *.db
 *.sqlite
 data_pipelines/database/*.db
+
+# User requested ignores
+A1_ETL_Output/
+toolkit_dataCollect/

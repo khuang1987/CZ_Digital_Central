@@ -27,16 +27,17 @@ def get_db_connection():
         return None
 
 
-def apply_dark_theme():
+def apply_theme():
     st.markdown(
         """
         <style>
         .block-container { padding-top: 1.2rem; padding-bottom: 2rem; }
-        [data-testid="stSidebar"] { background: #0B1220; }
-        html, body, [class*="css"]  { background-color: #070B14; color: #E6EEF8; }
-        .stApp { background: linear-gradient(180deg, #070B14 0%, #070B14 100%); }
-        div[data-testid="stMetric"] { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); padding: 14px 16px; border-radius: 14px; }
-        div[data-testid="stDataFrame"] { background: rgba(255,255,255,0.02); }
+        div[data-testid="stMetric"] { 
+            background-color: rgba(128, 128, 128, 0.1); 
+            border: 1px solid rgba(128, 128, 128, 0.2); 
+            padding: 14px 16px; 
+            border-radius: 14px; 
+        }
         </style>
         """,
         unsafe_allow_html=True,
@@ -169,9 +170,7 @@ def load_sample(table_name: str, limit: int = 50) -> pd.DataFrame:
 
 def main():
     st.set_page_config(page_title="单表详情", layout="wide")
-    apply_dark_theme()
-
-    st.title("单表详情 (Table Detail)")
+    apply_theme()
 
     today = date.today()
     snapshot = st.sidebar.date_input("选择日期", value=today)
@@ -197,7 +196,46 @@ def main():
     if default_table in options:
         idx = options.index(default_table)
 
-    table_name = st.sidebar.selectbox("选择表", options=options, index=idx)
+    # Sidebar table selector (keep for backward compatibility)
+    sidebar_table = st.sidebar.selectbox("快速切换表", options=options, index=idx, key="sidebar_table")
+    
+    # MAIN AREA: Prominent table selector with navigation
+    st.subheader("📊 数据表详情")
+    
+    col_prev, col_select, col_next = st.columns([0.5, 6, 0.5])
+    
+    with col_prev:
+        st.write("")  # spacing
+        st.write("")
+        if st.button("◀", key="prev_table", use_container_width=True):
+            current_idx = options.index(sidebar_table) if sidebar_table in options else idx
+            new_idx = (current_idx - 1) % len(options)
+            st.session_state.selected_table = options[new_idx]
+            st.rerun()
+    
+    with col_select:
+        # Use session state to persist selection across prev/next clicks
+        if "selected_table" not in st.session_state:
+            st.session_state.selected_table = sidebar_table
+        
+        table_name = st.selectbox(
+            "选择要查看的数据表", 
+            options=options, 
+            index=options.index(st.session_state.selected_table) if st.session_state.selected_table in options else idx,
+            key="main_table_selector"
+        )
+        st.session_state.selected_table = table_name
+    
+    with col_next:
+        st.write("")  # spacing
+        st.write("")
+        if st.button("▶", key="next_table", use_container_width=True):
+            current_idx = options.index(table_name) if table_name in options else idx
+            new_idx = (current_idx + 1) % len(options)
+            st.session_state.selected_table = options[new_idx]
+            st.rerun()
+    
+    st.markdown("---")
 
     s, d = load_meta_for_table(snapshot_str, table_name)
 
@@ -233,7 +271,7 @@ def main():
             fig.update_layout(
                 paper_bgcolor="rgba(0,0,0,0)",
                 plot_bgcolor="rgba(0,0,0,0)",
-                font_color="#E6EEF8",
+                # font_color="#E6EEF8", # REMOVED
                 margin=dict(l=10, r=10, t=40, b=10),
             )
             st.plotly_chart(fig, use_container_width=True)
@@ -243,7 +281,7 @@ def main():
             fig2.update_layout(
                 paper_bgcolor="rgba(0,0,0,0)",
                 plot_bgcolor="rgba(0,0,0,0)",
-                font_color="#E6EEF8",
+                # font_color="#E6EEF8", # REMOVED
                 margin=dict(l=10, r=10, t=40, b=10),
             )
             st.plotly_chart(fig2, use_container_width=True)

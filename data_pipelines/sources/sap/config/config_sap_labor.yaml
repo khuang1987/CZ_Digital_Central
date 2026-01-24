@@ -1,0 +1,16 @@
+# SAP 计划与实际工时配置
+
+source:
+  # 实际上是从SAP导出的源文件放置位置 (ZIP)
+  # 以及 labor_hour_formatter 脚本解压和转换的目标位置
+  labor_hour_path: "C:\\Users\\huangk14\\OneDrive - Medtronic PLC\\CZ Production - 文档\\General\\POWER BI 数据源 V2\\40-SAP工时"
+  
+  # 文件名配置
+  file_patterns:
+    zip_source: "YPP_M03_Q5003.ZIP"
+    excel_intermediate: "YPP_M03_Q5003_00000.xls"
+    excel_output: "YPP_M03_Q5003_00000.xlsx"
+
+logging:
+  level: INFO
+  file: "../06_日志文件/etl_sap_labor.log"

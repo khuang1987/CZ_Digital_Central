@@ -152,9 +152,14 @@ def load_kpi_rules() -> pd.DataFrame:
         return pd.DataFrame()
     df = pd.read_csv(KPI_RULES_PATH)
     df.columns = [c.strip() for c in df.columns]
-    for c in ['RuleCode', 'KPI_Name', 'Owner', 'DataSource', 'Description', 'TagFilter', 'ActionType', 'TriggerLevel', 'ComparisonOperator']:
+    for c in ['RuleCode', 'KPI_Name', 'Owner', 'DataSource', 'Description', 'TagFilter', 'ActionType', 'TriggerLevel', 'ComparisonOperator', 'Active']:
         if c in df.columns:
             df[c] = df[c].astype(str).str.strip()
+    
+    # Filter by Active column
+    if 'Active' in df.columns:
+        df = df[df['Active'].str.lower() == 'yes'].copy()
+        
     for c in ['KPI_Id', 'ThresholdValue', 'ConsecutiveOccurrences', 'LookbackDays']:
         if c in df.columns:
             df[c] = pd.to_numeric(df[c], errors='coerce')

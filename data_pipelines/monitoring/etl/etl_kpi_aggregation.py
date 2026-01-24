@@ -10,12 +10,16 @@ import pandas as pd
 from pathlib import Path
 from datetime import datetime, timedelta
 import logging
+import csv
+
+PROJECT_ROOT = Path(__file__).resolve().parents[3]
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
 CAMPUS_TAG = 'CZ_Campus'
 PLANT_TAGS = ('CKH', 'CZM')
+HISTORY_WEEKS = 8  # 仅处理最近8周的数据
 
 def get_db_connection():
     conn_str = (
@@ -235,6 +239,7 @@ def aggregate_global_lead_time_weekly(conn):
             MAX(TrackOutTime) as EndTime
         FROM dbo.raw_sfc
         WHERE TrackInTime IS NOT NULL AND TrackOutTime IS NOT NULL
+          AND TrackOutTime > DATEADD(week, -{HISTORY_WEEKS}, GETDATE())
         GROUP BY BatchNumber
     ),
     BatchPlant AS (
@@ -267,7 +272,8 @@ def aggregate_global_lead_time_weekly(conn):
     SELECT
         MIN(cal_date) as CreatedDate,
         '{CAMPUS_TAG}' as Tag,
-        AVG(DurationDays) as AvgDurationDays
+        AVG(DurationDays) as AvgDurationDays,
+        COUNT(*) as BatchCount
     FROM BatchWithFiscal
     GROUP BY fiscal_year, fiscal_week
 
@@ -276,7 +282,8 @@ def aggregate_global_lead_time_weekly(conn):
     SELECT
         MIN(cal_date) as CreatedDate,
         Plant as Tag,
-        AVG(DurationDays) as AvgDurationDays
+        AVG(DurationDays) as AvgDurationDays,
+        COUNT(*) as BatchCount
     FROM BatchWithFiscal
     WHERE Plant IN ('CKH', 'CZM')
     GROUP BY Plant, fiscal_year, fiscal_week
@@ -293,9 +300,10 @@ def aggregate_global_lead_time_weekly(conn):
         for _, row in df.iterrows():
             if pd.isna(row['AvgDurationDays']): continue
             cursor.execute("""
-                INSERT INTO dbo.KPI_Data (KPI_Id, Tag, CreatedDate, Progress)
-                VALUES (1, ?, ?, ?)
-            """, (row['Tag'], row['CreatedDate'], row['AvgDurationDays']))
+                INSERT INTO dbo.KPI_Data (KPI_Id, Tag, CreatedDate, Progress, Details)
+                VALUES (1, ?, ?, ?, ?)
+            """, (row['Tag'], row['CreatedDate'], row['AvgDurationDays'], f"Count: {row['BatchCount']}"))
+
             count += 1
         logger.info(f"  KPI #1 Global: 已插入 {count} 条周记录。")
     except Exception as e:
@@ -321,6 +329,7 @@ def aggregate_global_sa_weekly(conn):
             END AS IsOnTime
         FROM dbo.v_mes_metrics vm
         WHERE vm.TrackOutDate IS NOT NULL
+          AND vm.TrackOutDate > DATEADD(week, -{HISTORY_WEEKS}, GETDATE())
           AND vm.CompletionStatus IN ('OnTime', 'Overdue')
     )
     SELECT
@@ -365,9 +374,9 @@ def aggregate_global_sa_weekly(conn):
             sa_pct = min(max(sa_pct, 0), 100)
 
             cursor.execute("""
-                INSERT INTO dbo.KPI_Data (KPI_Id, Tag, CreatedDate, Progress)
-                VALUES (2, ?, ?, ?)
-            """, (row['Tag'], row['CreatedDate'], sa_pct))
+                INSERT INTO dbo.KPI_Data (KPI_Id, Tag, CreatedDate, Progress, Details)
+                VALUES (2, ?, ?, ?, ?)
+            """, (row['Tag'], row['CreatedDate'], sa_pct, f"Count: {total_ops}"))
             count += 1
         logger.info(f"  KPI #2 Global: 已插入 {count} 条周记录。")
     except Exception as e:
@@ -409,7 +418,7 @@ def aggregate_safety_issue_rank_weekly(conn):
     WITH WeekStarts AS (
         SELECT fiscal_year, fiscal_week, MIN(date) as week_start
         FROM dbo.dim_calendar
-        WHERE date >= '2026-01-01'
+        WHERE date >= DATEADD(week, -8, GETDATE())
         GROUP BY fiscal_year, fiscal_week
     )
     SELECT 
@@ -421,12 +430,13 @@ def aggregate_safety_issue_rank_weekly(conn):
     JOIN dbo.planner_tasks t ON l.TaskId = t.TaskId
     JOIN dbo.dim_calendar cal ON CONVERT(varchar(10), t.CreatedDate, 23) = cal.date
     JOIN WeekStarts ws ON cal.fiscal_year = ws.fiscal_year AND cal.fiscal_week = ws.fiscal_week
-    WHERE t.BucketName = N'安全' 
+    WHERE t.BucketName = ? 
       AND l.IsExcluded = 0
     """
     
     try:
-        df = pd.read_sql(query, conn)
+        # Use parameters to handle Unicode '安全' correctly
+        df = pd.read_sql(query, conn, params=['安全'])
         if df.empty:
             logger.info("  KPI #3 Safety: 无数据。")
             return
@@ -450,17 +460,27 @@ def aggregate_safety_issue_rank_weekly(conn):
             logger.error("  KPI #3 Safety: KPI_Definition 'Safety_Issue_Rank' not found.")
             return
         kpi_id = kpi_id_row[0]
-        
+
+        # MinVolume logic removed from aggregation layer to allow full visibility in Matrix.
+        # Volume filtering will be handled by Alert Engine.
+        pass
+
         # Insert into KPI_Data
         cursor = conn.cursor()
         count = 0
         for _, row in df_counts.iterrows():
+            # 移除聚合层的 MinVolume 过滤，保留所有排名数据供 Dashboard 展示
+            # MinVolume 检查将由 Alert Engine 负责
+            # if row['Count'] <= min_volume:
+            #     continue
+
             # Tag = Label Name
             # Progress = Rank
+            # Details = Count info
             cursor.execute("""
-                INSERT INTO dbo.KPI_Data (KPI_Id, Tag, CreatedDate, Progress)
-                VALUES (?, ?, ?, ?)
-            """, (kpi_id, row['Label'], row['week_start_date'], round(row['Rank'], 2)))
+                INSERT INTO dbo.KPI_Data (KPI_Id, Tag, CreatedDate, Progress, Details)
+                VALUES (?, ?, ?, ?, ?)
+            """, (kpi_id, row['Label'], row['week_start_date'], round(row['Rank'], 2), f"Count: {row['Count']}"))
             count += 1
             
         logger.info(f"  KPI #3 Safety: 已插入 {count} 条排名记录。")
@@ -538,138 +558,11 @@ def generate_reports(conn):
     safety_matrix.to_csv(safety_output, index=False, encoding='utf-8-sig')
     logger.info(f"安全排名矩阵已保存至: {safety_output}")
     
-    # 3. 分析触发条件
-    all_triggers = []
-    
-    # Lead Time 触发（连续超过24小时）
-    lt_triggers = check_lead_time_triggers(global_matrix)
-    all_triggers.extend(lt_triggers)
-    
-    # Schedule Attainment 触发（连续低于95%）
-    sa_triggers = check_schedule_attainment_triggers(global_matrix)
-    all_triggers.extend(sa_triggers)
-    
-    # 安全触发（连续3周前3）
-    safety_triggers = check_safety_triggers(safety_matrix)
-    all_triggers.extend(safety_triggers)
-    
-    # 保存所有触发结果
-    if all_triggers:
-        df_triggers = pd.DataFrame(all_triggers)
+    # 移除聚合脚本中的触发检查逻辑，统一由 etl_alert_engine.py 处理
+    logger.info("KPI 报表生成完成。触发检查将由 Alert Engine 执行。")
         
-        # 保存为 CSV
-        triggers_csv = Path(__file__).parent.parent / 'output' / 'kpi_trigger_results.csv'
-        df_triggers.to_csv(triggers_csv, index=False, encoding='utf-8-sig')
-        logger.info(f"触发结果已保存至: {triggers_csv} (CSV)")
-        
-        # 保存为 TSV
-        triggers_tsv = Path(__file__).parent.parent / 'output' / 'kpi_trigger_results.tsv'
-        df_triggers.to_csv(triggers_tsv, index=False, sep='\t', encoding='utf-8-sig')
-        logger.info(f"触发结果已保存至: {triggers_tsv} (TSV)")
-        
-        # 显示当前活跃的触发
-        logger.info("=== 当前活跃的触发警报 ===")
-        for trigger in all_triggers:
-            if trigger['Status'] == 'ACTIVE':
-                logger.info(f"类型: {trigger['KPI_Type']} | 标签: {trigger['Tag']} | 描述: {trigger['Description']}")
 
-def check_lead_time_triggers(matrix):
-    """检查 Lead Time 触发（连续超过24小时）"""
-    triggers = []
-    if 'Lead_Time' not in matrix.columns:
-        return triggers
-    
-    consecutive = 0
-    for idx, row in matrix.iterrows():
-        if pd.notna(row['Lead_Time']) and row['Lead_Time'] > 24:
-            consecutive += 1
-            if consecutive >= 3:
-                triggers.append({
-                    'KPI_Type': 'Lead_Time',
-                    'Tag': 'CZ_Campus',
-                    'Level': 'Critical',
-                    'Description': '制造周期连续3周超过24小时',
-                    'Details': f"当前值: {row['Lead_Time']:.1f}小时",
-                    'Status': 'ACTIVE',
-                    'TriggerWeek': row['FiscalWeek']
-                })
-                break
-        else:
-            consecutive = 0
-    return triggers
 
-def check_schedule_attainment_triggers(matrix):
-    """检查 Schedule Attainment 触发（连续低于95%）"""
-    triggers = []
-    if 'Schedule_Attainment' not in matrix.columns:
-        return triggers
-    
-    consecutive = 0
-    for idx, row in matrix.iterrows():
-        if pd.notna(row['Schedule_Attainment']) and row['Schedule_Attainment'] < 95:
-            consecutive += 1
-            if consecutive >= 3:
-                triggers.append({
-                    'KPI_Type': 'Schedule_Attainment',
-                    'Tag': 'CZ_Campus',
-                    'Level': 'Critical',
-                    'Description': '达成率连续3周低于95%',
-                    'Details': f"当前值: {row['Schedule_Attainment']:.1f}%",
-                    'Status': 'ACTIVE',
-                    'TriggerWeek': row['FiscalWeek']
-                })
-                break
-        else:
-            consecutive = 0
-    return triggers
-
-def extract_week_number(fiscal_week):
-    """从财周字符串提取可排序的数字"""
-    try:
-        parts = fiscal_week.split()
-        year = int(parts[0][2:])
-        week = int(parts[1][1:])
-        return year * 100 + week
-    except:
-        return 0
-
-def check_safety_triggers(matrix):
-    """检查安全触发（连续3周前3）"""
-    triggers = []
-    
-    # 转换为可排序的格式
-    matrix['WeekNum'] = matrix['FiscalWeek'].apply(extract_week_number)
-    matrix_sorted = matrix.sort_values('WeekNum')
-    
-    for label in matrix.columns:
-        if label in ['FiscalWeek', 'WeekNum']:
-            continue
-        
-        ranks = matrix_sorted[label]
-        consecutive = 0
-        
-        for idx, rank in enumerate(ranks):
-            if pd.isna(rank) or rank == '':
-                consecutive = 0
-                continue
-            
-            if rank <= 3:
-                consecutive += 1
-                if consecutive >= 3:
-                    week = matrix_sorted.iloc[idx]['FiscalWeek']
-                    triggers.append({
-                        'KPI_Type': 'Safety_Issue_Rank',
-                        'Tag': label,
-                        'Level': 'Critical',
-                        'Description': '安全隐患类型连续3周排名前3',
-                        'Details': f"当前排名: {rank}",
-                        'Status': 'ACTIVE',
-                        'TriggerWeek': week
-                    })
-                    break
-            else:
-                consecutive = 0
-    return triggers
 
 def main():
     conn = get_db_connection()

@@ -131,7 +131,8 @@ def clean_data(df, source_file):
     df = df.rename(columns=COLUMN_MAPPING)
     
     # 添加快照日期和源文件
-    df['snapshot_date'] = pd.to_datetime(parse_snapshot_date(source_file), errors='coerce').dt.date
+    snapshot_date = pd.to_datetime(parse_snapshot_date(source_file), errors='coerce')
+    df['snapshot_date'] = snapshot_date.date() if pd.notnull(snapshot_date) else None
     df['source_file'] = os.path.basename(source_file)
     
     # 转换数据类型

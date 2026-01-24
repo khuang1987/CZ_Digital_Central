@@ -1,0 +1,9 @@
+--- dbo.mes_metrics_snapshot_a ---
+id, BatchNumber, Operation, machine, Machine(#), EnterStepTime, TrackInTime, TrackOutTime, TrackOutDate, Plant, Product_Desc, ProductNumber, CFN, ProductionOrder, Operation description, Group, StepInQuantity, TrackOutQuantity, TrackOutOperator, Setup, Setup Time (h), OEE, EH_machine, EH_labor, factory_name, VSM, Checkin_SFC, ScrapQty, PreviousBatchEndTime, unit_time, LT(d), PT(d), ST(d), PNW(d), LNW(d), CompletionStatus
+
+--- dbo.raw_mes ---
+id, BatchNumber, Operation, Machine, EnterStepTime, TrackInTime, TrackOutTime, Plant, Product_Desc, ProductNumber, CFN, ProductionOrder, OperationDesc, Group, StepInQuantity, TrackOutQuantity, TrackOutOperator, factory_name, VSM, source_file, record_hash, created_at, updated_at
+
+--- dbo.raw_sap_routing ---
+id, ProductNumber, CFN, Plant, Operation, WorkCenter, OperationDesc, StandardTime, SetupTime, OEE, EH_machine, EH_labor, Quantity, Group, factory_code, source_file, record_hash, created_at, updated_at
+

@@ -316,10 +316,10 @@ def _upsert_case_registry_row(conn, a3_id, category, trigger_type, status, opene
             "  ClosedAt=?, "
             "  PlannerTaskId=?, "
             "  Notes=?, "
-            "  OriginalLevel=COALESCE(NULLIF(OriginalLevel,''), ?), "
-            "  OriginalDesc=COALESCE(NULLIF(OriginalDesc,''), ?), "
-            "  OriginalDetails=COALESCE(NULLIF(OriginalDetails,''), ?), "
-            "  OriginalValue=COALESCE(NULLIF(OriginalValue,''), ?), "
+            "  OriginalLevel=?, "
+            "  OriginalDesc=?, "
+            "  OriginalDetails=?, "
+            "  OriginalValue=?, "
             "  UpdatedAt=SYSUTCDATETIME() "
             "WHERE A3Id=?",
             (
@@ -397,6 +397,11 @@ def _load_rules_from_csv():
                     continue
                     
                 rules.append(row_dict)
+                
+        logger.info(f"Loaded {len(rules)} active rules.")
+        for r in rules:
+            logger.info(f"  Rule: {r['RuleCode']} | Op: {r['ComparisonOperator']} | Thr: {r['ThresholdValue']} | TagFilter: {r.get('TagFilter')}")
+        return rules
     except Exception as e:
         logger.error(f"读取规则文件失败: {e}")
     return rules
@@ -416,6 +421,12 @@ def check_generic_rule(cursor, rule):
     lookback = int(rule.get('LookbackDays', 7))
     desc_template = rule.get('Description', '')
     tag_filter = rule.get('TagFilter', '')
+    
+    # Load MinVolume (Default 0)
+    min_volume = 0
+    val = rule.get('MinVolume', '0')
+    if val and str(val).isdigit():
+        min_volume = int(val)
 
     watermark_days = 60
     effective_lookback = min(max(lookback, 1), watermark_days)
@@ -472,7 +483,18 @@ def check_generic_rule(cursor, rule):
                 CAST(d.CreatedDate AS date) AS CreatedDate,
                 CONCAT(cal.fiscal_year, ' W', RIGHT('0' + CAST(cal.fiscal_week AS varchar(2)), 2)) AS FiscalWeek,
                 d.Progress,
-                CASE WHEN d.Progress {op} ? THEN 1 ELSE 0 END AS IsViolation,
+                d.Details,
+                CASE 
+                    WHEN d.Progress {op} ? 
+                    AND (
+                        ? = 0 
+                        OR 
+                        -- Parse 'Count: X' from Details using robust logic
+                        TRY_CAST(LTRIM(SUBSTRING(d.Details, CHARINDEX('Count:', d.Details) + 6, LEN(d.Details))) AS INT) >= ?
+                    )
+                    THEN 1 
+                    ELSE 0 
+                END AS IsViolation,
                 c.ClosedAt AS CutoffClosedAt
             FROM dbo.KPI_Data d
             LEFT JOIN Cutoffs c
@@ -492,6 +514,7 @@ def check_generic_rule(cursor, rule):
                 CreatedDate,
                 FiscalWeek,
                 Progress,
+                Details,
                 IsViolation,
                 ROW_NUMBER() OVER (PARTITION BY Tag ORDER BY CreatedDate) -
                 ROW_NUMBER() OVER (PARTITION BY Tag, IsViolation ORDER BY CreatedDate) AS Grp
@@ -507,6 +530,11 @@ def check_generic_rule(cursor, rule):
                         COALESCE(g.FiscalWeek, CONVERT(varchar(10), g.CreatedDate, 23)),
                         '(',
                         FORMAT(g.Progress, '0.0'),
+                        CASE 
+                            WHEN g.Details LIKE '%Count:%' THEN 
+                                CONCAT(', ', LTRIM(RTRIM(SUBSTRING(g.Details, CHARINDEX('Count:', g.Details) + 6, LEN(g.Details)))))
+                            ELSE '' 
+                        END,
                         ')'
                     ),
                     ', '
@@ -541,7 +569,7 @@ def check_generic_rule(cursor, rule):
           AND l.ConsecCount >= ?;
         """
 
-        params = [float(threshold), str(rule_code), int(kpi_id)]
+        params = [float(threshold), int(min_volume), int(min_volume), str(rule_code), int(kpi_id)]
         if tag_filter:
             params.append(str(tag_filter))
         params.extend(
@@ -649,16 +677,41 @@ def _refine_trigger_row(row, rule_code, threshold_val):
         # Refine Description
         refined_desc = f"Latest Week SA: {sa_val_str}, Threshold: {threshold_str}"
         
-        # Refine Details (FY26 W39(88.0) -> FY26 W39(88.0%))
+        # Refine Details (FY26 W39(88.0, 4000) -> FY26 W39(88.0%, Count: 4000))
         refined_details = details
-        matches = re.findall(r'(\d+(?:\.\d+)?)\)', details)
-        for m in matches:
-            refined_details = refined_details.replace(f"({m})", f"({m}%)")
+        # Pattern: (Progress, Count) e.g. (94.7, 4201)
+        # We want to keep it simple. The SQL returns (Progress, Count) or (Progress).
+        
+        # Try to match (Progress, Count)
+        # Use a callback function for substitution to be robust
+        def repl(m):
+            prog = m.group(1)
+            cnt = m.group(2)
+            return f"({prog}%, Count: {cnt})"
+
+        refined_details = re.sub(r'\((\d+(?:\.\d+)?),\s*(\d+)\)', repl, refined_details)
+        
+        # Also handle case without count if any: (94.7) -> (94.7%)
+        refined_details = re.sub(r'\((\d+(?:\.\d+)?)\)', r'(\1%)', refined_details)
         
         # Truncate to last 4 weeks
-        detail_parts = [p.strip() for p in refined_details.split(',') if p.strip()]
-        if len(detail_parts) > 4:
-            refined_details = ', '.join(detail_parts[-4:])
+        detail_parts = [p.strip() for p in refined_details.split(', FY') if p.strip()] # Split by FY to avoid splitting internal commas if any, though standard format is ", "
+        # Actually standard separator is ", ". splitting by ", " might be safe if dates don't have comma.
+        # Let's rely on standard split but be careful.
+        # Re-construct list properly
+        parts = []
+        current = ""
+        # Simple split by ", F" helps? No.
+        # Just use ") ," as delimiter?
+        
+        # Fallback to simple split by comma if no internal commas expected (current SQL doesn't add internal commas except the one we just formatted)
+        # Our formatted string has comma: "94.7%, Count: 4201". 
+        # So we CANNOT split by comma!
+        
+        # Use regex to find all "FY..(...)" blocks
+        blocks = re.findall(r'(FY\d+ W\d+\([^)]+\))', refined_details)
+        if len(blocks) > 4:
+            refined_details = ', '.join(blocks[-4:])
             
         return (tag, trigger_type, level, refined_desc, sa_val_str, consec_weeks, refined_details, status, update)
 
@@ -912,8 +965,12 @@ def run_alert_engine(conn):
                 trigger_name = (rule_cfg.get('KPI_Name') or '').strip() or trigger_type
                 trigger_level = (original_level or '').strip() or (rule_cfg.get('TriggerLevel') or '').strip()
                 trigger_desc = (original_desc or '').strip()
-                consecutive_weeks = (original_value or '').strip()
+                
                 weekly_details = (original_details or '').strip()
+                # Calculate ConsecutiveWeeks from details count (number of ")" parentheses)
+                # Fallback to original_value if details empty (though unlikely for valid trigger)
+                c_weeks_count = weekly_details.count(')')
+                consecutive_weeks = str(c_weeks_count) if c_weeks_count > 0 else (original_value or '').strip()
                 last_update = str(updated_at or '').strip()
 
                 case_status_norm = _normalize_status(case_status)

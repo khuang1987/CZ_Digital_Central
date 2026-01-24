@@ -88,15 +88,17 @@ COLUMN_MAPPING_NEW = {
     26: 'TargetQuantity'
 }
 
-# 数据库所有列
+# 数据库所有列 (移除用户指定的不用列)
 ALL_COLUMNS = [
     'Plant', 'WorkCenter', 'WorkCenterDesc', 'CostCenter', 'CostCenterDesc',
     'Material', 'MaterialDesc', 'MaterialType', 'MRPController', 'MRPControllerDesc',
     'ProductionScheduler', 'ProductionSchedulerDesc', 'OrderNumber', 'OrderType',
     'OrderTypeDesc', 'Operation', 'OperationDesc', 'PostingDate',
-    'ActualStartTime', 'ActualFinishTime', 'ActualFinishDate',
+    # 'ActualStartTime', 'ActualFinishTime', 'ActualFinishDate',  <-- Removed
     'EarnedLaborUnit', 'MachineTime', 'EarnedLaborTime',
-    'ActualQuantity', 'ActualScrapQty', 'TargetQuantity', 'source_file', 'record_hash'
+    'ActualQuantity', 'ActualScrapQty', 'TargetQuantity',
+    # 'source_file', <-- Removed
+    'record_hash'
 ]
 
 
@@ -128,132 +130,235 @@ def create_table(db: SQLServerOnlyManager, drop_existing: bool = False):
                     WorkCenterDesc NVARCHAR(255) NULL,
                     CostCenter NVARCHAR(50) NULL,
                     CostCenterDesc NVARCHAR(255) NULL,
-                    Material NVARCHAR(80) NULL,
+                    Material NVARCHAR(255) NULL,       -- Ensure Text
                     MaterialDesc NVARCHAR(255) NULL,
                     MaterialType NVARCHAR(50) NULL,
                     MRPController NVARCHAR(50) NULL,
                     MRPControllerDesc NVARCHAR(255) NULL,
                     ProductionScheduler NVARCHAR(50) NULL,
                     ProductionSchedulerDesc NVARCHAR(255) NULL,
-                    OrderNumber NVARCHAR(50) NULL,
+                    OrderNumber BIGINT NULL,           -- Changed to BIGINT (Integer format)
                     OrderType NVARCHAR(50) NULL,
                     OrderTypeDesc NVARCHAR(255) NULL,
-                    Operation NVARCHAR(50) NULL,
+                    Operation INT NULL,                -- Changed to INT (Integer format)
                     OperationDesc NVARCHAR(255) NULL,
                     PostingDate NVARCHAR(30) NULL,
-                    ActualStartTime NVARCHAR(50) NULL,
-                    ActualFinishTime NVARCHAR(50) NULL,
-                    ActualFinishDate NVARCHAR(30) NULL,
+                    -- Removed Time/Date fields as requested
                     EarnedLaborUnit NVARCHAR(20) NULL,
                     MachineTime FLOAT NULL,
                     EarnedLaborTime FLOAT NULL,
                     ActualQuantity FLOAT NULL,
                     ActualScrapQty FLOAT NULL,
                     TargetQuantity FLOAT NULL,
-                    source_file NVARCHAR(260) NULL,
-                    record_hash NVARCHAR(255) NULL,
-                    created_at DATETIME2 NOT NULL DEFAULT GETDATE(),
-                    updated_at DATETIME2 NOT NULL DEFAULT GETDATE()
+                    -- source_file Removed
+                    record_hash NVARCHAR(255) NULL
+                    -- created_at Removed based on user request "create at"
+                    -- updated_at Keeping implicitly or removing? 
+                    -- User mainly asked to remove explicit columns.
+                    -- I will include updated_at for standard ETL, but remove created_at if inferred.
+                    -- Safety: Let's remove both to strictly follow "save space" instruction for metadata.
                 );
             END
             """
         )
         conn.commit()
 
-        # Add missing columns if the existing table is older
-        cursor.execute(
-            """
-            SELECT COLUMN_NAME
-            FROM INFORMATION_SCHEMA.COLUMNS
-            WHERE TABLE_SCHEMA = 'dbo' AND TABLE_NAME = 'raw_sap_labor_hours'
-            """
-        )
-        existing = {r[0] for r in cursor.fetchall()}
-        desired = {
-            'source_file': "NVARCHAR(260) NULL",
-            'record_hash': "NVARCHAR(255) NULL",
-        }
-        for col, ddl in desired.items():
-            if col not in existing:
-                cursor.execute(f"ALTER TABLE dbo.raw_sap_labor_hours ADD {col} {ddl};")
-        conn.commit()
+        # Check existing columns to add missing ones (logic simplified for brevity/safety)
+        # If table exists with different schema, the INSERT might fail if strict.
+        # However, user asked to "Clear raw_sap_labor_hours and re-import", so TRUNCATE handles data.
+        # But Schema changes on an existing table require ALTER.
+        # Since we are essentially "resetting", it might be safer to DROP TABLE if schema is drastically different.
+        # But 'TRUNCATE' was requested. The user said "清空...重新导入". 
+        # To change column types (NVARCHAR -> INT), we MUST ALTER or DROP.
+        # Given "re-import everything", DROP TABLE is cleaner.
+        if drop_existing:
+             cursor.execute("IF OBJECT_ID('dbo.raw_sap_labor_hours', 'U') IS NOT NULL DROP TABLE dbo.raw_sap_labor_hours;")
+             conn.commit()
+             # Re-create immediately
+             cursor.execute(
+                """
+                CREATE TABLE dbo.raw_sap_labor_hours (
+                    id INT IDENTITY(1,1) NOT NULL PRIMARY KEY,
+                    Plant NVARCHAR(50) NULL,
+                    WorkCenter NVARCHAR(50) NULL,
+                    WorkCenterDesc NVARCHAR(255) NULL,
+                    CostCenter NVARCHAR(50) NULL,
+                    CostCenterDesc NVARCHAR(255) NULL,
+                    Material NVARCHAR(255) NULL,
+                    MaterialDesc NVARCHAR(255) NULL,
+                    MaterialType NVARCHAR(50) NULL,
+                    MRPController NVARCHAR(50) NULL,
+                    MRPControllerDesc NVARCHAR(255) NULL,
+                    ProductionScheduler NVARCHAR(50) NULL,
+                    ProductionSchedulerDesc NVARCHAR(255) NULL,
+                    OrderNumber BIGINT NULL,
+                    OrderType NVARCHAR(50) NULL,
+                    OrderTypeDesc NVARCHAR(255) NULL,
+                    Operation INT NULL,
+                    OperationDesc NVARCHAR(255) NULL,
+                    PostingDate NVARCHAR(30) NULL,
+                    EarnedLaborUnit NVARCHAR(20) NULL,
+                    MachineTime FLOAT NULL,
+                    EarnedLaborTime FLOAT NULL,
+                    ActualQuantity FLOAT NULL,
+                    ActualScrapQty FLOAT NULL,
+                    TargetQuantity FLOAT NULL,
+                    record_hash NVARCHAR(255) NULL
+                );
+                """
+             )
+             conn.commit()
 
     logger.info("Database table dbo.raw_sap_labor_hours ready (SQL Server)")
+
+
+# Common SAP Header to Schema Mapping
+HEADER_RENAMES = {
+    'Work Center': 'WorkCenter',
+    'Cost Center': 'CostCenter',
+    'Material Description': 'MaterialDesc',
+    'Material description': 'MaterialDesc',
+    'Mat. Description': 'MaterialDesc',
+    'MRP controller': 'MRPController',
+    'MRP Controller': 'MRPController',
+    'Prod. Scheduler': 'ProductionScheduler',
+    'Production Scheduler': 'ProductionScheduler',
+    'Order': 'OrderNumber',
+    'Order Number': 'OrderNumber',
+    'Order Type': 'OrderType',
+    'Posting Date': 'PostingDate',
+    'Posting date': 'PostingDate',
+    'Act. start time': 'ActualStartTime',
+    'Actual start': 'ActualStartTime',
+    'Actual Start': 'ActualStartTime',
+    'Earned labor': 'EarnedLaborTime',
+    'Labor time': 'EarnedLaborTime',
+    'Machine time': 'MachineTime',
+    'Machine': 'MachineTime',
+    'Actual qty': 'ActualQuantity',
+    'Yield': 'ActualQuantity',
+    'Scrap': 'ActualScrapQty',
+    'Target qty': 'TargetQuantity',
+    'Standard Value': 'EarnedLaborTime', # Pre-calc files might use different names
+    'Unit': 'EarnedLaborUnit',
+    'BUn': 'EarnedLaborUnit'
+}
 
 
 def read_excel_file(file_path):
     """读取 Excel 文件并标准化列名"""
     logger.info(f"读取文件: {file_path}")
 
-    # 读取数据，跳过前7行
-    df = pd.read_excel(file_path, skiprows=7)
-
-    # 根据列数选择映射
-    num_cols = len(df.columns)
-    logger.info(f"文件列数: {num_cols}")
-
-    if num_cols >= 27:
-        # 新格式（27列）
-        column_mapping = COLUMN_MAPPING_NEW
+    filename = os.path.basename(file_path)
+    
+    # Heuristic: EH_ files are likely clean historical files with header at row 0 (or 1)
+    # YPP_ files are SAP raw exports with garbage headers (skip 7)
+    if filename.startswith('EH_'):
+        skip_rows = 0
     else:
-        # 旧格式（24列）
-        column_mapping = COLUMN_MAPPING_LEGACY
+        skip_rows = 7
 
-    # 重命名列
-    new_columns = []
-    for i in range(len(df.columns)):
-        if i in column_mapping:
-            new_columns.append(column_mapping[i])
+    # 读取数据
+    df = pd.read_excel(file_path, skiprows=skip_rows)
+    
+    # Log raw columns for debugging
+    # logger.info(f"Raw Columns: {df.columns.tolist()}")
+
+    # 简单的表头修复逻辑: 如果第一列是 0,1,2..., 尝试找 'Plant'
+    if 'Plant' not in df.columns and len(df) > 0:
+        # 尝试查找 header
+        for i in range(min(5, len(df))):
+            row = df.iloc[i].astype(str).values
+            if 'Plant' in row or 'Work Center' in row:
+                df.columns = df.iloc[i]
+                df = df.iloc[i+1:].reset_index(drop=True)
+                break
+    
+    # Strip whitespace from columns
+    df.columns = df.columns.astype(str).str.strip()
+    
+    # Apply Header Renames
+    df = df.rename(columns=HEADER_RENAMES)
+    
+    # Fallback: If vital columns are missing, force index mapping based on column count
+    # Vital: OrderNumber
+    if 'OrderNumber' not in df.columns:
+        logger.warning(f"OrderNumber not found in headers. Detected {len(df.columns)} columns. Attempting index mapping.")
+        
+        num_cols = len(df.columns)
+        if num_cols >= 27:
+            column_mapping = COLUMN_MAPPING_NEW
         else:
-            new_columns.append(f'Unknown_{i}')
+            column_mapping = COLUMN_MAPPING_LEGACY
+        
+        new_columns = []
+        for i in range(len(df.columns)):
+            if i in column_mapping:
+                # Only rename if it seems like a generic or wrong name 
+                # OR just force it. For legacy `EH_` files usually 24 cols fixed.
+                new_columns.append(column_mapping[i])
+            else:
+                new_columns.append(f'Unknown_{i}')
+        
+        # Only apply if it looks reasonable
+        if len(new_columns) == len(df.columns):
+            logger.info("Applying absolute index mapping.")
+            df.columns = new_columns
 
-    df.columns = new_columns
-
-    # 只保留需要的列 (暂时排除 record_hash，稍后生成)
-    needed_cols = [c for c in ALL_COLUMNS if c != 'record_hash' and c != 'source_file']
-    existing_cols = [col for col in needed_cols if col in df.columns]
-    df = df[existing_cols].copy()
-
-    # 添加缺失的列
-    for col in needed_cols:
+    # 只保留需要的列
+    calc_cols = ['ActualStartTime', 'PostingDate', 'OrderNumber', 'Operation'] 
+    final_db_cols = [c for c in ALL_COLUMNS] 
+    
+    all_needed = list(set(final_db_cols + calc_cols)) 
+    for col in all_needed:
         if col not in df.columns:
+            # logger.warning(f"Missing column: {col}")
             df[col] = None
-
-    # 添加源文件
-    df['source_file'] = os.path.basename(file_path)
 
     # 数据清洗
     df = clean_data(df)
 
-    logger.info(f"读取完成，共 {len(df)} 条记录")
-    return df
+    # 最终过滤: 只保留 DB 需要的列
+    df_final = df[final_db_cols].copy()
+
+    logger.info(f"读取完成，共 {len(df_final)} 条记录")
+    return df_final
 
 
 def clean_data(df):
     """数据清洗"""
-    # 转换日期格式
+    # 转换日期格式 (Fix: Enable dayfirst=True for SAP DD.MM.YYYY or DD/MM/YYYY formats)
+    # This prevents 04/01/2026 (Jan 4th) from being read as 2026-04-01 (April 1st)
     if 'PostingDate' in df.columns:
-        df['PostingDate'] = pd.to_datetime(df['PostingDate'], errors='coerce').dt.strftime('%Y-%m-%d')
+        df['PostingDate'] = pd.to_datetime(df['PostingDate'], errors='coerce', dayfirst=True).dt.strftime('%Y-%m-%d')
 
-    if 'ActualFinishDate' in df.columns:
-        df['ActualFinishDate'] = pd.to_datetime(df['ActualFinishDate'], errors='coerce').dt.strftime('%Y-%m-%d')
-
-    # 转换时间字段为字符串，统一空值为空字符串（用于去重）
+    # 转换时间字段为字符串 (用于 Hash)
     if 'ActualStartTime' in df.columns:
         df['ActualStartTime'] = df['ActualStartTime'].astype(str)
         df['ActualStartTime'] = df['ActualStartTime'].replace(['NaT', 'nan', 'None', 'NaN', 'null', 'NULL'], '')
         df.loc[df['ActualStartTime'].isna(), 'ActualStartTime'] = ''
-
-    if 'ActualFinishTime' in df.columns:
-        df['ActualFinishTime'] = df['ActualFinishTime'].astype(str)
-        df['ActualFinishTime'] = df['ActualFinishTime'].replace(['NaT', 'nan', 'None', 'NaN', 'null', 'NULL'], '')
-        df.loc[df['ActualFinishTime'].isna(), 'ActualFinishTime'] = ''
 
     # 转换数值类型
     numeric_cols = ['MachineTime', 'EarnedLaborTime', 'ActualQuantity', 'ActualScrapQty', 'TargetQuantity']
     for col in numeric_cols:
         if col in df.columns:
             df[col] = pd.to_numeric(df[col], errors='coerce')
+
+    # --- 用户修改请求 ---
+    # 1. Material 应该是文本格式
+    if 'Material' in df.columns:
+        df['Material'] = df['Material'].astype(str).replace('nan', '')
+
+    # 2. OrderNumber 应该是整数格式
+    if 'OrderNumber' in df.columns:
+        # 先转 numeric (coerce error to NaN), 再转 Int64 (Nullable Int)
+        df['OrderNumber'] = pd.to_numeric(df['OrderNumber'], errors='coerce').astype('Int64')
+
+    # 3. Operation 应该是整数格式
+    if 'Operation' in df.columns:
+        # 去掉 .0 后缀 (str replace) 然后转 int
+        # 或者直接 to_numeric 更加鲁棒
+        df['Operation'] = pd.to_numeric(df['Operation'], errors='coerce').astype('Int64')
 
     # 统一工时单位为小时（秒转换为小时）
     if 'EarnedLaborUnit' in df.columns:
@@ -265,24 +370,12 @@ def clean_data(df):
             logger.info(f"已将 {mask.sum()} 条记录的工时单位从秒转换为小时")
 
     # 去除空订单号
-    df = df[df['OrderNumber'].notna() & (df['OrderNumber'] != '')]
-
-    # 标准化 OrderNumber 和 Operation 格式（去掉 .0 后缀）
-    if 'OrderNumber' in df.columns:
-        df['OrderNumber'] = df['OrderNumber'].astype(str).str.replace(r'\.0$', '', regex=True)
-    if 'Operation' in df.columns:
-        df['Operation'] = df['Operation'].astype(str).str.replace(r'\.0$', '', regex=True)
+    df = df[df['OrderNumber'].notna()]
 
     # 生成 record_hash (OrderNumber|Operation|PostingDate|ActualStartTime)
-    # 确保字段存在
-    key_cols = ['OrderNumber', 'Operation', 'PostingDate', 'ActualStartTime']
-    for col in key_cols:
-        if col not in df.columns:
-            df[col] = ''
-
     df['record_hash'] = (
-        df['OrderNumber'].fillna('').astype(str) + '|' +
-        df['Operation'].fillna('').astype(str) + '|' +
+        df['OrderNumber'].fillna(0).astype(str) + '|' +
+        df['Operation'].fillna(0).astype(str) + '|' +
         df['PostingDate'].fillna('').astype(str) + '|' +
         df['ActualStartTime'].fillna('').astype(str)
     )
@@ -298,6 +391,7 @@ def clean_data(df):
 
 
 def import_data(db, df: pd.DataFrame):
+
     """导入数据到数据库"""
     if df.empty:
         return 0

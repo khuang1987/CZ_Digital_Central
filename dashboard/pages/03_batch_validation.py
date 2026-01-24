@@ -94,26 +94,175 @@ def manual_calc_st(qty, scrap, eh_machine, eh_labor, setup_time, oee, is_setup):
     return round(st_days, 4)
 
 
-def manual_calc_lt(track_out, enter_step, lnw_sec):
+# --- Calculation Verification Helpers ---
+def get_non_work_days_deduction(conn, start_time, end_time):
+    """
+    Calculate non-working days deduction between two timestamps using dim_calendar_cumulative.
+    Logic mimics the SQL view: (End_CumNW - Start_CumNW) * 86400 seconds approx (simplified)
+    Actually, to be precise, we fetch the specific days.
+    """
+    if not start_time or not end_time:
+        return 0.0
+    
+    start_date = start_time.date()
+    end_date = end_time.date()
+    
+    if start_date == end_date:
+        # Check if today is non-work
+        cursor = conn.cursor()
+        cursor.execute("SELECT IsWorkday FROM dbo.dim_calendar_cumulative WHERE CalendarDate = ?", (start_date,))
+        row = cursor.fetchone()
+        is_work = row[0] if row else 1
+        return 0.0 if(is_work == 1) else (end_time - start_time).total_seconds() / 86400.0
+
+    # For different days
+    cursor = conn.cursor()
+    # Get range stats
+    cursor.execute("""
+        SELECT 
+            MIN(CalendarDate) as StartDate,
+            MAX(CalendarDate) as EndDate,
+            SUM(CASE WHEN IsWorkday = 0 THEN 1 ELSE 0 END) as TotalNonWorkDays
+        FROM dbo.dim_calendar_cumulative 
+        WHERE CalendarDate BETWEEN ? AND ?
+    """, (start_date, end_date))
+    row = cursor.fetchone()
+    
+    if not row:
+        return 0.0
+        
+    total_nw_days = row[2] or 0
+    
+    # Correction for start/end partial days is complex in SQL.
+    # Here we simplify: Just count full non-working days in the range.
+    # The SQL view logic is robust:
+    # (End_CumNW - Start_CumNW) - (If Start is NW then partial) - (If End is NW then partial) ...
+    # Let's rely on the cumulative difference for the "days" part.
+    
+    cursor.execute("""
+        SELECT 
+            (SELECT CumulativeNonWorkDays FROM dbo.dim_calendar_cumulative WHERE CalendarDate = ?) as StartCum,
+            (SELECT CumulativeNonWorkDays FROM dbo.dim_calendar_cumulative WHERE CalendarDate = ?) as EndCum,
+            (SELECT IsWorkday FROM dbo.dim_calendar_cumulative WHERE CalendarDate = ?) as StartIsWork,
+            (SELECT IsWorkday FROM dbo.dim_calendar_cumulative WHERE CalendarDate = ?) as EndIsWork
+    """, (start_date, end_date, start_date, end_date))
+    metrics = cursor.fetchone()
+    
+    if not metrics:
+        return 0.0
+        
+    start_cum, end_cum, start_is_work, end_is_work = metrics
+    start_cum = start_cum or 0
+    end_cum = end_cum or 0
+    
+    # Calculate deduction in seconds effectively
+    # If a day is non-work, the entire duration on that day should be deducted?
+    # SQL Logic:
+    # If Start is Work: no deduction for start day part
+    # If Start is Non-Work: deduct (86400 - seconds_in_day) => time from start to midnight
+    # Intermediate days: (Diff in CumNW) * 1 day
+    # If End is Work: no deduction for end day part
+    # If End is Non-Work: deduct time from midnight to end
+    
+    deduction_seconds = 0.0
+    
+    # Middle days deduction (full days between)
+    # cum diff includes the end day if it is non-work
+    # base diff = end_cum - start_cum
+    
+    # Careful implementation of SQL logic:
+    # (CASE WHEN PT_Start_IsWork = 0 THEN (86400 - DATEDIFF(SECOND, CAST(PT_StartTime AS DATE), PT_StartTime)) ELSE 0 END)
+    # + (CASE WHEN End_IsWork = 0 THEN DATEDIFF(SECOND, CAST(TrackOutTime AS DATE), TrackOutTime) ELSE 0 END)
+    # + ((COALESCE(End_CumNW, 0) - (CASE WHEN End_IsWork = 0 THEN 1 ELSE 0 END)) - COALESCE(PT_Start_CumNW, 0)) * 86400
+    
+    # Part 1: Start Day Deduction
+    if start_is_work == 0:
+        midnight_next = datetime.combine(start_date + timedelta(days=1), datetime.min.time())
+        deduction_seconds += (midnight_next - start_time).total_seconds()
+        
+    # Part 2: End Day Deduction
+    if end_is_work == 0:
+        midnight_end = datetime.combine(end_date, datetime.min.time())
+        deduction_seconds += (end_time - midnight_end).total_seconds()
+        
+    # Part 3: Middle Days Deduction
+    # (End_CumNW - (1 if End is NW) - Start_CumNW)
+    correction = 1 if end_is_work == 0 else 0
+    middle_days = (end_cum - correction - start_cum)
+    if middle_days > 0:
+        deduction_seconds += middle_days * 86400.0
+        
+    return deduction_seconds / 86400.0
+
+def manual_calc_lt(track_out, enter_step, lnw_days):
     """手动计算 LT(d)"""
     if track_out is None or enter_step is None:
         return None
     
-    gross_days = (track_out - enter_step).total_seconds() / 86400
-    nw_days = (lnw_sec or 0) / 86400
-    lt = gross_days - nw_days
+    gross_days = (track_out - enter_step).total_seconds() / 86400.0
+    lt = gross_days - (lnw_days or 0)
     return round(max(lt, 0), 4)
+
+
+# --- Helper Functions for Dropdowns ---
+@st.cache_data(ttl=600)
+def get_batch_list():
+    """Fetch distinct batch numbers for dropdown (optimized)"""
+    conn = get_connection()
+    if not conn:
+        return []
+    try:
+        cursor = conn.cursor()
+        # Query raw table instead of complex view for performance
+        cursor.execute("SELECT DISTINCT BatchNumber FROM dbo.raw_mes ORDER BY BatchNumber DESC")
+        return [row[0] for row in cursor.fetchall()]
+    finally:
+        conn.close()
+
+@st.cache_data(ttl=600)
+def get_operation_list(batch_number):
+    """Fetch operations for a specific batch (optimized)"""
+    if not batch_number:
+        return []
+    conn = get_connection()
+    if not conn:
+        return []
+    try:
+        cursor = conn.cursor()
+        cursor.execute("SELECT DISTINCT LTRIM(RTRIM(Operation)) FROM dbo.raw_mes WHERE BatchNumber = ?", (batch_number,))
+        ops = [row[0] for row in cursor.fetchall() if row[0]]
+        
+        # Sort numerically in Python (handle potential non-numeric values gracefully)
+        def sort_key(op):
+            try:
+                return float(op)
+            except ValueError:
+                return float('inf') # Put non-numeric at the end
+                
+        ops.sort(key=sort_key)
+        return ops
+    finally:
+        conn.close()
 
 
 # --- UI ---
 st.title("🔍 批次 LT/PT/ST 计算验证工具")
-st.markdown('输入批次号和工序号，点击 **计算** 查看原始数据和计算过程。')
+st.markdown('选择批次号和工序号，点击 **计算** 查看原始数据和计算过程。')
 
 col1, col2, col3 = st.columns([2, 1, 1])
 with col1:
-    batch_input = st.text_input("批次号 (BatchNumber)", placeholder="例如: K25M2170")
+    # Use selectbox with search capability (in Streamlit, selectbox has built-in search)
+    batch_list = get_batch_list()
+    batch_input = st.selectbox("批次号 (BatchNumber)", options=[""] + batch_list, index=0, placeholder="输入或选择批次号")
+
 with col2:
-    op_input = st.text_input("工序号 (Operation)", placeholder="例如: 10")
+    # Dynamic operation list based on selected batch
+    if batch_input:
+        op_list = get_operation_list(batch_input)
+        op_input = st.selectbox("工序号 (Operation)", options=[""] + op_list, index=0, placeholder="输入或选择工序")
+    else:
+        op_input = st.selectbox("工序号 (Operation)", options=[], disabled=True)
+
 with col3:
     st.write("")
     st.write("")
@@ -305,6 +454,53 @@ if calc_btn:
 
 **SQL 计算结果**: `{row.get('PT(d)')}` 天
 """)
+                    # --- Section 3: Python Real-time Verification ---
+                    st.markdown("---")
+                    st.subheader("🐍 Python 实时复算验证")
+                    st.info("基于原始数据和 Python 逻辑实时重新计算，用于验证 SQL 结果的正确性。")
+                    
+                    # LT Recalculation
+                    # Using the exact same logic as SQL but in Python
+                    # 1. Calc non-work days between actual_start and trackout for LT
+                    lt_nw_days = get_non_work_days_deduction(conn, pd.to_datetime(actual_start), pd.to_datetime(trackout))
+                    lt_python_val = manual_calc_lt(pd.to_datetime(trackout), pd.to_datetime(actual_start), lt_nw_days)
+                    
+                    # PT Recalculation
+                    pt_nw_days = get_non_work_days_deduction(conn, pd.to_datetime(pt_start), pd.to_datetime(trackout))
+                    # Reuse manual_calc_lt as it's just (end-start) - deduction
+                    pt_python_val = manual_calc_lt(pd.to_datetime(trackout), pd.to_datetime(pt_start), pt_nw_days)
+                    
+                    # ST Recalculation
+                    st_python_val = manual_calc_st(
+                        row.get('TrackOutQuantity'), row.get('ScrapQty'),
+                        row.get('EH_machine'), row.get('EH_labor'),
+                        row.get('SetupTime'), row.get('OEE'), row.get('IsSetup')
+                    )
+
+                    # Comparison Table
+                    st.markdown("#### ✅ 结果对比")
+                    
+                    # Formatting helper
+                    def fmt_val(v): return f"{v:.4f}" if v is not None else "N/A"
+                    def diff_color(dev): return "background-color: #ffcccc" if abs(dev) > 0.0001 else ""
+
+                    lt_sql = row.get('LT(d)')
+                    pt_sql = row.get('PT(d)')
+                    st_sql = row.get('ST(d)')
+                    
+                    lt_diff = (lt_sql or 0) - (lt_python_val or 0)
+                    pt_diff = (pt_sql or 0) - (pt_python_val or 0)
+                    st_diff = (st_sql or 0) - (st_python_val or 0)
+                    
+                    st.markdown(f"""
+                    | 指标 | SQL 视图结果 | Python 实时计算 | 差异 (SQL-Py) | 状态 |
+                    |:---|:---|:---|:---|:---|
+                    | **LT(d)** | `{fmt_val(lt_sql)}` | `{fmt_val(lt_python_val)}` | `{fmt_val(lt_diff)}` | {'✅ 一致' if abs(lt_diff) < 0.001 else '❌ 差异'} |
+                    | **PT(d)** | `{fmt_val(pt_sql)}` | `{fmt_val(pt_python_val)}` | `{fmt_val(pt_diff)}` | {'✅ 一致' if abs(pt_diff) < 0.001 else '❌ 差异'} |
+                    | **ST(d)** | `{fmt_val(st_sql)}` | `{fmt_val(st_python_val)}` | `{fmt_val(st_diff)}` | {'✅ 一致' if abs(st_diff) < 0.001 else '❌ 差异'} |
+                    
+                    *注: 非工作日扣除计算 Python 侧为: LT={lt_nw_days:.4f}天, PT={pt_nw_days:.4f}天*
+                    """)
 
                 else:
                     st.warning("视图中无此批次数据，可能尚未同步或 JOIN 条件不满足")

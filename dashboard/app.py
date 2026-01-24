@@ -44,8 +44,8 @@ def apply_theme():
         <style>
         .block-container { padding-top: 1.2rem; padding-bottom: 2rem; }
         div[data-testid="stMetric"] { 
-            background: rgba(128,128,128,0.1); 
-            border: 1px solid rgba(128,128,128,0.2); 
+            background-color: rgba(128, 128, 128, 0.1); 
+            border: 1px solid rgba(128, 128, 128, 0.2); 
             padding: 14px 16px; 
             border-radius: 14px; 
         }

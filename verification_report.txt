@@ -1,0 +1,16 @@
+--- Data for Batch K25M2170 at Op 20 ---
+
+[mes_metrics_snapshot_a]
+          CFN BatchNumber Operation Plant                                    machine                TrackInTime               TrackOutTime       PreviousBatchEndTime              EnterStepTime  TrackOutQuantity  ScrapQty   PT(d)   LT(d)   ST(d)  PNW(d) CompletionStatus
+0  5597500-02    K25M2170        20  1303               CZM 1288 加工中心 Milling center 2025-12-30 14:27:35.956666 2026-01-08 02:23:01.146666 2025-12-30 14:26:29.790000 2025-12-30 12:26:20.100000             103.0       5.0  6.4976  6.5810  4.7646     2.0          Overdue
+1  5597500-02    K25M2170       120  1303  CZM Q002 器械终检 Instrument Final inspection 2026-01-20 08:36:49.613333 2026-01-20 08:44:51.293333 2026-01-20 08:39:30.623333 2026-01-20 03:21:21.396666             103.0       NaN  0.0037  0.2247  0.2995     0.0           OnTime
+
+[raw_sap_routing] for CFN: 5597500-02
+          CFN Operation WorkCenter  SetupTime  StandardTime  Quantity
+0  5597500-02        20   KMC08-09        7.5     50.599998       1.0
+1  5597500-02       120     I01-08        NaN      3.000000       1.0
+
+[raw_mes]
+  BatchNumber Operation         CFN                                    Machine             TrackInTime            TrackOutTime  TrackOutQuantity
+0    K25M2170       120  5597500-02  CZM Q002 器械终检 Instrument Final inspection 2026-01-20 08:36:49.613 2026-01-20 08:44:51.293             103.0
+1    K25M2170        20  5597500-02               CZM 1288 加工中心 Milling center 2025-12-30 14:27:35.957 2026-01-08 02:23:01.147             103.0

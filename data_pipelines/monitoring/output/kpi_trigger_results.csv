@@ -1,7 +1,3 @@
-﻿KPI_Type,Tag,Level,Description,Details,Status,TriggerWeek
-Lead_Time,CZ_Campus,Critical,制造周期连续3周超过24小时,当前值: 190.4小时,ACTIVE,FY25 W32
-Safety_Issue_Rank,其他隐患,Critical,安全隐患类型连续3周排名前3,当前排名: 2.0,ACTIVE,FY26 W16
-Safety_Issue_Rank,滑倒/摔伤,Critical,安全隐患类型连续3周排名前3,当前排名: 1.0,ACTIVE,FY26 W02
-Safety_Issue_Rank,电气伤害,Critical,安全隐患类型连续3周排名前3,当前排名: 1.0,ACTIVE,FY26 W04
-Safety_Issue_Rank,被外力击伤,Critical,安全隐患类型连续3周排名前3,当前排名: 3.0,ACTIVE,FY26 W05
-Safety_Issue_Rank,锋利边缘 (割伤/扎伤/切伤),Critical,安全隐患类型连续3周排名前3,当前排名: 1.0,ACTIVE,FY26 W09
+﻿A3Id,Category,TriggerType,TriggerName,TriggerLevel,TriggerDesc,ConsecutiveWeeks,WeeklyDetails,TriggerStatus,LastUpdate,CaseStatus,IsCurrentTrigger,OpenedAt,ClosedAt,PlannerTaskId,Owner,ActionType,DataSource
+A3-20260123-0001,电气伤害,SAFETY_RANK_CRITICAL,Safety_Issue_Rank,Critical,"Latest Week Rank: 1st, Threshold: Top 3",2,"FY26 W38(1.0, 3), FY26 W39(1.0, 2)",TRIGGER,2026-01-24 01:35:27.211861,OPEN,Yes,2026-01-23,,,ehs_manager@example.com,Create_A3,Planner Safety Bucket
+A3-20260123-0002,CZ_Campus,SA_GLOBAL_CRITICAL,Schedule Attainment,Critical,"Latest Week SA: 94.8%, Threshold: < 95%",4,"FY26 W36(93.2%, Count: 2709), FY26 W37(92.1%, Count: 4650), FY26 W38(94.7%, Count: 4201), FY26 W39(94.8%, Count: 4206)",TRIGGER,2026-01-24 01:35:27.197148,OPEN,Yes,2026-01-23,,,director@example.com,Create_A3,SAP Labor Hours
