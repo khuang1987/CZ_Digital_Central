@@ -26,6 +26,16 @@ LOG_FILE = os.path.join(LOG_DIR, f"orchestrator_{TIMESTAMP}.log")
 # ============================================================
 STAGES = [
     {
+        "name": "0. Data Collection",
+        "tasks": [
+            # Runs unified downloader for Planner, CMES/MES, and Labor Formatting
+            # Warning: Browsers are heavy, running in parallel might be risky if resources are low, 
+            # but orchestrator runs stages sequentially so it's fine.
+            # Within this stage, we only have one task 'Data Collection (All)' to keep it simple.
+            {"name": "Data Collection (All)", "script": "scripts/run_data_collection.py", "args": ["all", "--no-headless"]},
+        ]
+    },
+    {
         "name": "1. Raw Data & Dimensions",
         "tasks": [
             {"name": "SAP Routing Raw",       "script": "data_pipelines/sources/sap/etl/etl_sap_routing_raw.py"},

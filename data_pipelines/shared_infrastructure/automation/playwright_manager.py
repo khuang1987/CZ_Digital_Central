@@ -28,6 +28,10 @@ try:
 except ImportError:
     PLAYWRIGHT_AVAILABLE = False
     PlaywrightTimeout = Exception
+    # Define dummy types to prevent NameError in type hints if playwright is missing
+    Page = object
+    Browser = object
+    BrowserContext = object
 
 
 class PlaywrightManager:
