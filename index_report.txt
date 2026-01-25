@@ -1,7 +1,0 @@
---- Comprehensive Index List for raw_sfc_inspection ---
-Index: PK__raw_sfc___3213E83FED64F3BE      | Type: CLUSTERED       | Size:   2037 MB | Columns: id
-Index: idx_raw_sfc_insp_hash               | Type: NONCLUSTERED    | Size:    640 MB | Columns: record_hash
-Index: UQ__raw_sfc___0821D0479F975F7B      | Type: NONCLUSTERED    | Size:    639 MB | Columns: record_hash
-Index: idx_raw_sfc_insp_batch              | Type: NONCLUSTERED    | Size:    199 MB | Columns: BatchNumber
-Index: idx_raw_sfc_insp_team               | Type: NONCLUSTERED    | Size:    105 MB | Columns: Team
-Index: idx_raw_sfc_insp_date               | Type: NONCLUSTERED    | Size:     80 MB | Columns: ReportDate

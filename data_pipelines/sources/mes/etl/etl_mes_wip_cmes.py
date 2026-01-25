@@ -282,29 +282,41 @@ def main(argv: Optional[List[str]] = None) -> int:
 
     db = get_db_manager()
 
-    files = _list_recent_files(args.source_dir, int(args.days))
-    if not files:
+    all_files = _list_recent_files(args.source_dir, int(args.days))
+    if not all_files:
         logger.warning(f"No CMES_WIP files found in: {args.source_dir}")
         return 0
 
-    logger.info(f"Selected files (last {args.days} days): {len(files)}")
+    logger.info(f"Found {len(all_files)} files in last {args.days} days.")
 
     if args.rebuild:
+        files_to_process = all_files
         with db.get_connection() as conn:
             cur = conn.cursor()
             cur.execute(f"IF OBJECT_ID('dbo.{TABLE_NAME}', 'U') IS NOT NULL DROP TABLE dbo.{TABLE_NAME};")
             conn.commit()
+    else:
+        # Filter to only changed files
+        files_to_process = db.filter_changed_files(ETL_NAME, all_files)
+        logger.info(f"Files to process (changed/new): {len(files_to_process)}")
 
     imported_dates: List[date] = []
     prefix_map = {}
 
-    cutoff_keep = max(_snapshot_date_from_filename(f) for f in files if _snapshot_date_from_filename(f) is not None)
-    if cutoff_keep is None:
-        return 0
-    cutoff_keep = cutoff_keep - timedelta(days=max(0, int(args.days) - 1))
+    # Calculate cutoff based on ALL files (to maintain sliding window)
+    dates_in_files = [
+        _snapshot_date_from_filename(f) 
+        for f in all_files 
+        if _snapshot_date_from_filename(f) is not None
+    ]
+    
+    if not dates_in_files:
+        cutoff_keep = date.today()
+    else:
+        cutoff_keep = max(dates_in_files) - timedelta(days=max(0, int(args.days) - 1))
 
-    for i, f in enumerate(files):
-        logger.info(f"[{i+1}/{len(files)}] Import: {os.path.basename(f)}")
+    for i, f in enumerate(files_to_process):
+        logger.info(f"[{i+1}/{len(files_to_process)}] Import: {os.path.basename(f)}")
 
         try:
             df_raw = _read_wip_excel(f)

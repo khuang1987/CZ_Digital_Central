@@ -254,6 +254,16 @@ def refresh_raw_calendar(db: SQLServerOnlyManager, df: pd.DataFrame) -> int:
 
 def main():
     """主函数"""
+    # Check if today is the last day of the month
+    today = datetime.now().date()
+    # Nice trick: tomorrow is the 1st of next month?
+    tomorrow = today + timedelta(days=1)
+    is_last_day = (tomorrow.day == 1)
+    
+    if not is_last_day:
+        logger.info(f"Skipping Calendar Refresh: Today ({today}) is not the last day of the month.")
+        return
+
     logger.info('开始生成财历日历表...')
     
     # 生成日历数据 (FY21-FY30)

@@ -22,7 +22,7 @@ if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
 # Import shared Playwright Manager
-from data_pipelines.shared_infrastructure.automation.playwright_manager import PlaywrightManager
+from shared_infrastructure.automation.playwright_manager import PlaywrightManager
 
 # Configure Logging
 logger = logging.getLogger(__name__)
@@ -187,160 +187,130 @@ def move_downloaded_file(downloads_path, index, total_urls, callback):
 def export_planner_data(headless=True, browser_type="chrome") -> bool:
     """导出Planner数据（使用 Playwright）"""
     
+    # User requested to remove retry loop and trigger only one round.
+    # Logic simplified: run once. If it fails, it fails (logs will show).
+    
     # Simple logger callback
     def log_callback(message):
         logger.info(message)
-        print(message)
     
     log_callback("开始导出Planner数据...")
     
-    # Retry loop: Attempt 1 (Headless/As Requested), Attempt 2 (Headed/Manual Fallback)
-    current_headless = headless
-    max_retries = 2
+    manager = None
     
-    for attempt_idx in range(max_retries):
-        manager = None
+    try:
+        # 创建 Playwright 管理器
+        manager = PlaywrightManager(
+            headless=headless,
+            use_user_profile=True,
+            callback=log_callback,
+            browser_type=browser_type
+        )
+        manager.start()
+        
+        # 创建页面
+        page = manager.new_page()
+            
+        # 读取配置文件
+        config_file = PROJECT_ROOT / "data_pipelines" / "sources" / "planner" / "config" / "planner_urls.csv"
+        
+        if not config_file.exists():
+             raise FileNotFoundError(f"配置文件未找到: {config_file}")
+
         try:
-            if attempt_idx > 0:
-                log_callback(f"\n⚠️ 尝试切换到 【可视化模式/Headed Mode】 (尝试 {attempt_idx+1}/{max_retries})")
-                log_callback("请在弹出的浏览器窗口中手动完成登录...")
-                current_headless = False
-            
-            # 创建 Playwright 管理器
-            manager = PlaywrightManager(
-                headless=current_headless,
-                use_user_profile=True,
-                callback=log_callback,
-                browser_type=browser_type
-            )
-            manager.start()
-            
-            # 创建页面
-            page = manager.new_page()
-                
-            # 读取配置文件
-            config_file = PROJECT_ROOT / "data_pipelines" / "sources" / "planner" / "config" / "planner_urls.csv"
-            
-            if not config_file.exists():
-                 raise FileNotFoundError(f"配置文件未找到: {config_file}")
-
-            try:
-                df = pd.read_csv(config_file, encoding='utf-8-sig')
-            except Exception as e:
-                 # Try without BOM
-                 df = pd.read_csv(config_file, encoding='utf-8')
-
-            if df.empty:
-                raise ValueError("配置文件为空")
-            
-            # Check columns
-            if 'URL' not in df.columns:
-                 # Try first column
-                 df['URL'] = df.iloc[:, 0]
-
-            urls = df['URL'].dropna().tolist()
-            areas = df['区域'].dropna().tolist() if '区域' in df.columns else [f"Area {i}" for i in range(len(urls))]
-            
-            if not urls:
-                raise ValueError("未找到有效的URL配置")
-                
-            log_callback(f"开始处理 {len(urls)} 个Planner URL...")
-            
-            success_count = 0
-            login_issue_detected = False
-            
-            # 处理所有URL
-            for index, url in enumerate(urls):
-                try:
-                    area = areas[index] if index < len(areas) else f"区域{index+1}"
-                    log_callback(f"开始处理 {area} [{index+1}/{len(urls)}]...")
-                    
-                    # 访问URL
-                    try:
-                        page.goto(url, timeout=60000, wait_until="domcontentloaded")
-                    except Exception as e:
-                        log_callback(f"⚠️ 页面初次加载超时: {str(e)}")
-                    
-                    # 等待加载
-                    if not _wait_for_planner_load(page, log_callback):
-                        log_callback(f"❌ {area} 页面加载超时 (可能是登录卡住)")
-                        login_issue_detected = True
-                        if current_headless:
-                            # Break inner loop to trigger fallback
-                            raise Exception("Login or Load Timeout in Headless Mode")
-                        else:
-                             # If already headed, just continue to next URL
-                             continue
-                    
-                    # 定位计划选项按钮
-                    dropdown_selector = '//button[contains(@aria-label, "计划选项") and contains(@class, "linkedBadgeDropdown")]'
-                    
-                    try:
-                        page.wait_for_selector(f"xpath={dropdown_selector}", state="visible", timeout=30000)
-                        page.locator(f"xpath={dropdown_selector}").wait_for(state="visible", timeout=5000)
-                    except Exception as e:
-                        log_callback(f"⚠️ 等待计划选项按钮超时: {str(e)}")
-                        # Retry logic could be added here
-                        continue # Skip if cant find button
-                    
-                    # 点击下接
-                    page.click(f"xpath={dropdown_selector}")
-                    
-                    # 等待导出按钮
-                    export_selector = "//button[@aria-label='将计划导出到 Excel']"
-                    page.wait_for_selector(f"xpath={export_selector}", state="visible", timeout=10000)
-                    
-                    # 等待下载
-                    downloads_path = os.path.expanduser("~/Downloads")
-                    
-                    with page.expect_download(timeout=60000) as download_info:
-                        page.click(f"xpath={export_selector}")
-                    
-                    download = download_info.value
-                    download_path = Path(downloads_path) / download.suggested_filename
-                    download.save_as(str(download_path))
-                    
-                    # 移动文件
-                    file_name = move_downloaded_file(downloads_path, index, len(urls), log_callback)
-                    log_callback(f"✅ {area} 导出成功")
-                    success_count += 1
-                    print()
-                    
-                except Exception as e:
-                    error_message = f"处理{area}时出错: {str(e)}"
-                    log_callback(error_message)
-                    if "Login or Load Timeout" in str(e):
-                        raise e # Re-raise to trigger fallback
-                    continue
-            
-            log_callback(f"🎉 Planner导出完成: {success_count}/{len(urls)} 个区域")
-            if success_count == len(urls):
-                return True
-            # If we are here and processed some but not all, return True mostly (partial success)
-            # Unless 0 success and detected login issue
-            if success_count == 0 and login_issue_detected and current_headless:
-                 raise Exception("Zero success in headless mode, trying fallback")
-            
-            return True # Consider partial success as done to avoid infinite loops if one URL is just bad
-        
+            df = pd.read_csv(config_file, encoding='utf-8-sig')
         except Exception as e:
-            error_msg = f"处理过程中出错: {str(e)}"
-            log_callback(error_msg)
-            
-            # Decide whether to retry in headed mode
-            if current_headless and attempt_idx < max_retries - 1:
-                log_callback("⚠️ 检测到 Headless 模式下可能存在登录问题，准备切换到可视化模式...")
-                time.sleep(2)
-            else:
-                log_callback("❌ 所有尝试均失败")
-                return False
+             # Try without BOM
+             df = pd.read_csv(config_file, encoding='utf-8')
+
+        if df.empty:
+            raise ValueError("配置文件为空")
         
-        finally:
-            if manager:
+        # Check columns
+        if 'URL' not in df.columns:
+             # Try first column
+             df['URL'] = df.iloc[:, 0]
+
+        urls = df['URL'].dropna().tolist()
+        areas = df['区域'].dropna().tolist() if '区域' in df.columns else [f"Area {i}" for i in range(len(urls))]
+        
+        if not urls:
+            raise ValueError("未找到有效的URL配置")
+            
+        log_callback(f"开始处理 {len(urls)} 个Planner URL...")
+        
+        success_count = 0
+        
+        # 处理所有URL
+        for index, url in enumerate(urls):
+            try:
+                area = areas[index] if index < len(areas) else f"区域{index+1}"
+                log_callback(f"开始处理 {area} [{index+1}/{len(urls)}]...")
+                
+                # 访问URL
                 try:
-                    manager.close()
+                    page.goto(url, timeout=60000, wait_until="domcontentloaded")
                 except Exception as e:
-                    pass
+                    log_callback(f"⚠️ 页面初次加载超时: {str(e)}")
+                
+                # 等待加载
+                if not _wait_for_planner_load(page, log_callback):
+                    log_callback(f"❌ {area} 页面加载超时，跳过此区域")
+                    continue
+                
+                # 定位计划选项按钮
+                dropdown_selector = '//button[contains(@aria-label, "计划选项") and contains(@class, "linkedBadgeDropdown")]'
+                
+                try:
+                    page.wait_for_selector(f"xpath={dropdown_selector}", state="visible", timeout=30000)
+                    page.locator(f"xpath={dropdown_selector}").wait_for(state="visible", timeout=5000)
+                except Exception as e:
+                    log_callback(f"⚠️ 等待计划选项按钮超时: {str(e)}")
+                    # Retry logic could be added here
+                    continue # Skip if cant find button
+                
+                # 点击下接
+                page.click(f"xpath={dropdown_selector}")
+                
+                # 等待导出按钮
+                export_selector = "//button[@aria-label='将计划导出到 Excel']"
+                page.wait_for_selector(f"xpath={export_selector}", state="visible", timeout=10000)
+                
+                # 等待下载
+                downloads_path = os.path.expanduser("~/Downloads")
+                
+                with page.expect_download(timeout=60000) as download_info:
+                    page.click(f"xpath={export_selector}")
+                
+                download = download_info.value
+                download_path = Path(downloads_path) / download.suggested_filename
+                download.save_as(str(download_path))
+                
+                # 移动文件
+                file_name = move_downloaded_file(downloads_path, index, len(urls), log_callback)
+                log_callback(f"✅ {area} 导出成功")
+                success_count += 1
+                print()
+                
+            except Exception as e:
+                error_message = f"处理{area}时出错: {str(e)}"
+                log_callback(error_message)
+                continue
+        
+        log_callback(f"🎉 Planner导出完成: {success_count}/{len(urls)} 个区域")
+        return True
+    
+    except Exception as e:
+        error_msg = f"处理过程中出错: {str(e)}"
+        log_callback(error_msg)
+        return False
+    
+    finally:
+        if manager:
+            try:
+                manager.close()
+            except Exception as e:
+                pass
     
     return False
 

@@ -3,7 +3,11 @@ import json
 import logging
 import shutil
 import sys
+import warnings
 from datetime import date
+
+# Suppress pandas UserWarning: pandas only supports SQLAlchemy connectable...
+warnings.filterwarnings("ignore", category=UserWarning, message=r".*pandas only supports SQLAlchemy connectable.*")
 from pathlib import Path
 from typing import Optional, List, Tuple
 

@@ -22,7 +22,7 @@ if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
 # Import shared Playwright Manager
-from data_pipelines.shared_infrastructure.automation.playwright_manager import PlaywrightManager
+from shared_infrastructure.automation.playwright_manager import PlaywrightManager
 
 logger = logging.getLogger(__name__)
 
@@ -174,15 +174,15 @@ def move_and_rename_file(source: Path, target_dir: str, new_name: str) -> Path:
 # ============================================================
 
 class CMESDataCollector:
-    def __init__(self, config: Dict, headless: bool = False, browser_type: str = "chrome"):
+    def __init__(self, config: Dict, headless: bool = False, browser_type: str = "chrome", page=None):
         self.config = config
         self.headless = headless
         self.browser_type = browser_type
         self.download_dir = Path(os.path.expanduser("~/Downloads")) # Temp download location
+        self.page = page
         
     def _log(self, message: str):
         logger.info(message)
-        print(message)
     
     def collect(self, start_date: str = None, end_date: str = None, output_period: str = None) -> bool:
         skip_date_filter = self.config.get('skip_date_filter', False)
@@ -223,15 +223,23 @@ class CMESDataCollector:
             self._log(f"日期筛选: 跳过 (使用默认或WIP逻辑)")
         
         manager = None
+        current_page = None
+        
         try:
-            manager = PlaywrightManager(
-                headless=self.headless,
-                use_user_profile=True,
-                callback=None, # Use internal logger
-                browser_type=self.browser_type
-            )
-            manager.start()
-            page = manager.new_page()
+            if self.page:
+                current_page = self.page
+            else:
+                manager = PlaywrightManager(
+                    headless=self.headless,
+                    use_user_profile=True,
+                    callback=None, # Use internal logger
+                    browser_type=self.browser_type
+                )
+                manager.start()
+                current_page = manager.new_page()
+
+            # Ensure we have a page object
+            page = current_page
             page.set_default_timeout(ELEMENT_TIMEOUT * 1000)
             
             report_url = self.config['url']
@@ -272,6 +280,7 @@ class CMESDataCollector:
             traceback.print_exc()
             return False
         finally:
+            # Only close if we created the manager
             if manager:
                 manager.close()
 
@@ -375,9 +384,30 @@ def collect_cmes_data(headless=True):
         logger.warning("没有加载到 CMES 配置")
         return
     
-    for cfg in configs:
-        collector = CMESDataCollector(cfg, headless=headless)
-        collector.collect()
+    # Initialize global browser session to reuse across tasks
+    manager = None
+    try:
+        manager = PlaywrightManager(
+            headless=headless,
+            use_user_profile=True,
+            callback=None,
+            browser_type="chrome"
+        )
+        manager.start()
+        main_page = manager.new_page()
+        
+        # Loop with the same page
+        for cfg in configs:
+            # Pass page to collector
+            collector = CMESDataCollector(cfg, headless=headless, page=main_page)
+            collector.collect()
+            
+    except Exception as e:
+        logger.error(f"Global collection error: {e}")
+    finally:
+        if manager:
+            logger.info("[INFO] Closing shared browser session")
+            manager.close()
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(message)s')
