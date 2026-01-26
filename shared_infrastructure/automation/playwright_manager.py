@@ -512,7 +512,7 @@ class PlaywrightManager:
         
         # 等待资源完全释放
         time.sleep(1)
-        self._log("浏览器已关闭")
+        # self._log("浏览器已关闭") # Silence verbose output
 
 
 # ============================================================

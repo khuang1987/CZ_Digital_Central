@@ -4,6 +4,35 @@
 
 ---
 
+## 🌟 核心功能概览
+
+本项目(MDDAP)实现了从**原始数据获取**到**报表展示**的全链路自动化，主要包含以下四大模块：
+
+### 1. 自动化采集 (Data Collection)
+*   **智能爬虫**：使用 Headless Browser (Playwright) 模拟用户登录，自动从 **Microsoft Planner** 和 **CMES (Power BI)** 下载最新的生产报表和任务数据。
+*   **智能验证**：具备“Smart Auth”功能，自动检测 Token 是否过期。如果过期，会弹窗提示手动登录，平时则静默运行。
+*   **SAP 集成**：处理和格式化 SAP 导出的工时和路由数据。
+
+### 2. ETL 数据清洗与入库 (ETL Pipeline)
+*   **多源异构整合**：将来自不同来源（MES 系统、SFC 现场控制、SAP ERP、Planner 任务）的 Excel/CSV 数据统一清洗。
+*   **增量处理**：通过文件指纹（Hash/MTime）识别变化，只处理新文件，极大提高了每日运行效率。
+*   **核心计算**：
+    *   **WIP 计算**：计算产线在制品数量。
+    *   **工时/效率**：计算 SAP 标准工时与实际产出的对比。
+    *   **Calendar/Shift**：统一对齐工厂日历和班次。
+
+### 3. 数据仓库与指标计算 (Data Warehousing)
+*   **SQL Server 存储**：所有清洗后的数据存入 SQL Server (`mddap_v2`)。
+*   **物化视图 (Materialized Views)**：针对复杂的 MES 指标（如产量、一次合格率、OEE），预先计算并存储快照（Snapshots），解决实时查询慢的问题。
+*   **业务领域建模**：包含生产 (Production)、质量 (Quality)、财务 (Finance)、EHS (Safety) 等分领域的业务逻辑映射。
+
+### 4. 编排与输出 (Orchestration & Output)
+*   **并行编排**：使用 `run_etl_parallel.py` 并行执行多个 ETL 任务，显著缩短运行时间。
+*   **Power BI 供数**：将最终的清洗数据（Curated Data）导出为 **Parquet** 格式（高性能）或 Excel，供 Power BI 直接读取展示。
+*   **自动化运维**：具备日志自动清理、错误重试和健康检查机制。
+
+---
+
 ## 🏗️ 平台架构与技术路线
 
 本平台采用现代化的数据工程架构，将分散孤立的业务数据转化为可信赖的决策依据。

@@ -17,6 +17,34 @@ LOG_DIR = os.path.join(PROJECT_ROOT, "shared_infrastructure", "logs")
 if not os.path.exists(LOG_DIR):
     os.makedirs(LOG_DIR)
 
+def cleanup_logs(keep_days: int = 7):
+    """
+    Clean up log files older than keep_days in the log directory and subdirectories.
+    """
+    now = time.time()
+    cutoff = now - (keep_days * 86400)
+    
+    deleted_count = 0
+    
+    for root, dirs, files in os.walk(LOG_DIR):
+        for file in files:
+            if file.endswith(".log"):
+                file_path = os.path.join(root, file)
+                try:
+                    mtime = os.path.getmtime(file_path)
+                    if mtime < cutoff:
+                        os.remove(file_path)
+                        deleted_count += 1
+                        # print(f"Deleted old log: {file_path}") # Optional verbose
+                except Exception as e:
+                    print(f"Failed to delete old log {file_path}: {e}")
+    
+    if deleted_count > 0:
+        print(f"Cleaned up {deleted_count} log files older than {keep_days} days.")
+
+# Perform cleanup on startup
+cleanup_logs(keep_days=7)
+
 # Generate single log filename for this run
 TIMESTAMP = datetime.now().strftime("%Y%m%d_%H%M%S")
 LOG_FILE = os.path.join(LOG_DIR, f"orchestrator_{TIMESTAMP}.log")
@@ -32,7 +60,7 @@ STAGES = [
             # Warning: Browsers are heavy, running in parallel might be risky if resources are low, 
             # but orchestrator runs stages sequentially so it's fine.
             # Within this stage, we only have one task 'Data Collection (All)' to keep it simple.
-            {"name": "Data Collection (All)", "script": "scripts/run_data_collection.py", "args": ["all", "--no-headless"]},
+            {"name": "Data Collection (All)", "script": "scripts/orchestration/run_data_collection.py", "args": ["all", "--no-headless"]},
         ]
     },
     {

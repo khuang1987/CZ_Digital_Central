@@ -13,7 +13,7 @@ import re
 from typing import Dict, List, Any, Optional, Tuple, Iterable, Set
 from datetime import datetime
 
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+# logging.basicConfig removed to allow consumer scripts to configure logging
 
 class SQLServerOnlyManager:
     """Database Manager that writes only to SQL Server"""

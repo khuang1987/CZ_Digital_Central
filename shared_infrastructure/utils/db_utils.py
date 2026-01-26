@@ -14,7 +14,7 @@ from contextlib import contextmanager
 import pandas as pd
 
 # 配置日志
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+# logging.basicConfig removed to allow consumer scripts to configure logging
 
 
 class DatabaseManager:

@@ -51,11 +51,11 @@ let
 
     TypePairsFull = {
         {"id", Int64.Type},
-        {"PostingDate", type date},
-        {"DocumentDate", type date},
+        {"PostingDate", type datetime}, // Using datetime to be safe if it has 00:00:00
+        {"DocumentDate", type datetime}, // Fix: Handle "YYYY-MM-DD HH:mm:ss"
         {"Material", type text},
         {"MaterialDesc", type text},
-        {"Plant", type text},
+        {"Plant", Int64.Type}, // Fix: Integer
         {"StorageLocation", type text},
         {"MovementType", type text},
         {"Quantity", type number},

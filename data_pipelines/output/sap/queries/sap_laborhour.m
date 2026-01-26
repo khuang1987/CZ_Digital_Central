@@ -1,12 +1,16 @@
 let
-    // 1. 定义 Parquet 数据源路径 (指向 02_CURATED_PARTITIONED/sap_labor_hours)
-    SourcePath = "C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\A1_ETL_Output\02_CURATED_PARTITIONED\sap_labor_hours",
-    
-    // 2. 获取文件夹下的所有文件
-    Source = Folder.Files(SourcePath),
-    
-    // 3. 筛选 Parquet 文件 (忽略隐藏文件或临时文件)
-    FilterParquet = Table.SelectRows(Source, each ([Extension] = ".parquet")),
+    // 1. 定义 SharePoint 站点
+    SharePointSite = "https://medtronicapac.sharepoint.com/sites/ChangzhouOpsProduction",
+
+    // 2. 获取 SharePoint 文件
+    Source = SharePoint.Files(SharePointSite, [ApiVersion = 15]),
+
+    // 3. 筛选路径 (指向 02_CURATED_PARTITIONED/sap_labor_hours)
+    // 此时 [Folder Path] 是URL格式，我们匹配关键路径部分
+    FilterFolder = Table.SelectRows(Source, each Text.Contains([Folder Path], "02_CURATED_PARTITIONED/sap_labor_hours")),
+
+    // 4. 筛选 Parquet 文件
+    FilterParquet = Table.SelectRows(FilterFolder, each ([Extension] = ".parquet")),
     
     // 4. 读取 Parquet 内容
     ReadParquet = Table.AddColumn(FilterParquet, "Data", each Parquet.Document([Content])),

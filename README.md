@@ -5,8 +5,8 @@
 常州园区数字化数据平台是一个集成化的数据处理和分析系统，用于整合MES、SFC、SAP等多个数据源，为生产、质量、财务等业务部门提供数据支持和分析服务。
 
 **项目状态：** ✅ 生产环境运行中  
-**架构版本：** Phase 4 (标准化完成)  
-**最后更新：** 2025年12月9日
+**架构版本：** Phase 5 (并行编排与智能验证)  
+**最后更新：** 2026年1月25日
 
 ---
 
@@ -14,15 +14,13 @@
 
 ### 核心数据快速刷新 (日常推荐)
 
-```bash
-.\scripts\refresh_core_data.bat
-```
-
-### 全量数据刷新 (维护用)
+使用并行编排器进行一键刷新：
 
 ```bash
-.\scripts\refresh_full_data.bat
+.\scripts\orchestration\refresh_parallel.bat
 ```
+
+> **注意**：首次运行或Token过期时，脚本会自动检测并提示您在弹出的浏览器中登录。
 
 ### 预览文档
 
@@ -34,23 +32,26 @@ mkdocs serve
 
 权威文档入口：[`docs/README.md`](docs/README.md)
 
+### 迁移指南
+
+如需将项目迁移至新设备，请阅读：[`docs/MIGRATION_GUIDE.md`](docs/MIGRATION_GUIDE.md)
+
 ---
 
 ## 📁 项目结构
 
 ```
 250418_MDDAP_project/
-├── scripts/                    # 工具脚本中心
-│   ├── debug/                 # 调试脚本
-│   ├── tools/                 # 工具脚本
-│   ├── validation/            # 验证脚本
-│   └── refresh_core_data.bat  # 核心数据刷新脚本
+├── scripts/                    # 脚本根目录
+│   ├── orchestration/         # [核心] 编排与执行脚本 (run_etl_parallel.py)
+│   ├── maintenance/           # 维护与数据库刷新脚本
+│   └── archive/               # 旧脚本归档
 ├── data_pipelines/            # 数据管道
 │   └── sources/               # 数据源（MES, SFC, SAP）
 ├── shared_infrastructure/     # 共享基础设施
 │   ├── config/               # 配置文件
 │   ├── utils/                # 工具函数
-│   └── logs/                 # 日志文件
+│   └── logs/                 # 日志文件 (自动清理7天前日志)
 ├── business_domains/          # 业务领域
 ├── documentation/             # MkDocs文档系统
 └── docs/                      # 项目文档（权威入口）
@@ -60,24 +61,32 @@ mkdocs serve
 
 ---
 
-## 🔧 主要功能
+## 🌟 核心功能概览
 
-### 数据集成
-- ✅ **MES数据：** 生产批次报告、设备数据
-- ✅ **SFC数据：** 质量检验、团队合格率、批次报告
-- ✅ **SAP数据：** 工艺信息、标准时间
-- ✅ **Planner数据：** 任务管理、EHS隐患排查、行动项跟踪
+本项目(MDDAP)实现了从**原始数据获取**到**报表展示**的全链路自动化，主要包含以下四大模块：
 
-### 数据处理
-- ✅ **增量刷新：** 智能识别新数据，快速更新
-- ✅ **全量刷新：** 完整数据重新处理
-- ✅ **数据清洗：** 自动去重、格式化、验证
-- ✅ **数据合并：** 跨数据源关联和整合
+### 1. 自动化采集 (Data Collection)
+*   **智能爬虫**：使用 Headless Browser (Playwright) 模拟用户登录，自动从 **Microsoft Planner** 和 **CMES (Power BI)** 下载最新的生产报表和任务数据。
+*   **智能验证**：具备“Smart Auth”功能，自动检测 Token 是否过期。如果过期，会弹窗提示手动登录，平时则静默运行。
+*   **SAP 集成**：处理和格式化 SAP 导出的工时和路由数据。
 
-### 输出格式
-- ✅ **Parquet文件：** 高效的列式存储格式
-- ✅ **Excel文件：** 便于查看和验证
-- ✅ **Power BI集成：** 直接连接到BI报表
+### 2. ETL 数据清洗与入库 (ETL Pipeline)
+*   **多源异构整合**：将来自不同来源（MES 系统、SFC 现场控制、SAP ERP、Planner 任务）的 Excel/CSV 数据统一清洗。
+*   **增量处理**：通过文件指纹（Hash/MTime）识别变化，只处理新文件，极大提高了每日运行效率。
+*   **核心计算**：
+    *   **WIP 计算**：计算产线在制品数量。
+    *   **工时/效率**：计算 SAP 标准工时与实际产出的对比。
+    *   **Calendar/Shift**：统一对齐工厂日历和班次。
+
+### 3. 数据仓库与指标计算 (Data Warehousing)
+*   **SQL Server 存储**：所有清洗后的数据存入 SQL Server (`mddap_v2`)。
+*   **物化视图 (Materialized Views)**：针对复杂的 MES 指标（如产量、一次合格率、OEE），预先计算并存储快照（Snapshots），解决实时查询慢的问题。
+*   **业务领域建模**：包含生产 (Production)、质量 (Quality)、财务 (Finance)、EHS (Safety) 等分领域的业务逻辑映射。
+
+### 4. 编排与输出 (Orchestration & Output)
+*   **并行编排**：使用 `run_etl_parallel.py` 并行执行多个 ETL 任务，显著缩短运行时间。
+*   **Power BI 供数**：将最终的清洗数据（Curated Data）导出为 **Parquet** 格式（高性能）或 Excel，供 Power BI 直接读取展示。
+*   **自动化运维**：具备日志自动清理、错误重试和健康检查机制。
 
 ---
 
