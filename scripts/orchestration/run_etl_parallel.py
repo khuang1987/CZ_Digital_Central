@@ -60,7 +60,7 @@ STAGES = [
             # Warning: Browsers are heavy, running in parallel might be risky if resources are low, 
             # but orchestrator runs stages sequentially so it's fine.
             # Within this stage, we only have one task 'Data Collection (All)' to keep it simple.
-            {"name": "Data Collection (All)", "script": "scripts/orchestration/run_data_collection.py", "args": ["all", "--no-headless"]},
+            {"name": "Data Collection (All)", "script": "scripts/orchestration/run_data_collection.py", "args": ["all"]},
         ]
     },
     {
@@ -97,6 +97,17 @@ STAGES = [
             {"name": "Export to A1",          "script": "scripts/orchestration/export_core_to_a1.py", "args": ["--mode", "partitioned", "--reconcile", "--reconcile-last-n", "2", "--meta-store", "sql"]},
             {"name": "Validation Postcheck",  "script": "scripts/orchestration/sqlserver_postcheck.py"},
             {"name": "Meta Summary",          "script": "data_pipelines/monitoring/etl/etl_meta_table_health.py"},
+        ]
+    },
+    {
+        "name": "5. Dashboard & Reports",
+        "tasks": [
+            # 1. PowerBI Refresh (New migration)
+            # Use 'run_data_collection.py refresh'
+            {"name": "PowerBI Refresh",            "script": "scripts/orchestration/run_data_collection.py", "args": ["refresh"]},
+            
+            # 2. Start Dashboard Service (Non-blocking launch)
+            {"name": "Start Dashboard Service",    "script": "scripts/orchestration/launch_services.py"},
         ]
     }
 ]

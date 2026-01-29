@@ -42,20 +42,20 @@ logger = logging.getLogger(__name__)
 # 默认超时设置（秒）
 PAGE_LOAD_TIMEOUT = 60
 ELEMENT_TIMEOUT = 30
-DOWNLOAD_TIMEOUT = 600  # 10分钟，年度数据量大需要更长时间
+DOWNLOAD_TIMEOUT = 900  # 15分钟，Resource 数据量特别大需要更长时间
 
 # 元素选择器
 SELECTORS = {
-    # 日期筛选器 - 开始日期
-    "date_start_input": "input[aria-label^='开始日期']",
+    # 日期筛选器 - 开始日期 (支持中文和英文)
+    "date_start_input": "input[aria-label^='开始日期'], input[aria-label^='Start date']",
     # 日期筛选器 - 结束日期
-    "date_end_input": "input[aria-label^='结束日期']",
+    "date_end_input": "input[aria-label^='结束日期'], input[aria-label^='End date']",
     # 数据表容器
     "table_visual": ".visual-tableEx",
     # 更多选项按钮
     "table_menu_button": "button[data-testid='visual-more-options-btn']",
     # 导出数据菜单项
-    "export_data_menu": "button[data-testid='pbimenu-item.导出数据']",
+    "export_data_menu": "button[data-testid='pbimenu-item.导出数据'], button[data-testid*='Export']",
     # 导出确认按钮
     "export_confirm_button": "button[data-testid='export-btn']",
 }
@@ -117,8 +117,19 @@ def get_cmes_config() -> List[Dict]:
                 # 规则 2: Output 数据 (CZM/CKH) -> .../CMES_Product_Output/{Factory}
                 elif report_name.upper() in ["CZM", "CKH"]:
                      target_folder = str(base_folder / "CMES_Product_Output" / report_name)
+                     
+                # 规则 3: Scrap Detail (如 CKH_Scrap) -> .../CMES_Scrap_Detail/{Factory}
+                elif "SCRAP" in report_name.upper():
+                    # 提取工厂名 (e.g. CKH_Scrap -> CKH)
+                    factory = report_name.split('_')[0]
+                    target_folder = str(base_folder / "CMES_Scrap_Detail" / factory)
+                    
+                # 规则 4: Resource Detail (如 CKH_Resource) -> .../CMES_Resource_Detail/{Factory}
+                elif "RESOURCE" in report_name.upper():
+                    factory = report_name.split('_')[0]
+                    target_folder = str(base_folder / "CMES_Resource_Detail" / factory)
                 
-                # 规则 3: 其他默认逻辑 (按原样或放在根目录)
+                # 规则 5: 其他默认逻辑 (按原样或放在根目录)
                 else:
                     # 尝试从文件名推断
                     if "Product_Output" in filename_format:
@@ -197,106 +208,257 @@ class CMESDataCollector:
         
     def _log(self, message: str):
         logger.info(message)
-    
+
     def collect(self, start_date: str = None, end_date: str = None, output_period: str = None) -> bool:
         skip_date_filter = self.config.get('skip_date_filter', False)
         report_name = self.config.get('name', '')
         
         # Logic to determine report type
-        is_quarterly = "Product_Output" in self.config.get('filename_format', '') or report_name in ['CZM', 'CKH']
+        is_quarterly = (
+            "Product_Output" in self.config.get('filename_format', '') 
+            or report_name in ['CZM', 'CKH'] 
+            or "SCRAP" in report_name.upper() 
+            or "RESOURCE" in report_name.upper()
+        )
+        
+        # 历史数据补全逻辑 (仅针对 Quarterly 报表且未指定特定日期时)
+        # WIP 报表永远只下载最新，不需要补全历史
         is_wip = "WIP" in report_name.upper()
+        if is_quarterly and not skip_date_filter and start_date is None and not is_wip:
+            # Generate a sample filename to log what we are looking for
+            sample_period = "2024Q1"
+            if "RESOURCE" in report_name.upper(): sample_period = "2024M01"
+            sample_filename = get_output_filename(self.config['filename_format'], self.config['name'], period=sample_period)
+            
+            self._log(f"[{report_name}] 启动历史数据检查 (2023年至今)...")
+            self._log(f"[{report_name}] 目标文件示例: {sample_filename}")
+            
+            browser_initialized = False
+            manager = None
+            
+            try:
+                # 判断是否为 Resource 报表（按月下载）
+                is_resource = "RESOURCE" in report_name.upper()
+                
+                if is_resource:
+                    # Resource 报表：生成从 2023年1月 到当前月的所有月份
+                    periods_to_check = []
+                    today = datetime.now()
+                    start_year, start_month = 2023, 1
+                    
+                    current_year, current_month = today.year, today.month
+                    
+                    # 从2023年1月开始，逐月生成
+                    year, month = start_year, start_month
+                    while (year < current_year) or (year == current_year and month <= current_month):
+                        period_str = f"{year}M{month:02d}"
+                        periods_to_check.append((year, month, period_str, 'month'))
+                        
+                        # 递增月份
+                        month += 1
+                        if month > 12:
+                            month = 1
+                            year += 1
+                else:
+                    # 其他报表（Output, Scrap）：生成从 2023Q1 到当前季度
+                    periods_to_check = []
+                    today = datetime.now()
+                    current_quarter = (today.month - 1) // 3 + 1
+                    current_year = today.year
+                    
+                    start_year, start_quarter = 2023, 1
+                    
+                    # 从2023Q1开始，逐季度生成
+                    year, quarter = start_year, start_quarter
+                    while (year < current_year) or (year == current_year and quarter <= current_quarter):
+                        period_str = f"{year}Q{quarter}"
+                        periods_to_check.append((year, quarter, period_str, 'quarter'))
+                        
+                        # 递增季度
+                        quarter += 1
+                        if quarter > 4:
+                            quarter = 1
+                            year += 1
+                
+                # 优先下载最近的数据：反转列表
+                periods_to_check.reverse()
 
-        if not skip_date_filter and (start_date is None or end_date is None):
-            if is_quarterly:
-                start_date, end_date = get_current_quarter_range()
-                if output_period is None:
-                    output_period = get_quarter_str()
+                # 打印一下要检查的周期总数，辅助调试
+                # self._log(f"[{report_name}] 需检查 {len(periods_to_check)} 个周期: {[x[2] for x in periods_to_check]}")
+                
+                # 逐个检查本地文件是否存在
+                missing_periods = []
+                for *period_info, period_str, period_type in periods_to_check:
+                    # 预测文件名
+                    filename = get_output_filename(
+                        self.config['filename_format'],
+                        self.config['name'],
+                        period=period_str
+                    )
+                    target_path = Path(self.config['target_folder']) / filename
+                    
+                    if not target_path.exists():
+                        missing_periods.append((*period_info, period_str, period_type))
+                    # else:
+                    #    self._log(f"[{report_name}] 文件已存在: {filename}")
+                
+                if not missing_periods:
+                    period_type_name = "月度" if is_resource else "季度"
+                    self._log(f"✅ [{report_name}] 所有历史{period_type_name}数据已完整 ({len(periods_to_check)} 个周期)，无需下载。")
+                    return True
+                    
+                period_type_name = "月" if is_resource else "个季度"
+                self._log(f"⚠️ [{report_name}] 发现 {len(missing_periods)} {period_type_name}数据缺失，准备补全: {[x[2] for x in missing_periods]}")
+                
+                # 初始化浏览器 (如果还没初始化)
+                if self.page:
+                     page = self.page
+                else:
+                    manager = PlaywrightManager(headless=self.headless, use_user_profile=True, browser_type=self.browser_type)
+                    manager.start()
+                    # 尝试自动登录
+                    if os.getenv("MDDAP_MS_USER"):
+                         manager.login_microsoft(os.getenv("MDDAP_MS_USER"), os.getenv("MDDAP_MS_PASSWORD"))
+                    page = manager.new_page()
+                    browser_initialized = True
+
+                # 导航到页面 (只需一次)
+                self._ensure_page_ready(page)
+                
+                # 循环下载缺失周期
+                for *period_info, period_str, period_type in missing_periods:
+                    self._log(f">>> 开始补全: {period_str}")
+                    
+                    if period_type == 'month':
+                        # 月度：直接使用该月的起止日期
+                        year, month = period_info
+                        s_date = datetime(year, month, 1).strftime("%Y/%m/%d")
+                        last_day = monthrange(year, month)[1]
+                        e_date = datetime(year, month, last_day).strftime("%Y/%m/%d")
+                    else:
+                        # 季度：计算季度的起止日期
+                        year, quarter = period_info
+                        q_start_month = (quarter - 1) * 3 + 1
+                        q_end_month = q_start_month + 2
+                        
+                        s_date = datetime(year, q_start_month, 1).strftime("%Y/%m/%d")
+                        last_day = monthrange(year, q_end_month)[1]
+                        e_date = datetime(year, q_end_month, last_day).strftime("%Y/%m/%d")
+                    
+                    # 执行下载逻辑
+                    if self._perform_single_download(page, s_date, e_date, period_str):
+                        self._log(f"✅ {period_str} 补全成功")
+                    else:
+                        self._log(f"❌ {period_str} 补全失败")
+                
+                return True
+                
+            except Exception as e:
+                self._log(f"历史补全过程出错: {e}")
+                return False
+            finally:
+                if browser_initialized and manager:
+                    manager.close()
+            
+            return True # 这里的 Return 代表历史检查逻辑结束
+            
+        # ==========================================
+        # 原有的单次下载逻辑 (WIP 或 指定日期)
+        # ==========================================
+        
+        # 智能日期计算：优先从 output_period 解析，否则使用当前月
+        if start_date is None or end_date is None:
+            if output_period and ('M' in output_period or 'Q' in output_period):
+                # 从 output_period 解析日期范围
+                try:
+                    if 'M' in output_period:
+                        # 月度格式: 2024M01
+                        year, month = output_period.split('M')
+                        year, month = int(year), int(month)
+                        start_date = datetime(year, month, 1).strftime("%Y/%m/%d")
+                        last_day = monthrange(year, month)[1]
+                        end_date = datetime(year, month, last_day).strftime("%Y/%m/%d")
+                    elif 'Q' in output_period:
+                        # 季度格式: 2024Q1
+                        year, quarter = output_period.split('Q')
+                        year, quarter = int(year), int(quarter)
+                        q_start_month = (quarter - 1) * 3 + 1
+                        q_end_month = q_start_month + 2
+                        start_date = datetime(year, q_start_month, 1).strftime("%Y/%m/%d")
+                        last_day = monthrange(year, q_end_month)[1]
+                        end_date = datetime(year, q_end_month, last_day).strftime("%Y/%m/%d")
+                except:
+                    # 解析失败，回退到当前月
+                    start_date, end_date = get_current_month_range()
+                    if output_period is None:
+                        output_period = datetime.now().strftime("%Y%m%d")
             else:
-                # Default to monthly for non-quarterly (could be refined for WIP specific ranges if needed)
+                # 没有周期格式，使用当前月
                 start_date, end_date = get_current_month_range()
                 if output_period is None:
-                    # WIP defaults to YYYYMMDD, others to YYYYMM
-                    if is_wip:
-                        output_period = datetime.now().strftime("%Y%m%d")
-                    else:
-                        output_period = datetime.now().strftime("%Y%m")
+                    output_period = datetime.now().strftime("%Y%m%d")  # WIP format default
         
-        # Allow override even if logic set it above, but if still None (e.g. skip_date=True), set default name
-        if output_period is None:
-             if is_quarterly:
-                 output_period = get_quarter_str()
-             elif is_wip:
-                 output_period = datetime.now().strftime("%Y%m%d")
-             else:
-                 output_period = datetime.now().strftime("%Y%m")
+        self._log(f"开始单次采集: {self.config['name']} ({output_period})")
         
-        self._log(f"开始采集: {self.config['name']}")
-        if not skip_date_filter:
-            self._log(f"日期范围: {start_date} ~ {end_date}")
-        else:
-            self._log(f"日期筛选: 跳过 (使用默认或WIP逻辑)")
+        # ... (Reuse _perform_single_download logic or generic manager setup)
+        # Refactoring to avoid code duplication is ideal, but for now lets wrap the core download
         
         manager = None
-        current_page = None
-        
         try:
             if self.page:
-                current_page = self.page
+                page = self.page
             else:
-                manager = PlaywrightManager(
-                    headless=self.headless,
-                    use_user_profile=True,
-                    callback=None, # Use internal logger
-                    browser_type=self.browser_type
-                )
+                manager = PlaywrightManager(headless=self.headless, use_user_profile=True, browser_type=self.browser_type)
                 manager.start()
-                current_page = manager.new_page()
-
-            # Ensure we have a page object
-            page = current_page
-            page.set_default_timeout(ELEMENT_TIMEOUT * 1000)
+                page = manager.new_page()
             
-            report_url = self.config['url']
-            try:
-                page.goto(report_url, timeout=PAGE_LOAD_TIMEOUT * 1000, wait_until="domcontentloaded")
-            except Exception as e:
-                self._log(f"⚠️ 页面加载超时，尝试继续: {str(e)}")
-            
-            if not self._check_page_loaded(page):
-                self._log("❌ 页面加载失败或需要登录")
-                return False
-            
-            if not skip_date_filter:
-                if not self._set_date_filter(page, start_date, end_date):
-                    self._log("❌ 设置日期筛选器失败")
-                    return False
-                time.sleep(2)
-            
-            downloaded_file = self._export_data(page)
-            if not downloaded_file:
-                self._log("❌ 导出数据失败")
-                return False
-            
-            new_filename = get_output_filename(
-                self.config['filename_format'],
-                self.config['name'],
-                output_period
-            )
-            target_dir = self.config['target_folder']
-            
-            final_path = move_and_rename_file(downloaded_file, target_dir, new_filename)
-            self._log(f"✅ 导出成功: {final_path}")
-            return True
+            self._ensure_page_ready(page)
+            if self._perform_single_download(page, start_date, end_date, output_period):
+                 return True
+            return False
             
         except Exception as e:
-            self._log(f"❌ 采集错误: {e}")
-            import traceback
-            traceback.print_exc()
+            self._log(f"采集错误: {e}")
             return False
         finally:
-            # Only close if we created the manager
             if manager:
                 manager.close()
+
+    def _ensure_page_ready(self, page):
+        """Helper to navigate and wait for load"""
+        if page.url != self.config['url']:
+            try:
+                page.goto(self.config['url'], timeout=PAGE_LOAD_TIMEOUT * 1000, wait_until="domcontentloaded")
+            except: pass
+        
+        if not self._check_page_loaded(page):
+            raise Exception("页面加载失败")
+
+    def _perform_single_download(self, page, start_date, end_date, output_period) -> bool:
+        """Core download execution for a given date range"""
+        skip_date_filter = self.config.get('skip_date_filter', False)
+        
+        self._log(f"  日期范围: {start_date} ~ {end_date}")
+        
+        if not skip_date_filter:
+            if not self._set_date_filter(page, start_date, end_date):
+                 self._log("❌ 设置日期筛选器失败")
+                 return False
+            time.sleep(2)
+        
+        downloaded_file = self._export_data(page)
+        if not downloaded_file:
+            return False
+        
+        new_filename = get_output_filename(
+            self.config['filename_format'],
+            self.config['name'],
+            output_period
+        )
+        target_dir = self.config['target_folder']
+        final_path = move_and_rename_file(downloaded_file, target_dir, new_filename)
+        self._log(f"✅ 文件保存: {final_path}")
+        return True
 
     def _check_page_loaded(self, page) -> bool:
         # Simplified load check logic
@@ -342,13 +504,34 @@ class CMESDataCollector:
 
     def _set_date_filter(self, page, start_date: str, end_date: str) -> bool:
         try:
-            # JS injection is most reliable for PowerBI inputs
+            # Reverting to explicit JS event dispatching - The most efficient method
+            # Method Name: JS Injection with Event Dispatching (直接DOM操作+事件触发)
             def _apply(val, selector):
-                page.locator(selector).fill(val)
+                # 1. Fill standard way (updates 'value' attribute)
+                try: page.locator(selector).fill(val)
+                except: pass
+                
+                # 2. Force events using JS - critical for React/Angular to detect change
                 page.locator(selector).evaluate("el => { el.dispatchEvent(new Event('input', {bubbles: true})); el.dispatchEvent(new Event('change', {bubbles: true})); el.blur(); }")
                 time.sleep(0.5)
 
+            # Change order: Set END DATE first to avoid "Start Date > End Date" validation error
+            self._log(f"  正在设置日期: {start_date} ~ {end_date}")
+            _apply(end_date, SELECTORS["date_end_input"])
+            time.sleep(0.5) 
             _apply(start_date, SELECTORS["date_start_input"])
+            return True
+
+            self._log(f"  正在设置日期: {start_date} ~ {end_date}")
+            _apply(start_date, SELECTORS["date_start_input"])
+            time.sleep(0.5) 
+            _apply(end_date, SELECTORS["date_end_input"])
+            return True
+
+            self._log(f"  正在设置日期: {start_date} ~ {end_date}")
+            _apply(start_date, SELECTORS["date_start_input"])
+            # Small delay between inputs
+            time.sleep(0.5) 
             _apply(end_date, SELECTORS["date_end_input"])
             return True
         except Exception as e:
@@ -378,7 +561,11 @@ class CMESDataCollector:
             # 4. Wait for dialog and click Export confirm
             page.wait_for_selector(SELECTORS["export_confirm_button"], timeout=5000)
             
-            with page.expect_download(timeout=60000) as download_info:
+            # Dynamic timeout: Resource reports need more time due to large data volume
+            is_resource = "RESOURCE" in self.config.get('name', '').upper()
+            download_timeout_ms = 900000 if is_resource else 600000  # 15min for Resource, 10min for others
+            
+            with page.expect_download(timeout=download_timeout_ms) as download_info:
                 page.click(SELECTORS["export_confirm_button"])
                 
             download = download_info.value
@@ -409,11 +596,22 @@ def collect_cmes_data(headless=True):
         )
         manager.start()
 
+        main_page = manager.new_page()
+
+        # 优化流程：先访问第一个目标 URL，触发跳转登录页，然后再执行登录
+        # 这样避免了在 about:blank 页面尝试登录的问题
+        if configs and configs[0].get('url'):
+            first_url = configs[0]['url']
+            logger.info(f"正在导航至首个目标页面以触发登录: {first_url}")
+            try:
+                main_page.goto(first_url, timeout=60000, wait_until="domcontentloaded")
+            except: 
+                pass # 忽略可能的超时，继续处理登录
+
         # 尝试自动登录
         if os.getenv("MDDAP_MS_USER") and os.getenv("MDDAP_MS_PASSWORD"):
             manager.login_microsoft(os.getenv("MDDAP_MS_USER"), os.getenv("MDDAP_MS_PASSWORD"))
-
-        main_page = manager.new_page()
+        
         
         # Loop with the same page
         for cfg in configs:

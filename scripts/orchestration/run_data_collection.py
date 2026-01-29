@@ -21,7 +21,7 @@ if str(PROJECT_ROOT) not in sys.path:
 # Setup logging
 logging.basicConfig(
     level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    format='%(asctime)s - %(levelname)s - %(message)s',
     handlers=[logging.StreamHandler()]
 )
 logger = logging.getLogger("DataCollectionPipeline")
@@ -67,26 +67,47 @@ def run_labor(headless=True):
     except Exception as e:
         logger.exception(f">>> Labor Hour/SAP Formatting Error: {e}")
 
+def run_tooling(headless=True):
+    logger.info(">>> Starting Tooling Data Export...")
+    try:
+        from data_pipelines.sources.tooling.download.transaction_exporter import export_tooling_data
+        success = export_tooling_data()
+        if success:
+            logger.info(">>> Tooling Export Completed Successfully.")
+        else:
+            logger.error(">>> Tooling Export Failed.")
+    except Exception as e:
+        logger.exception(f">>> Tooling Export Error: {e}")
+
+def run_refresh(headless=True):
+    logger.info(">>> Starting PowerBI Refresh...")
+    try:
+        from scripts.orchestration.trigger_pbi_refresh import trigger_refresh_all
+        trigger_refresh_all(headless=headless)
+        logger.info(">>> PowerBI Refresh Completed.")
+    except Exception as e:
+        logger.exception(f">>> PowerBI Refresh Error: {e}")
+
 def main():
     parser = argparse.ArgumentParser(description="Run Data Collection Pipelines")
-    parser.add_argument("target", choices=["planner", "cmes", "labor", "all"], nargs='?', default='all', help="Target pipeline to run (default: all)")
-    parser.add_argument("--headless", action="store_true", default=False, help="Run in headless mode (default: False/Headed)")
-    parser.add_argument("--no-headless", action="store_false", dest="headless", help="Show browser UI")
+    # Updated choices to include 'tooling' and 'refresh'
+    parser.add_argument("target", choices=["planner", "cmes", "labor", "tooling", "refresh", "all"], nargs='?', default='all', help="Target pipeline to run (default: all=planner+cmes+labor+tooling)")
+    parser.add_argument("--headless", action="store_true", default=True, help="Run in headless mode (default: True)")
+    parser.add_argument("--no-headless", action="store_false", dest="headless", help="Show browser UI (disable headless)")
     
     args = parser.parse_args()
     
-    # ---------------------------------------------------------
-    # Direct Execution Logic (Simplified)
-    # ---------------------------------------------------------
-    # User requested to remove Smart Auth check and default to headed mode.
-    # We simply respect the argument.
-    
     final_headless = args.headless
     
-    if args.target in ["planner", "cmes", "all"]:
+    if args.target in ["planner", "cmes", "tooling", "refresh", "all"]:
          mode_str = "HEADLESS" if final_headless else "HEADED (Visible Browser)"
          logger.info(f">>> Mode: {mode_str}")
     
+    # Execution Sequence
+    if args.target == "refresh":
+        run_refresh(headless=final_headless)
+        return # Refresh is usually standalone
+
     if args.target == "planner" or args.target == "all":
         run_planner(headless=final_headless)
         
@@ -94,8 +115,10 @@ def main():
         run_cmes(headless=final_headless)
         
     if args.target == "labor" or args.target == "all":
-        # Labor always runs in its own way (COM), headless arg ignored usually
         run_labor(headless=final_headless)
+        
+    if args.target == "tooling" or args.target == "all":
+        run_tooling(headless=final_headless)
 
 if __name__ == "__main__":
     main()

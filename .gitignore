@@ -26,6 +26,7 @@ MANIFEST
 venv/
 ENV/
 env/
+.venv_czxmfg/
 
 # MkDocs generated content
 site/
@@ -86,3 +87,9 @@ clienttest/
 
 # Agent Rules
 .agent/
+
+# Deployment Packages
+server_deploy_package/
+
+# Temporary Scripts
+*_extensions_v2.ps1

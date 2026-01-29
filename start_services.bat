@@ -7,13 +7,37 @@ echo   MDDAP Integrated Platform Services
 echo ========================================================
 echo.
 
+echo [0/2] Detecting Environment...
+set "VENV_DIR=.venv"
+if exist ".venv_%USERNAME%" (
+    set "VENV_DIR=.venv_%USERNAME%"
+    echo   - Using User Env: .venv_%USERNAME%
+) else (
+    if exist ".venv" (
+        echo   - Using Shared Env: .venv
+    ) else (
+        echo   - Warning: No VENV found, trying Global Python...
+        set "VENV_DIR="
+    )
+)
+
 echo [1/2] Starting Documentation Service (Port 8000)...
-start "MDDAP Docs" cmd /c "mkdocs serve -a 0.0.0.0:8000"
+if defined VENV_DIR (
+    start "MDDAP Docs" cmd /c ""%VENV_DIR%\Scripts\mkdocs" serve -a 0.0.0.0:8000"
+) else (
+    start "MDDAP Docs" cmd /c "mkdocs serve -a 0.0.0.0:8000"
+)
 
 echo [2/2] Starting Dashboard Service (Port 8501)...
 set "SCRIPT_DIR=%~dp0dashboard\"
 cd /d "%SCRIPT_DIR%"
-start "MDDAP Dashboard" cmd /c "streamlit run app.py"
+if defined VENV_DIR (
+    REM Need to go back up two levels to find venv from dashboard dir, OR use absolute path from before
+    REM Easier: Use absolute path derived from %~dp0
+    start "MDDAP Dashboard" cmd /c ""..\%VENV_DIR%\Scripts\streamlit" run app.py"
+) else (
+    start "MDDAP Dashboard" cmd /c "streamlit run app.py"
+)
 
 echo.
 echo ========================================================

@@ -156,6 +156,7 @@ class PlaywrightManager:
         try:
             # 启动参数 - 移除 --profile-directory，因为 user_data_dir 已经指定了配置目录
             launch_args = [
+                "--start-maximized",  # 启动时全屏最大化
                 "--no-sandbox",
                 "--disable-dev-shm-usage",
                 "--disable-gpu",
@@ -232,6 +233,7 @@ class PlaywrightManager:
         browser_name = "Chrome" if self.browser_type == "chrome" else "Edge"
         
         launch_args = [
+            "--start-maximized",  # 启动时全屏最大化
             "--no-sandbox",
             "--disable-dev-shm-usage",
             "--disable-gpu",
@@ -504,63 +506,130 @@ class PlaywrightManager:
         page = self._page
         
         try:
+            # 0. Initial Navigation (Removed as per user request to access target URL directly)
+            # But we DO need to wait for page to stabilize after goto()
+            self._log(f"等待页面稳定... 当前 URL: {page.url[:60]}")
+            time.sleep(1)  # Reduced: Most times we have cached login
+
+            # 0. Handle Power BI specific Single Sign-On page (Intermediary)
+            # User reported a yellow "Enter email" page with id="email"
+            try:
+                pbi_input_selector = "input#email"
+                
+                self._log("正在检测 Power BI 专用登录页...")
+                
+                # Use wait_for_selector - reduced timeout since we now use user profile
+                try:
+                    page.wait_for_selector(pbi_input_selector, state="visible", timeout=3000)
+                    self._log("✅ 检测到 Power BI 专用登录页 (input#email)")
+                    
+                    page.fill(pbi_input_selector, username)
+                    self._log(f"已填入邮箱: {username}")
+                    
+                    # Click Submit
+                    submit_selector = "button.pbi-button, button:has-text('Submit'), button:has-text('提交')"
+                    if page.locator(submit_selector).is_visible(timeout=2000):
+                        page.click(submit_selector)
+                        self._log("已点击'提交'按钮")
+                    else:
+                        self._log("尝试 Enter 键提交")
+                        page.press(pbi_input_selector, "Enter")
+                    
+                    self._log("Power BI SSO: 等待页面跳转...")
+                    time.sleep(5)
+                    # Continue to standard MS login (password entry)
+                    
+                except:
+                    self._log("未检测到 Power BI 登录页，继续标准 MS 登录流程")
+                    
+            except Exception as e:
+                self._log(f"Power BI SSO 检测异常: {e}")
+
             # Check if likely already logged in (redirected to internal page)
-            if "login.microsoftonline.com" not in page.url and "medtronic.com" not in page.url:
+            if "login.microsoftonline.com" not in page.url and "medtronic.com" not in page.url and "app.powerbi.com" not in page.url and "office.com" not in page.url:
                 # Assuming if we are not on a login-like page, we might be good or need to nav first.
-                # Usually this is called AFTER goto(url) redirects to login.
                 pass
 
             self._log(f"尝试自动登录: {username}")
             
-            # 1. Input Username
-            # Wait for email input or account picker
+            # 1. Account Picker / Username Input
             try:
                 # Check for account picker first
-                picker = page.locator("div[role='listitem']").filter(has_text=username).first
+                # Refined selector: Look for the tile with the email
+                picker = page.locator(f"div[role='listitem']:has-text('{username}')").first
                 if picker.is_visible(timeout=3000):
                     self._log("检测到账号选择器，点击账号...")
                     picker.click()
+                    # Wait for potential redirect or next step
+                    time.sleep(2)
                 else:
-                    # Input email
-                    email_input = page.locator("input[type='email'], input[name='loginfmt']")
+                    # Input email if no picker using strict ID provided by user
+                    email_input = page.locator("input[name='loginfmt'], #i0116")
                     if email_input.is_visible(timeout=3000):
                         self._log("输入用户名...")
                         email_input.fill(username)
                         page.click("input[type='submit'], #idSIButton9") # Next
+                        time.sleep(1)
             except Exception as e:
-                self._log(f"用户名输入阶段跳过或异常: {e}")
+                self._log(f"用户名/账号选择阶段非致命异常: {e}")
 
-            # 2. Input Password
+            # 2. Check Password (Expect it to appear in fresh session)
             try:
-                # Wait for password field (might be immediate or after animation)
-                password_input = page.locator("input[type='password'], input[name='passwd']")
-                if password_input.is_visible(timeout=5000):
-                    self._log("输入密码...")
-                    password_input.fill(password)
-                    # Click Sign in
+                # 既然是无痕模式，密码框几乎必现。我们显式等待它。
+                # 同时也检测是否意外跳转到了成功页（防止 SSO 免密）
+                # Using strict ID provided by user
+                password_selector = "input[name='passwd'], #i0118"
+                
+                # 轮询检测：密码框出现 OR 已跳转至内网
+                found_password = False
+                for _ in range(20): # 20 * 0.5s = 10s wait
+                    if page.locator(password_selector).is_visible():
+                        found_password = True
+                        break
+                    
+                    # 检查是否已跳转成功
+                    if "medtronic.com" in page.url and "login.microsoftonline.com" not in page.url:
+                        self._log("检测到已跳转至 medtronic.com，跳过密码输入")
+                        break
+                        
+                    time.sleep(0.5)
+                
+                if found_password:
+                    self._log("检测到密码输入框，正在输入...")
+                    page.fill(password_selector, password)
+                    time.sleep(0.5)
                     page.click("input[type='submit'], #idSIButton9")
+                    self._log("密码已提交")
                 else:
-                    self._log("未检测到密码输入框，可能已登录或需要2FA")
+                     # Double check URL before giving up
+                     if "login.microsoftonline.com" in page.url:
+                         self._log("警告: 10秒内未出现密码框且仍停留在登录页", "WARNING")
+                     else:
+                         self._log("未检测到密码框，且页面已跳转 (视为成功)")
+
             except Exception as e:
-                self._log(f"密码输入异常: {e}")
+                self._log(f"密码输入阶段异常: {e}")
 
             # 3. Handle "Stay signed in" (KMSI)
             try:
                 # Look for "Stay signed in?" or "Reduce number of times..."
-                kmsi_checkbox = page.locator("input[name='DontShowAgain']")
-                if kmsi_checkbox.is_visible(timeout=5000):
-                     kmsi_checkbox.check() # Optional: check 'Don't show again'
-                
-                kmsi_btn = page.locator("input[type='submit'][value='Yes'], #idSIButton9")
-                if kmsi_btn.is_visible(timeout=3000):
-                    self._log("点击 '保持登录' (Yes)...")
-                    kmsi_btn.click()
+                # Use a specific text check or the prominent button
+                kmsi_header = page.locator("div[role='heading']:has-text('Stay signed in?')")
+                if kmsi_header.is_visible(timeout=5000):
+                     kmsi_checkbox = page.locator("input[name='DontShowAgain']")
+                     if kmsi_checkbox.is_visible(timeout=1000):
+                          kmsi_checkbox.check() 
+                     
+                     kmsi_btn = page.locator("input[type='submit'][value='Yes'], #idSIButton9")
+                     if kmsi_btn.is_visible(timeout=2000):
+                        self._log("点击 '保持登录' (Yes)...")
+                        kmsi_btn.click()
             except:
                 pass
                 
             # Wait for redirection to stabilize
             time.sleep(3)
-            self._log("自动登录流程完成")
+            self._log("自动登录流程结束")
             return True
             
         except Exception as e:
