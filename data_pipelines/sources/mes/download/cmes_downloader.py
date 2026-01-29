@@ -24,6 +24,15 @@ if str(PROJECT_ROOT) not in sys.path:
 # Import shared Playwright Manager
 from shared_infrastructure.automation.playwright_manager import PlaywrightManager
 
+# Load environment variables
+try:
+    from dotenv import load_dotenv
+    env_path = PROJECT_ROOT / ".env"
+    if env_path.exists():
+        load_dotenv(env_path)
+except ImportError:
+    pass
+
 logger = logging.getLogger(__name__)
 
 # ============================================================
@@ -399,6 +408,11 @@ def collect_cmes_data(headless=True):
             browser_type="chrome"
         )
         manager.start()
+
+        # 尝试自动登录
+        if os.getenv("MDDAP_MS_USER") and os.getenv("MDDAP_MS_PASSWORD"):
+            manager.login_microsoft(os.getenv("MDDAP_MS_USER"), os.getenv("MDDAP_MS_PASSWORD"))
+
         main_page = manager.new_page()
         
         # Loop with the same page

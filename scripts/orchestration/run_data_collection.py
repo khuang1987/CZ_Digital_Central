@@ -69,7 +69,7 @@ def run_labor(headless=True):
 
 def main():
     parser = argparse.ArgumentParser(description="Run Data Collection Pipelines")
-    parser.add_argument("target", choices=["planner", "cmes", "labor", "all"], help="Target pipeline to run")
+    parser.add_argument("target", choices=["planner", "cmes", "labor", "all"], nargs='?', default='all', help="Target pipeline to run (default: all)")
     parser.add_argument("--headless", action="store_true", default=False, help="Run in headless mode (default: False/Headed)")
     parser.add_argument("--no-headless", action="store_false", dest="headless", help="Show browser UI")
     

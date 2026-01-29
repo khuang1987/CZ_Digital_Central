@@ -487,6 +487,86 @@ class PlaywrightManager:
             self._log(f"执行 JavaScript 失败: {e}", "ERROR")
             return None
     
+    def login_microsoft(self, username: str, password: str) -> bool:
+        """
+        自动登录微软账号
+        
+        Args:
+            username: 邮箱
+            password: 密码
+            
+        Returns:
+            bool: 是否登录成功（或者已经登录）
+        """
+        if not self._page:
+            self._page = self.new_page()
+            
+        page = self._page
+        
+        try:
+            # Check if likely already logged in (redirected to internal page)
+            if "login.microsoftonline.com" not in page.url and "medtronic.com" not in page.url:
+                # Assuming if we are not on a login-like page, we might be good or need to nav first.
+                # Usually this is called AFTER goto(url) redirects to login.
+                pass
+
+            self._log(f"尝试自动登录: {username}")
+            
+            # 1. Input Username
+            # Wait for email input or account picker
+            try:
+                # Check for account picker first
+                picker = page.locator("div[role='listitem']").filter(has_text=username).first
+                if picker.is_visible(timeout=3000):
+                    self._log("检测到账号选择器，点击账号...")
+                    picker.click()
+                else:
+                    # Input email
+                    email_input = page.locator("input[type='email'], input[name='loginfmt']")
+                    if email_input.is_visible(timeout=3000):
+                        self._log("输入用户名...")
+                        email_input.fill(username)
+                        page.click("input[type='submit'], #idSIButton9") # Next
+            except Exception as e:
+                self._log(f"用户名输入阶段跳过或异常: {e}")
+
+            # 2. Input Password
+            try:
+                # Wait for password field (might be immediate or after animation)
+                password_input = page.locator("input[type='password'], input[name='passwd']")
+                if password_input.is_visible(timeout=5000):
+                    self._log("输入密码...")
+                    password_input.fill(password)
+                    # Click Sign in
+                    page.click("input[type='submit'], #idSIButton9")
+                else:
+                    self._log("未检测到密码输入框，可能已登录或需要2FA")
+            except Exception as e:
+                self._log(f"密码输入异常: {e}")
+
+            # 3. Handle "Stay signed in" (KMSI)
+            try:
+                # Look for "Stay signed in?" or "Reduce number of times..."
+                kmsi_checkbox = page.locator("input[name='DontShowAgain']")
+                if kmsi_checkbox.is_visible(timeout=5000):
+                     kmsi_checkbox.check() # Optional: check 'Don't show again'
+                
+                kmsi_btn = page.locator("input[type='submit'][value='Yes'], #idSIButton9")
+                if kmsi_btn.is_visible(timeout=3000):
+                    self._log("点击 '保持登录' (Yes)...")
+                    kmsi_btn.click()
+            except:
+                pass
+                
+            # Wait for redirection to stabilize
+            time.sleep(3)
+            self._log("自动登录流程完成")
+            return True
+            
+        except Exception as e:
+            self._log(f"自动登录失败: {e}", "ERROR")
+            return False
+
     def close(self):
         """关闭浏览器和 Playwright"""
         import time

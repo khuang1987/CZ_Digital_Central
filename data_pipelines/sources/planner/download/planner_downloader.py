@@ -27,6 +27,28 @@ from shared_infrastructure.automation.playwright_manager import PlaywrightManage
 # Configure Logging
 logger = logging.getLogger(__name__)
 
+# Load environment variables
+try:
+    from dotenv import load_dotenv
+    env_path = PROJECT_ROOT / ".env"
+    if env_path.exists():
+        load_dotenv(env_path)
+    else:
+        logger.warning(f".env file not found at {env_path}")
+except ImportError:
+    logger.warning("python-dotenv not installed, environment variables might not be loaded.")
+
+# Debug Env Loading
+try:
+    user_val = os.getenv("MDDAP_MS_USER")
+    pass_val = os.getenv("MDDAP_MS_PASSWORD")
+    logger.info(f"DEBUG: .env path used: {PROJECT_ROOT / '.env'}")
+    logger.info(f"DEBUG: .env exists? {(PROJECT_ROOT / '.env').exists()}")
+    logger.info(f"DEBUG: MDDAP_MS_USER loaded? {'Yes: ' + user_val if user_val else 'No'}")
+    logger.info(f"DEBUG: MDDAP_MS_PASSWORD loaded? {'Yes (Masked)' if pass_val else 'No'}")
+except Exception as e:
+    logger.error(f"DEBUG Error: {e}")
+
 # Constants
 DEFAULT_DOWNLOAD_TIMEOUT = 120
 
@@ -61,101 +83,49 @@ def get_download_path() -> Path:
     path.mkdir(parents=True, exist_ok=True)
     return path
 
-def _try_auto_login(page, log_callback) -> bool:
-    """尝试自动登录（如果检测到登录页面）"""
-    try:
-        # 首先检查当前 URL 是否是 Microsoft 登录页面
-        current_url = page.url.lower()
-        is_login_page = any(domain in current_url for domain in [
-            'login.microsoftonline.com',
-            'login.live.com',
-            'login.windows.net',
-            'microsoftonline.com'
-        ])
-        
-        if not is_login_page:
-            return False
-        
-        if log_callback:
-            log_callback("探测到 Microsoft 登录/验证页面...")
-        
-        # 1. 优先尝试“选取账户”页面的账号磁贴
-        pick_account_selector = "div[aria-label*='@medtronic.com'], div[role='button']:has-text('@medtronic.com')"
-        
-        try:
-            element = page.wait_for_selector(pick_account_selector, timeout=2000)
-            if element:
-                if log_callback:
-                    log_callback("🔥 发现已保存的公司账号磁贴，立即点击...")
-                element.click()
-                return True
-        except:
-            pass
-        
-        # 2. 交互元素选择器 (Next/Sign-in)
-        login_selectors = [
-            "input#idSIButton9",                   # 微软通用按钮 ID
-            "input[type='submit'][value='登录']",
-            "input[type='submit'][value='Sign in']",
-            "input[type='submit'][id='idSIButton9']",
-            "div.table-row:has-text('@medtronic.com')",
-            "input[type='submit'][value='Next']",
-            "input[type='submit'][value='下一步']",
-        ]
-        
-        for selector in login_selectors:
-            try:
-                element = page.locator(selector).first
-                if element.is_visible(timeout=500):
-                    if log_callback:
-                        log_callback(f"发现登录交互元素 ({selector})，点击...")
-                    element.click()
-                    time.sleep(1)
-                    return True
-            except:
-                continue
-        
-        return False
-    except Exception as e:
-        if log_callback:
-            log_callback(f"自动登录检测失败: {e}")
-        return False
 
-def _wait_for_planner_load(page, log_callback) -> bool:
+
+def _wait_for_planner_load(page, manager, log_callback) -> bool:
     """循环检查页面加载，处理重定向和自动登录"""
-    max_attempts = 6
+    max_attempts = 10
     dropdown_selector = '//button[contains(@aria-label, "计划选项") and contains(@class, "linkedBadgeDropdown")]'
+    
+    # 获取凭证
+    ms_user = os.getenv("MDDAP_MS_USER")
+    ms_pass = os.getenv("MDDAP_MS_PASSWORD")
     
     for attempt in range(max_attempts):
         try:
-            # 1. 检查是否在登录页面，如果是则触发自动登录
-            if _try_auto_login(page, log_callback):
-                log_callback("✅ 自动登录成功，等待跳转...")
-                time.sleep(5)
-                continue
+            # 1. 检查当前 URL 状态 (检测登录页)
+            current_url = page.url.lower()
+            is_login_page = any(domain in current_url for domain in [
+                'login.microsoftonline.com', 'login.live.com', 'login.windows.net', 'microsoftonline.com'
+            ])
+
+            if is_login_page:
+                if ms_user and ms_pass:
+                    log_callback(f"探测到登录页面，尝试通过 PlaywrightManager 自动登录...")
+                    # 调用统一的登录逻辑
+                    if manager.login_microsoft(ms_user, ms_pass):
+                        log_callback("✅ 自动登录操作执行完毕，等待跳转...")
+                        time.sleep(5)
+                        continue
+                else:
+                    log_callback("探测到登录页面，但未配置 .env 凭证 (MDDAP_MS_USER/PASSWORD)，等待手动登录...")
+                    time.sleep(5)
             
-            # 2. 检查是否已经加载到 Planner 主页面 (通过检测 计划选项 按钮)
+            # 2. 检查是否已经加载到 Planner 主页面
             try:
-                # 缩短单词等待时间，以便更快进入下一次循环检测登录页
-                element = page.wait_for_selector(f"xpath={dropdown_selector}", state="visible", timeout=8000)
+                # 缩短等待时间以便快速响应
+                element = page.wait_for_selector(f"xpath={dropdown_selector}", state="visible", timeout=5000)
                 if element:
                     log_callback("✅ Planner 页面加载完成")
                     return True
             except:
                 pass
             
-            # 3. 检查当前 URL 状态
-            current_url = page.url.lower()
-            is_login_page = any(domain in current_url for domain in [
-                'login.microsoftonline.com', 'login.live.com', 'login.windows.net', 'microsoftonline.com'
-            ])
-            
-            if is_login_page:
-                log_callback(f"仍在登录页面/等待重定向 ({attempt + 1}/{max_attempts})...")
-                time.sleep(3)
-            else:
-                log_callback(f"等待 Planner 内容加载 ({attempt + 1}/{max_attempts})...")
-                time.sleep(3)
+            log_callback(f"等待 Planner 内容加载 ({attempt + 1}/{max_attempts})...")
+            time.sleep(3)
                 
         except Exception as e:
             log_callback(f"⚠️ 加载检测异常: {str(e)}")
@@ -210,8 +180,6 @@ def export_planner_data(headless=True, browser_type="chrome") -> bool:
             browser_type=browser_type
         )
         manager.start()
-        
-        # 创建页面
         page = manager.new_page()
             
         # 读取配置文件
@@ -257,7 +225,7 @@ def export_planner_data(headless=True, browser_type="chrome") -> bool:
                     log_callback(f"⚠️ 页面初次加载超时: {str(e)}")
                 
                 # 等待加载
-                if not _wait_for_planner_load(page, log_callback):
+                if not _wait_for_planner_load(page, manager, log_callback):
                     log_callback(f"❌ {area} 页面加载超时，跳过此区域")
                     continue
                 
