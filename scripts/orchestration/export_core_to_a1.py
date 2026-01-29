@@ -22,7 +22,37 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 logger = logging.getLogger(__name__)
 
 
-A1_OUTPUT_DIR = Path(r"C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\A1_ETL_Output")
+import os
+
+def get_output_dir() -> Path:
+    # 1. Direct Override via Env Var
+    env_export_dir = os.getenv("MDDAP_EXPORT_DIR")
+    if env_export_dir:
+        return Path(env_export_dir)
+
+    # 2. Derive from OneDrive Root (Standard Team Path)
+    # Default suffix path within OneDrive
+    relative_path = r"CZ Production - 文档\General\POWER BI 数据源 V2\A1_ETL_Output"
+    
+    onedrive_root = os.getenv("MDDAP_ONEDRIVE_ROOT")
+    if onedrive_root:
+        candidate = Path(onedrive_root) / relative_path
+        if candidate.exists():
+            return candidate
+            
+    # 3. Fallback: Hardcoded Path (Legacy/Dev)
+    # WARNING: This path works only for specific user (huangk14)
+    fallback = Path(r"C:\Users\huangk14\OneDrive - Medtronic PLC") / relative_path
+    if fallback.exists():
+        logger.warning(f"Using fallback hardcoded output path: {fallback}")
+        return fallback
+
+    # 4. Error if nothing found
+    raise RuntimeError(
+        "Could not determine A1_OUTPUT_DIR. Please set 'MDDAP_EXPORT_DIR' or 'MDDAP_ONEDRIVE_ROOT' in .env"
+    )
+
+A1_OUTPUT_DIR = get_output_dir()
 
 
 STATIC_OUTPUT_DIR = A1_OUTPUT_DIR / '01_CURATED_STATIC'
