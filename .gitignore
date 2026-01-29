@@ -82,6 +82,7 @@ data_pipelines/database/*.db
 # User requested ignores
 A1_ETL_Output/
 toolkit_dataCollect/
+clienttest/
 
 # Agent Rules
 .agent/

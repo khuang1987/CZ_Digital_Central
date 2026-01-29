@@ -4,7 +4,7 @@
 # 注意：请填写SharePoint同步到本地的文件路径
 source:
   # SFC数据路径（支持通配符）
-  sfc_path: "C:\\Users\\huangk14\\OneDrive - Medtronic PLC\\CZ Production - 文档\\General\\POWER BI 数据源 V2\\70-SFC导出数据\\批次报工汇总报表\\LC-*.xlsx"
+  sfc_path: "${MDDAP_ONEDRIVE_ROOT}/CZ Production - 文档/General/POWER BI 数据源 V2/70-SFC导出数据/批次报工汇总报表/LC-*.xlsx"
   
   # 合并后的标准时间表路径（可选，用于计算ST(d)等指标）
   # 支持通配符，例如：publish/SAP_Routing_*.parquet

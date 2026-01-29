@@ -96,6 +96,7 @@ def main():
     apply_theme()
 
     st.title("数据库数据健康总览")
+    st.markdown("**[📚 访问技术说明文档 (Technical Docs)](http://localhost:8000)**")
 
     snapshot = st.sidebar.date_input("选择日期", value=date.today())
     snapshot_str = snapshot.isoformat()
@@ -179,6 +180,12 @@ def main():
         risk = df[df["risk_flag"]].sort_values(["dq_score"], ascending=True)
         st.write("风险表列表")
         st.dataframe(risk[["table_name", "dq_score", "issues_summary"]].head(15), use_container_width=True, height=320)
+
+    with st.sidebar:
+        st.markdown("---")
+        st.markdown("### 🔗 快速链接")
+        st.markdown("[📚 访问说明文档 (Docs)](http://localhost:8000)")
+        st.markdown("*双击链接在新窗口打开文档*")
 
 if __name__ == "__main__":
     main()

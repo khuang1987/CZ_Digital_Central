@@ -397,10 +397,9 @@ python etl_sa.py
 
 ## 相关资源
 
-- [ETL 处理流程详解](etl-process.md)
 - [SA 数据清洗](etl-sa.md)
 - [SFC 数据清洗](etl-sfc.md)
 - [配置说明](configuration.md)
+- **[ETL 流程详解](../developer/etl-process.md)**: 全局 ETL 逻辑说明。
 - [数据更新流程](../guide/data-update.md)
-- [故障排查](../guide/troubleshooting.md)
-
+- **[常见问题排查](../developer/ops/troubleshooting.md)**: 故障诊断指南。

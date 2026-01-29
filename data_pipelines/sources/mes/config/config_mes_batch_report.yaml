@@ -10,7 +10,7 @@ source:
       factory_name: "1303_CZM"
       # 新目录结构：按工厂子文件夹存放
       patterns:
-        - "C:\\Users\\huangk14\\OneDrive - Medtronic PLC\\CZ Production - 文档\\General\\POWER BI 数据源 V2\\30-MES导出数据\\CMES_Product_Output\\CZM\\CMES_Product_Output_CZM_*.xlsx"
+        - "${MDDAP_ONEDRIVE_ROOT}/CZ Production - 文档/General/POWER BI 数据源 V2/30-MES导出数据/CMES_Product_Output/CZM/CMES_Product_Output_CZM_*.xlsx"
       # 仅包含月度(YYYYMM)或季度(YYYYQn)文件，排除旧的按年(YYYY)文件
       filename_include_regex:
         - '_\d{6}\.xlsx$'

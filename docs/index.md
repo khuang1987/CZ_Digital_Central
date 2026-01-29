@@ -47,13 +47,13 @@ graph LR
     end
 
     subgraph "2. Python ETL (数据处理)"
-        Clean[Data Cleaning <br/>(清洗与标准化)]
-        Logic[Business Logic <br/>(KPI 计算引擎)]
-        Alert[Alert Engine <br/>(异常监控)]
+        Clean["Data Cleaning <br/>(清洗与标准化)"]
+        Logic["Business Logic <br/>(KPI 计算引擎)"]
+        Alert["Alert Engine <br/>(异常监控)"]
     end
 
     subgraph "3. Data Storage (数据存储)"
-        SQL[(SQL Server <br/> Data Warehouse)]
+        SQL[("SQL Server <br/> Data Warehouse")]
         ODS[ODS 层/原始数据]
         DWD[DWD 层/明细数据]
         DWS[DWS 层/汇总数据]
@@ -61,7 +61,7 @@ graph LR
 
     subgraph "4. Consumption (应用)"
         PBI[Power BI Reports]
-        Planner[Planner Tasks <br/>(闭环追踪)]
+        Planner["Planner Tasks <br/>(闭环追踪)"]
         Email[Email Alerts]
     end
 

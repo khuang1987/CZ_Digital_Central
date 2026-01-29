@@ -131,13 +131,17 @@ def run_task(task: Dict[str, Any]) -> Dict[str, Any]:
     name = task["name"]
     script_rel_path = task["script"]
     args = task.get("args", [])
+    stream_output = task.get("stream_output", False)
     
     # Buffer for logs
     log_buffer = []
 
     def log(msg):
         timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        log_buffer.append(f"[{timestamp}] [{name}] {msg}")
+        full_msg = f"[{timestamp}] [{name}] {msg}"
+        log_buffer.append(full_msg)
+        if stream_output:
+            print(full_msg)
 
     log(f"STARTING...")
     start_time = time.time()
@@ -150,7 +154,8 @@ def run_task(task: Dict[str, Any]) -> Dict[str, Any]:
             'success': False, 
             'duration': 0, 
             'error': 'Script not found',
-            'output': "\n".join(log_buffer)
+            'output': "\n".join(log_buffer),
+            'streamed': stream_output
         }
 
     # Use the same python interpreter as the orchestrator
@@ -165,41 +170,65 @@ def run_task(task: Dict[str, Any]) -> Dict[str, Any]:
 
     try:
         # Run and capture output
-        process = subprocess.run(
-            cmd,
-            capture_output=True,
-            cwd=PROJECT_ROOT,
-            env=env,
-            text=True,
-            encoding='utf-8',
-            errors='replace'
-        )
-
-        # Merge stdout and stderr
-        full_output = ""
-        if process.stdout:
-            full_output += process.stdout
-        if process.stderr:
-            full_output += process.stderr
+        if stream_output:
+            process = subprocess.Popen(
+                cmd,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT,
+                cwd=PROJECT_ROOT,
+                env=env,
+                text=True,
+                encoding='utf-8',
+                errors='replace',
+                bufsize=1  # Line buffered
+            )
             
-        if full_output:
-            log_buffer.append(full_output.strip())
-        
+            # Read stdout line by line
+            for line in process.stdout:
+                line_stripped = line.strip()
+                if line_stripped:
+                    print(line_stripped)  # Real-time print
+                    log_buffer.append(line_stripped)
+            
+            process.wait()
+            process_returncode = process.returncode
+            success = process_returncode == 0
+            
+        else:
+            # Traditional capture
+            process = subprocess.run(
+                cmd,
+                capture_output=True,
+                cwd=PROJECT_ROOT,
+                env=env,
+                text=True,
+                encoding='utf-8',
+                errors='replace'
+            )
+            
+            if process.stdout:
+                log_buffer.append(process.stdout.strip())
+            if process.stderr:
+                log_buffer.append(process.stderr.strip())
+                
+            process_returncode = process.returncode
+            success = process.returncode == 0
+
         duration = time.time() - start_time
-        success = process.returncode == 0
         status = "SUCCESS" if success else "FAILED"
         
         if not success:
-            log(f"Task failed with return code {process.returncode}")
+            log(f"Task failed with return code {process_returncode}")
         
         log(f"FINISHED - {status} ({duration:.2f}s)")
         
         return {
             'name': name,
             'success': success,
-            'returncode': process.returncode,
+            'returncode': process_returncode,
             'duration': duration,
-            'output': "\n".join(log_buffer)
+            'output': "\n".join(log_buffer),
+            'streamed': stream_output
         }
 
     except Exception as e:
@@ -209,7 +238,8 @@ def run_task(task: Dict[str, Any]) -> Dict[str, Any]:
             'success': False,
             'duration': time.time() - start_time,
             'error': str(e),
-            'output': "\n".join(log_buffer)
+            'output': "\n".join(log_buffer),
+            'streamed': stream_output
         }
 
 def run_stage(stage: Dict[str, Any], pool: concurrent.futures.ProcessPoolExecutor) -> Tuple[bool, List[Dict]]:
@@ -220,6 +250,12 @@ def run_stage(stage: Dict[str, Any], pool: concurrent.futures.ProcessPoolExecuto
     stage_results = []
     failed = False
     
+    # Inject streaming flag for Stage 0 (Data Collection)
+    is_streaming_stage = stage_name.startswith("0.")
+    if is_streaming_stage:
+        for t in tasks:
+            t["stream_output"] = True
+    
     # Submit all tasks in this stage
     futures = {pool.submit(run_task, task): task for task in tasks}
     
@@ -227,29 +263,31 @@ def run_stage(stage: Dict[str, Any], pool: concurrent.futures.ProcessPoolExecuto
         result = future.result()
         stage_results.append(result)
         
-        # Print buffered logs
-        logging.info("")
-        logging.info(f"==================================================================")
-        logging.info(f"LOGS for TASK: {result['name']}")
-        logging.info(f"==================================================================")
-        # Use simple print or logging.info for the whole block
-        # Since we want it in the main log file, we use logging.info
-        if result.get('output'):
-            # Avoid prefixing every line with main process timestamp
-            # We want to dump the raw block. But standard logging adds prefix.
-            # To keep it pretty, we iterate lines
-            for line in result['output'].splitlines():
-                # We already added timestamps in run_task
-                logging.info(f"  {line}")
+        # Determine if we should print the log block
+        was_streamed = result.get('streamed', False)
+        
+        if not was_streamed:
+            # Print buffered logs (Existing behavior for non-streamed tasks)
+            logging.info("")
+            logging.info(f"==================================================================")
+            logging.info(f"LOGS for TASK: {result['name']}")
+            logging.info(f"==================================================================")
+            if result.get('output'):
+                for line in result['output'].splitlines():
+                    logging.info(f"  {line}")
+            else:
+                logging.info("  (No output captured)")
+            logging.info(f"==================================================================")
+            logging.info("")
         else:
-            logging.info("  (No output captured)")
-        logging.info(f"==================================================================")
-        logging.info("")
+            # For streamed tasks, just print a small marker since logs are already visible
+            logging.info("")
+            logging.info(f">>> Task Completed: {result['name']} (Output above)")
+            logging.info("")
 
         if not result['success']:
             failed = True
             
-    
     logging.info(f"=== STAGE {stage_name} COMPLETED. Success: {not failed} ===")
     return not failed, stage_results
 

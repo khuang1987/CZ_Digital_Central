@@ -1,8 +1,15 @@
-# 报表说明总览
+# 报表看板总览 (Dashboard Overview)
+
+<div style="margin-bottom: 20px;">
+<a href="http://10.138.61.17:8501" target="_blank" class="md-button md-button--primary" style="font-size: 1.2em; padding: 10px 20px;">
+    🚀 进入报表看板 (Launch Dashboard)
+</a>
+<p style="font-size: 0.8em; color: gray; margin-top: 5px;">Server Address: http://10.138.61.17:8501</p>
+</div>
 
 ## 报表分类
 
-本节提供数据平台所有报表的详细说明和使用指南，帮助用户快速理解和使用各类报表。
+本平台集成了多个业务部门的关键报表，帮助您实时监控生产、质量与运营状况。
 
 ### 按部门分类
 - **供应链部门报表**：计划达成率、库存周转、供应商绩效等

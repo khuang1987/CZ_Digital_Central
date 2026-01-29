@@ -35,20 +35,21 @@ def get_base_path() -> Path:
 def get_etl_config_path() -> Path:
     return PROJECT_ROOT / "data_pipelines" / "sources" / "sap" / "config" / "config_sap_labor.yaml"
 
+from shared_infrastructure.env_utils import load_yaml_with_env
+
 def get_labor_hour_base_dir() -> Path:
     """Read base directory from ETL YAML config"""
     try:
         config_path = get_etl_config_path()
         if config_path.exists():
-            with open(config_path, 'r', encoding='utf-8') as f:
-                config = yaml.safe_load(f)
-                if config and 'source' in config and 'labor_hour_path' in config['source']:
-                    custom_path = Path(config['source']['labor_hour_path'])
-                    # Ensure directory exists (or warn if it's a network path that might be offline)
-                    if custom_path.exists():
-                        return custom_path
-                    else:
-                        logger.warning(f"Configured path does not exist: {custom_path}")
+            config = load_yaml_with_env(config_path)
+            if config and 'source' in config and 'labor_hour_path' in config['source']:
+                custom_path = Path(config['source']['labor_hour_path'])
+                # Ensure directory exists (or warn if it's a network path that might be offline)
+                if custom_path.exists():
+                    return custom_path
+                else:
+                    logger.warning(f"Configured path does not exist: {custom_path}")
     except Exception as e:
         logger.warning(f"Failed to read ETL config: {e}")
 
@@ -62,15 +63,14 @@ def get_labor_hour_config():
     try:
         config_path = get_etl_config_path()
         if config_path.exists():
-            with open(config_path, 'r', encoding='utf-8') as f:
-                yaml_conf = yaml.safe_load(f)
-                if yaml_conf and 'source' in yaml_conf and 'file_patterns' in yaml_conf['source']:
-                    patterns = yaml_conf['source']['file_patterns']
-                    return {
-                        'zip_filename': patterns.get('zip_source', 'YPP_M03_Q5003.ZIP'),
-                        'extracted_filename': patterns.get('excel_intermediate', 'YPP_M03_Q5003_00000.xls'),
-                        'output_filename': patterns.get('excel_output', 'YPP_M03_Q5003_00000.xlsx')
-                    }
+            yaml_conf = load_yaml_with_env(config_path)
+            if yaml_conf and 'source' in yaml_conf and 'file_patterns' in yaml_conf['source']:
+                patterns = yaml_conf['source']['file_patterns']
+                return {
+                    'zip_filename': patterns.get('zip_source', 'YPP_M03_Q5003.ZIP'),
+                    'extracted_filename': patterns.get('excel_intermediate', 'YPP_M03_Q5003_00000.xls'),
+                    'output_filename': patterns.get('excel_output', 'YPP_M03_Q5003_00000.xlsx')
+                }
     except Exception:
         pass
 

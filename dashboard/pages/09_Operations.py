@@ -3,6 +3,7 @@ import subprocess
 import os
 import sys
 import time
+import uuid
 from pathlib import Path
 
 # 设置页面 (Wide mode essential for this layout)
@@ -72,7 +73,7 @@ def run_task_logic(task_key, command_list, log_placeholder, cwd=None):
                     decoded_line = line.decode('utf-8', errors='replace')
             append_log(decoded_line)
             # Throttle updates slightly to avoid UI freeze on fast logs? No, direct is usually fine for local.
-            log_placeholder.text_area("Console Output", value=st.session_state.log_buffer, height=300, disabled=True, key=f"log_{time.time()}")
+            log_placeholder.text_area("Console Output", value=st.session_state.log_buffer, height=300, disabled=True, key=f"log_{uuid.uuid4()}")
             
     process.stdout.close()
     return_code = process.wait()
@@ -85,7 +86,7 @@ def run_task_logic(task_key, command_list, log_placeholder, cwd=None):
         st.session_state.task_status[task_key] = "error"
         append_log(f"\n❌ FAILED (Code: {return_code})\n")
     
-    log_placeholder.text_area("Console Output", value=st.session_state.log_buffer, height=300, disabled=True, key=f"log_final_{time.time()}")
+    log_placeholder.text_area("Console Output", value=st.session_state.log_buffer, height=300, disabled=True, key=f"log_final_{uuid.uuid4()}")
 
 
 # --- CSS Styling ---
@@ -156,7 +157,7 @@ with col_stages:
             st.caption(f"Status: {status.upper()}")
             # Main Run Button (Icon style)
             if st.button("▶ Run Stage", key="btn_ingest", disabled=is_locked):
-                st.session_state.trigger_task = ("collection_all", [sys.executable, "scripts/orchestration/run_data_collection.py", "all", "--no-headless"])
+                st.session_state.trigger_task = ("collection_all", [sys.executable, "scripts/orchestration/run_data_collection.py", "all"])
             if status == "running": st.progress(50) # Fake progress visual
             
         # Sub Tasks (Chips)

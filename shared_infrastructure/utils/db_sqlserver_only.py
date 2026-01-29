@@ -19,18 +19,39 @@ class SQLServerOnlyManager:
     """Database Manager that writes only to SQL Server"""
     
     def __init__(self, 
-                 sql_server: str = r"localhost\SQLEXPRESS", 
-                 sql_db: str = "mddap_v2",
-                 driver: str = "ODBC Driver 17 for SQL Server"):
-        self.sql_server = sql_server
-        self.sql_db = sql_db
-        self.driver = driver
+                 sql_server: str = None, 
+                 sql_db: str = None,
+                 driver: str = None,
+                 sql_user: str = None,
+                 sql_password: str = None):
+        
+        # Load defaults from environment if not provided
+        self.sql_server = sql_server or os.getenv("MDDAP_SQL_SERVER", r"localhost\SQLEXPRESS")
+        self.sql_db = sql_db or os.getenv("MDDAP_SQL_DATABASE", "mddap_v2")
+        self.driver = driver or os.getenv("MDDAP_SQL_DRIVER", "ODBC Driver 17 for SQL Server")
+        self.sql_user = sql_user or os.getenv("MDDAP_SQL_USER", "")
+        self.sql_password = sql_password or os.getenv("MDDAP_SQL_PASSWORD", "")
+        
         self._columns_cache: Dict[Tuple[str, str], set] = {}
+        self._build_connection_string()
+
+    def _build_connection_string(self):
+        base_conn = (
+            f"DRIVER={{{self.driver}}};"
+            f"SERVER={self.sql_server};"
+            f"DATABASE={self.sql_db};"
+        )
+        
+        if self.sql_user and self.sql_password:
+            # SQL Authentication
+            auth_part = f"UID={self.sql_user};PWD={self.sql_password};"
+        else:
+            # Windows Authentication
+            auth_part = "Trusted_Connection=yes;"
+            
         self.connection_string = (
-            f"DRIVER={{{driver}}};"
-            f"SERVER={sql_server};"
-            f"DATABASE={sql_db};"
-            "Trusted_Connection=yes;"
+            f"{base_conn}"
+            f"{auth_part}"
             "Encrypt=no;"
             "TrustServerCertificate=no;"
         )
@@ -41,22 +62,19 @@ class SQLServerOnlyManager:
             return pyodbc.connect(self.connection_string, autocommit=False, timeout=30)
         except pyodbc.Error as e:
             msg = str(e)
+            # Only try fallback for localhost strings
             fallback_candidates = {
-                r"localhost\\SQLEXPRESS",
-                r".\\SQLEXPRESS",
-                r"(local)\\SQLEXPRESS",
+                r"localhost\SQLEXPRESS",
+                r".\SQLEXPRESS",
+                r"(local)\SQLEXPRESS",
             }
-            if ("08001" in msg or "login timeout" in msg.lower() or "登录超时" in msg) and self.sql_server in fallback_candidates:
+            # Also check normalized versions (remove double backslashes for check)
+            server_check = self.sql_server.replace("\\\\", "\\")
+            
+            if ("08001" in msg or "login timeout" in msg.lower() or "登录超时" in msg) and server_check in fallback_candidates:
                 alt_server = "(local)"
                 self.sql_server = alt_server
-                self.connection_string = (
-                    f"DRIVER={{{self.driver}}};"
-                    f"SERVER={alt_server};"
-                    f"DATABASE={self.sql_db};"
-                    "Trusted_Connection=yes;"
-                    "Encrypt=no;"
-                    "TrustServerCertificate=yes;"
-                )
+                self._build_connection_string() # Rebuild with new server
                 return pyodbc.connect(self.connection_string, autocommit=False, timeout=30)
             raise
 

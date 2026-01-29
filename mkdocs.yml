@@ -82,7 +82,13 @@ nav:
   - 🛠️ 开发与运维 (Dev & Ops):
     - 架构设计: developer/data-architecture.md
     - 并行调度器: developer/orchestrator.md
+    - 自动化逻辑 (Logic): developer/automation_logic.md
     - ETL 流程详解: developer/etl-process.md
+    - 🔍 原始数据处理 (Raw ETL):
+      - SAP Routing: developer/raw_etl/sap_routing.md
+      - MES Batch: developer/raw_etl/mes_batch.md
+      - SFC Batch: developer/raw_etl/sfc_batch.md
+      - Planner Tasks: developer/raw_etl/planner_tasks.md
     - 代码规范: developer/standards/index.md
     - Power Query:
       - 概览: developer/pq/index.md

@@ -36,20 +36,23 @@ def get_base_path() -> Path:
 def get_etl_config_path() -> Path:
     return PROJECT_ROOT / "data_pipelines" / "sources" / "planner" / "config" / "config_planner_tasks.yaml"
 
+from shared_infrastructure.env_utils import load_yaml_with_env
+
 def get_download_path() -> Path:
     """Returns the path where raw Planner files should be saved."""
     # Try reading from ETL config first
     try:
         config_path = get_etl_config_path()
         if config_path.exists():
-            with open(config_path, 'r', encoding='utf-8') as f:
-                config = yaml.safe_load(f)
-                if config and 'source' in config and 'planner_path' in config['source']:
-                    custom_path = Path(config['source']['planner_path'])
-                    # Ensure it exists or try to create it
-                    custom_path.mkdir(parents=True, exist_ok=True)
-                    logger.info(f"Using download path from config: {custom_path}")
-                    return custom_path
+            config = load_yaml_with_env(config_path)
+            if config and 'source' in config and 'planner_path' in config['source']:
+                custom_path = Path(config['source']['planner_path'])
+                # Ensure it exists or try to create it
+                custom_path.mkdir(parents=True, exist_ok=True)
+                logger.info(f"Using download path from config: {custom_path}")
+                return custom_path
+    except Exception as e:
+        logger.warning(f"Failed to read ETL config: {e}")
     except Exception as e:
         logger.warning(f"Failed to read ETL config: {e}")
 

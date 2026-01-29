@@ -11,6 +11,7 @@ import yaml
 import pandas as pd
 from typing import Dict, List, Any, Optional
 from zipfile import BadZipFile
+from pathlib import Path
 
 
 def setup_logging(cfg: Dict[str, Any], base_dir: str = None) -> None:
@@ -41,10 +42,12 @@ def setup_logging(cfg: Dict[str, Any], base_dir: str = None) -> None:
     )
 
 
+
+from shared_infrastructure.env_utils import load_yaml_with_env
+
 def load_config(config_path: str) -> Dict[str, Any]:
-    """加载配置文件"""
-    with open(config_path, 'r', encoding='utf-8') as f:
-        return yaml.safe_load(f)
+    """加载配置文件 (支持环境变量替换)"""
+    return load_yaml_with_env(Path(config_path))
 
 
 def read_sharepoint_excel(file_path: str, max_rows: Optional[int] = None, max_retries: int = 3) -> pd.DataFrame:

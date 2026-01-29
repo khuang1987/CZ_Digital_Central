@@ -3,7 +3,7 @@
 
 source:
   # Planner 导出文件路径
-  planner_path: "C:\\Users\\huangk14\\OneDrive - Medtronic PLC\\CZ Production - 文档\\General\\POWER BI 数据源 V2\\B1_Planner 导出数据"
+  planner_path: "${MDDAP_ONEDRIVE_ROOT}/CZ Production - 文档/General/POWER BI 数据源 V2/B1_Planner 导出数据"
   file_pattern: "*.xlsx"
 
 # 字段映射: Excel列名 -> 数据库列名

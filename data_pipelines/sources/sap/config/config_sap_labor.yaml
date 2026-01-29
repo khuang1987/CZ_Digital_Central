@@ -3,7 +3,7 @@
 source:
   # 实际上是从SAP导出的源文件放置位置 (ZIP)
   # 以及 labor_hour_formatter 脚本解压和转换的目标位置
-  labor_hour_path: "C:\\Users\\huangk14\\OneDrive - Medtronic PLC\\CZ Production - 文档\\General\\POWER BI 数据源 V2\\40-SAP工时"
+  labor_hour_path: "${MDDAP_ONEDRIVE_ROOT}/CZ Production - 文档/General/POWER BI 数据源 V2/40-SAP工时"
   
   # 文件名配置
   file_patterns:

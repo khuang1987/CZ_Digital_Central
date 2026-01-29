@@ -65,9 +65,14 @@ def get_config_path() -> Path:
         pass 
     return path
 
+from shared_infrastructure.env_utils import resolve_path
+
 def get_download_base_dir() -> Path:
-    # 30-MES导出数据 (External Path)
-    path = Path(r"C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\30-MES导出数据")
+    # 30-MES导出数据 (Uses resolve_path to handle dynamic OneDrive root)
+    # The string below is legacy-compatible; resolve_path will rewrite 'huangk14' to current user
+    raw_path = r"C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\30-MES导出数据"
+    path = resolve_path(raw_path)
+    
     if not path.exists():
         logger.warning(f"External path not found: {path}, falling back to local")
         path = PROJECT_ROOT / "data" / "raw" / "cmes"
