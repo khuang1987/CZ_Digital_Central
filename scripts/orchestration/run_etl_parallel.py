@@ -401,9 +401,17 @@ def print_execution_summary(all_results: List[Dict], total_duration: float):
 # Main Entry Point
 # ============================================================
 def main():
+    import argparse
+    parser = argparse.ArgumentParser(description="MDDAP ETL Orchestrator")
+    parser.add_argument("--only-collection", action="store_true", help="Only run Stage 0 (Data Collection), skip SQL/DB stages.")
+    args = parser.parse_args()
+
     setup_logging()
     
     logging.info("MDDAP ETL Orchestrator Started")
+    if args.only_collection:
+        logging.info(">>> MODE: ONLY COLLECTION (System logic will skip SQL/DB stages)")
+    
     logging.info(f"Project Root: {PROJECT_ROOT}")
     logging.info(f"Log File: {LOG_FILE}")
     
@@ -412,9 +420,13 @@ def main():
     workflow_success = True
 
     # Use ProcessPoolExecutor
-    # Max workers = 5 (CPU dependent, but good default)
     with concurrent.futures.ProcessPoolExecutor(max_workers=5) as pool:
         for stage in STAGES:
+            # Skip non-collection stages if requested
+            if args.only_collection and not stage["name"].startswith("0."):
+                logging.info(f"--- Skipping Stage: {stage['name']} (Collection-only mode) ---")
+                continue
+
             success, stage_res = run_stage(stage, pool)
             all_results.extend(stage_res)
             if not success:

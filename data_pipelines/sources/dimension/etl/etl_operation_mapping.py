@@ -149,9 +149,24 @@ def import_area_mapping(conn):
 
 def main():
     """主函数"""
+    import argparse
+    parser = argparse.ArgumentParser(description='Import Operation Mapping')
+    parser.add_argument('--force', action='store_true', help='Force refresh even if file is unchanged')
+    args = parser.parse_args()
+
     logger.info('开始导入工序分类数据...')
 
     db = get_db_manager()
+    
+    # --- 优化：检测文件是否有变化 ---
+    if not args.force:
+        changed = db.filter_changed_files("dim_operation_mapping", [SOURCE_FILE])
+        if not changed:
+            logger.info("工序标准分类文件未变化，跳过导入。")
+            return
+    else:
+        logger.info("强制刷新模式")
+
     ensure_tables(db)
 
     with db.get_connection() as conn:
@@ -176,6 +191,9 @@ def main():
     df_op['lead_time'] = pd.to_numeric(df_op['lead_time'], errors='coerce')
     df_op = df_op[['operation_name', 'standard_routing', 'area', 'lead_time', 'erp_code']]
     op_count = db.bulk_insert(df_op, "dim_operation_mapping", if_exists="append")
+    
+    # 记录处理状态
+    db.mark_file_processed("dim_operation_mapping", SOURCE_FILE)
     
     print('\n导入结果:')
     print(f'  dim_operation_mapping: {op_count} 条')

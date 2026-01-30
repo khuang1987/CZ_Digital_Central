@@ -1,8 +1,15 @@
-# 常州园区数字化数据平台
+# Changzhou Campus Digital Central (常州园区数字化数据中心)
+
+> [!IMPORTANT]
+> **项目更名公告 / Project Rebranding**
+> - **正式名称**: Changzhou Campus Digital Central
+> - **技术缩写 / 文件夹名**: `CZ_Digital_Central`
+> - **变更日期**: 2026-01-30
+> - **原名**: 250418_MDDAP_project (由 MDDAP 审核项驱动进化而来)
 
 ## 📊 项目简介
 
-常州园区数字化数据平台是一个集成化的数据处理和分析系统，用于整合MES、SFC、SAP等多个数据源，为生产、质量、财务等业务部门提供数据支持和分析服务。
+Changzhou Campus Digital Central 是常州园区的核心数字化枢纽，集成了数据全自动采集、ETL 清洗、SQL 存储、以及基于 Next.js 的下一代智能运营看板。
 
 **项目状态：** ✅ 生产环境运行中  
 **架构版本：** Phase 5 (并行编排与智能验证)  
@@ -195,7 +202,7 @@ python data_pipelines\monitoring\etl\etl_kpi_aggregation.py
 1. **克隆项目**
    ```bash
    git clone <repository_url>
-   cd 250418_MDDAP_project
+   cd CZ_Digital_Central
    ```
 
 2. **创建虚拟环境**

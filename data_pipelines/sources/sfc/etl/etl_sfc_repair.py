@@ -195,7 +195,7 @@ def import_file(db, filepath):
         return 0
 
 
-def import_latest_only(db):
+def import_latest_only(db, force=False):
     """导入最新的维修记录文件（增量更新模式）"""
     files = sorted(glob.glob(str(SOURCE_PATH / 'Dev-*.xlsx')))
     if not files:
@@ -205,10 +205,13 @@ def import_latest_only(db):
     latest_file = files[-1]
     
     # Check if latest file has changed
-    changed = db.filter_changed_files("sfc_repair", [latest_file])
-    if not changed:
-        logger.info(f"最新文件未发生变化，跳过: {os.path.basename(latest_file)}")
-        return 0
+    if not force:
+        changed = db.filter_changed_files("sfc_repair", [latest_file])
+        if not changed:
+            logger.info(f"最新文件未发生变化，跳过: {os.path.basename(latest_file)}")
+            return 0
+    else:
+        logger.info(f"强制刷新模式: {os.path.basename(latest_file)}")
 
     logger.info(f'导入最新文件: {os.path.basename(latest_file)}')
 
@@ -222,11 +225,11 @@ def import_latest_only(db):
     return count
 
 
-def import_latest_file(db):
+def import_latest_file(db, force=False):
     """导入最新文件（用于 init 模式）"""
     # Just an alias wrapper or specific logic if distinct from import_latest_only
     # In V1 logic, it called import_file which was insert or replace.
-    return import_latest_only(db)
+    return import_latest_only(db, force=force)
 
 
 def import_all_files(db, limit=None):
@@ -273,6 +276,7 @@ def main():
     parser.add_argument('--mode', choices=['latest', 'all', 'init'], default='latest',
                        help='导入模式: latest=仅最新, all=全部增量, init=重建表并导入全部')
     parser.add_argument('--limit', type=int, help='限制导入文件数量')
+    parser.add_argument('--force', action='store_true', help='强制刷新')
     args = parser.parse_args()
     
     logger.info(f'开始导入 SFC 维修记录数据, 模式: {args.mode}')
@@ -286,7 +290,7 @@ def main():
         total = import_all_files(db, args.limit)
     else:
         # latest 模式
-        total = import_latest_only(db)
+        total = import_latest_only(db, force=args.force)
     
     # 统计
     total_records = db.get_table_count('raw_sfc_repair')

@@ -1,0 +1,44 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --foreground-rgb: 255, 255, 255;
+  --background-start-rgb: 2, 6, 23; /* Dark slate */
+  --background-end-rgb: 15, 23, 42;
+}
+
+body {
+  color: rgb(var(--foreground-rgb));
+  background: linear-gradient(
+      to bottom,
+      transparent,
+      rgb(var(--background-end-rgb))
+    )
+    rgb(var(--background-start-rgb));
+  min-height: 100vh;
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+@layer components {
+  .glass-card {
+    @apply bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl;
+  }
+  
+  .glass-sidebar {
+    @apply bg-white/5 backdrop-blur-2xl border-r border-white/10;
+  }
+  
+  .glow-cyan {
+    @apply shadow-[0_0_20px_rgba(34,211,238,0.3)];
+  }
+  
+  .glow-blue {
+    @apply shadow-[0_0_20px_rgba(59,130,246,0.3)];
+  }
+}

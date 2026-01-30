@@ -1,9 +1,9 @@
-site_name: 常州园区数据报表平台
-site_description: 数字化数据分析平台技术与用户文档
-site_author: MDDAP Team
+site_name: Changzhou Campus Digital Central
+site_description: 常州园区数字化数据中心技术与用户文档
+site_author: CZ Digital Team
 
-repo_url: https://github.com/khuang1987/250418_MDDAP_project
-repo_name: MDDAP Project
+repo_url: https://github.com/khuang1987/CZ_Digital_Central
+repo_name: CZ_Digital_Central
 
 theme:
   name: material

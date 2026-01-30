@@ -1,14 +1,14 @@
 // ============================================
-// 查询名称: Operation Mapping (工序映射表)
-// 数据源: dim_operation_mapping
-// 说明: 复制此代码到 Power BI 高级编辑器
+// 查询名称: Operation Mapping (工序映射�?
+// 数据�? dim_operation_mapping
+// 说明: 复制此代码到 Power BI 高级编辑�?
 // ============================================
 
 let
-    // 数据库路径 - 请根据实际路径修改
-    DbPath = "C:\Users\huangk14\OneDrive - Medtronic PLC\Huangkai Files\B1_Project\250418_MDDAP_project\data_pipelines\database\mddap_v2.db",
+    // 数据库路�?- 请根据实际路径修�?
+    DbPath = "C:\Users\huangk14\OneDrive - Medtronic PLC\Huangkai Files\C_code\CZ_Digital_Central\data_pipelines\database\mddap_v2.db",
     
-    // 连接 SQLite 数据库
+    // 连接 SQLite 数据�?
     Source = Odbc.Query(
         "Driver={SQLite3 ODBC Driver};Database=" & DbPath,
         "SELECT 

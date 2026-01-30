@@ -13,6 +13,6 @@ if exist ".venv_%USERNAME%\Scripts\python.exe" (
     echo Using Shared Env: .venv
 )
 
-"%PYTHON_CMD%" "scripts\orchestration\run_etl_parallel.py"
+"%PYTHON_CMD%" "scripts\orchestration\run_etl_parallel.py" %*
 
 pause

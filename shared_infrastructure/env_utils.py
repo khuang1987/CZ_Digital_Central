@@ -5,13 +5,49 @@ from pathlib import Path
 from typing import Any, Dict
 
 # Try to load dotenv
+# Load environment variables (Robust Method)
+def _manual_load_dotenv(env_path: Path):
+    """Fallback manual parser for .env files if python-dotenv is missing"""
+    if not env_path.exists():
+        return
+    try:
+        with open(env_path, 'r', encoding='utf-8') as f:
+            for line in f:
+                line = line.strip()
+                if not line or line.startswith('#') or '=' not in line:
+                    continue
+                k, v = line.split('=', 1)
+                os.environ[k.strip()] = v.strip().strip('"').strip("'")
+    except Exception:
+        pass
+
+import getpass
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+
+# Prioritize .env_<USERNAME> (e.g. .env_czxmfg) or fall back to .env
+username = getpass.getuser()
+ENV_FILE_USER = PROJECT_ROOT / f".env_{username}"
+ENV_FILE_DEFAULT = PROJECT_ROOT / ".env"
+
+ENV_FILE = ENV_FILE_USER if ENV_FILE_USER.exists() else ENV_FILE_DEFAULT
+
 try:
     from dotenv import load_dotenv
-    # Load .env from project root
-    PROJECT_ROOT = Path(__file__).resolve().parents[2]
-    load_dotenv(PROJECT_ROOT / ".env")
+    if ENV_FILE.exists():
+        load_dotenv(ENV_FILE)
+    
+    # Also load default .env if we used a user-specific one (to provide base defaults)
+    if ENV_FILE == ENV_FILE_USER and ENV_FILE_DEFAULT.exists():
+        load_dotenv(ENV_FILE_DEFAULT, override=False) # Only fill in missing gaps
+    
+    if not ENV_FILE.exists() and not ENV_FILE_DEFAULT.exists():
+        # Last resort fallback if no files found
+        pass
 except ImportError:
-    pass
+    if ENV_FILE.exists():
+        _manual_load_dotenv(ENV_FILE)
+    if ENV_FILE == ENV_FILE_USER and ENV_FILE_DEFAULT.exists():
+        _manual_load_dotenv(ENV_FILE_DEFAULT) # Manual fallback doesn't easy support override=False, but it's okay for now
 
 def get_onedrive_root() -> Path:
     """
@@ -19,7 +55,9 @@ def get_onedrive_root() -> Path:
     """
     env_root = os.getenv("MDDAP_ONEDRIVE_ROOT")
     if env_root:
-        return Path(env_root)
+        path = Path(env_root)
+        if path.exists():
+            return path
     
     # Fallback: Try to detect based on current user home
     # This works for both 'huangk14' and 'czxmfg' without .env

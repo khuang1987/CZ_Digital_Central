@@ -27,16 +27,11 @@ from shared_infrastructure.automation.playwright_manager import PlaywrightManage
 # Configure Logging
 logger = logging.getLogger(__name__)
 
-# Load environment variables
+# Ensure environment is loaded from shared utils
 try:
-    from dotenv import load_dotenv
-    env_path = PROJECT_ROOT / ".env"
-    if env_path.exists():
-        load_dotenv(env_path)
-    else:
-        logger.warning(f".env file not found at {env_path}")
+    from shared_infrastructure.env_utils import PROJECT_ROOT as _ROOT, ENV_FILE
 except ImportError:
-    logger.warning("python-dotenv not installed, environment variables might not be loaded.")
+    pass
 
 # Debug Env Loading
 try:

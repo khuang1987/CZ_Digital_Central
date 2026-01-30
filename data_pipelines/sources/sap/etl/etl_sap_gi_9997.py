@@ -288,6 +288,7 @@ def import_file(db: SQLServerOnlyManager, *, file_path: str, sheet: Optional[str
         raise FileNotFoundError(file_path)
 
     if rebuild:
+        logger.info(f"Rebuild mode: truncating table {TABLE_NAME}")
         with db.get_connection() as conn:
             cur = conn.cursor()
             cur.execute(f"IF OBJECT_ID('dbo.{TABLE_NAME}', 'U') IS NOT NULL TRUNCATE TABLE dbo.{TABLE_NAME};")
@@ -329,16 +330,21 @@ def main(argv: Optional[List[str]] = None) -> int:
     parser.add_argument('--file', default=DEFAULT_SOURCE_FILE)
     parser.add_argument('--sheet', default='Sheet1')
     parser.add_argument('--rebuild', action='store_true')
+    parser.add_argument('--force', action='store_true', help='Force refresh even if file is unchanged')
     args = parser.parse_args(argv)
 
     db = get_db_manager()
 
-    try:
-        changed = db.filter_changed_files(DATASET_NAME, [args.file])
-    except Exception:
+    if not args.force and not args.rebuild:
+        try:
+            changed = db.filter_changed_files(DATASET_NAME, [args.file])
+        except Exception:
+            changed = [args.file]
+    else:
         changed = [args.file]
+        logger.info(f"Force/Rebuild mode: processing {args.file}")
 
-    if not args.rebuild and not changed:
+    if not args.rebuild and not changed and not args.force:
         existing_cnt = _table_row_count(db)
         if existing_cnt == 0:
             logger.warning("Source file unchanged but target table is empty; force re-import")

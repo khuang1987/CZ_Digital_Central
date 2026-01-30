@@ -307,7 +307,7 @@ def load_label_cleaning_config(cfg: Dict[str, Any]):
         logger.warning(f"Failed to load label cleaning config: {e}. Using defaults.")
         return {"mappings": {}, "exclusions": []}
 
-def read_planner_files(cfg: Dict[str, Any], test_mode: bool = False, max_rows: int = 1000) -> pd.DataFrame:
+def read_planner_files(cfg: Dict[str, Any], test_mode: bool = False, max_rows: int = 1000, force: bool = False) -> pd.DataFrame:
     """读取 Planner Excel 文件"""
     source_cfg = cfg.get("source", {})
     planner_path = source_cfg.get("planner_path")
@@ -330,11 +330,14 @@ def read_planner_files(cfg: Dict[str, Any], test_mode: bool = False, max_rows: i
     files = [os.path.normpath(os.path.abspath(f)) for f in files]
     
     # Check for changes
-    changed_files = db.filter_changed_files("planner_tasks_raw", files)
-    
-    if not changed_files:
-        logger.info("所有文件均未变化，无需读取。")
-        return pd.DataFrame()
+    if not force:
+        changed_files = db.filter_changed_files("planner_tasks_raw", files)
+        if not changed_files:
+            logger.info("所有文件均未变化，跳过读取。")
+            return pd.DataFrame()
+    else:
+        changed_files = files
+        logger.info(f"强制刷新模式: 准备读取 {len(files)} 个文件")
         
     logger.info(f"发现 {len(changed_files)} 个文件有更新 (总数: {len(files)})")
 
@@ -690,7 +693,7 @@ def sync_planner_task_status():
     except Exception as e:
         logger.error(f"同步Planner任务状态失败: {e}")
 
-def main(test_mode: bool = False):
+def main(test_mode: bool = False, force: bool = False):
     logger.info("=" * 60)
     logger.info("Planner 任务数据 ETL (V2) 启动")
     if test_mode:
@@ -706,7 +709,7 @@ def main(test_mode: bool = False):
         
         # 2. 读取
         max_rows = cfg.get("test", {}).get("max_rows", 1000)
-        df = read_planner_files(cfg, test_mode=test_mode, max_rows=max_rows)
+        df = read_planner_files(cfg, test_mode=test_mode, max_rows=max_rows, force=force)
         
         # 3. 清洗任务数据
         df_clean = clean_planner_data(df, cfg)
@@ -742,6 +745,7 @@ if __name__ == "__main__":
     import argparse
     parser = argparse.ArgumentParser(description='Planner Data ETL')
     parser.add_argument('--test', action='store_true', help='Test mode')
+    parser.add_argument('--force', action='store_true', help='Force refresh even if files are unchanged')
     args = parser.parse_args()
     
-    main(test_mode=args.test)
+    main(test_mode=args.test, force=args.force)

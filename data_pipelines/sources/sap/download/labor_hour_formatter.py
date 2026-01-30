@@ -18,6 +18,7 @@ from datetime import datetime
 from pathlib import Path
 import pandas as pd
 
+import argparse
 # Add project root to path
 PROJECT_ROOT = Path(__file__).resolve().parents[4]
 if str(PROJECT_ROOT) not in sys.path:
@@ -84,7 +85,7 @@ def get_labor_hour_config():
 # 工具函数
 # ============================================================
 
-def format_labor_hour() -> bool:
+def format_labor_hour(force_refresh: bool = False) -> bool:
     """格式化工时数据"""
     
     def log_callback(message):
@@ -101,6 +102,18 @@ def format_labor_hour() -> bool:
         if not os.path.exists(target_zip_path):
             log_callback(f"[ERROR] 未找到ZIP文件: {target_zip_path}")
             return False
+
+        # --- 优化：检测 ZIP 是否有变化 ---
+        from shared_infrastructure.utils.db_sqlserver_only import SQLServerOnlyManager
+        db_state = SQLServerOnlyManager()
+        
+        if not force_refresh:
+            changed_list = db_state.filter_changed_files("sap_labor_zip", [target_zip_path])
+            if not changed_list:
+                log_callback(f"[INFO] SAP ZIP 文件未发生变化，跳过后续解析与导入。")
+                return True
+        else:
+            log_callback(f"[INFO] 强制刷新模式已开启")
 
         # 检测ZIP文件日期
         try:
@@ -125,6 +138,15 @@ def format_labor_hour() -> bool:
         except Exception:
             pass
 
+        # 获取 ZIP 文件日期用于命名
+        zip_mtime = os.path.getmtime(target_zip_path)
+        zip_date_raw = datetime.fromtimestamp(zip_mtime)
+        zip_date_suffix = zip_date_raw.strftime("%Y%m%d")
+        
+        # 新的输出文件名
+        output_filename = f"SAP_laborhour_{zip_date_suffix}.xlsx"
+        output_file = os.path.join(data_folder, output_filename)
+
         # 解压文件
         with zipfile.ZipFile(target_zip_path, 'r') as zip_ref:
             zip_ref.extractall(data_folder)
@@ -132,7 +154,6 @@ def format_labor_hour() -> bool:
 
         # 转换 XLS (MHTML) -> XLSX using Pandas + Quopri
         input_file = os.path.join(data_folder, labor_config['extracted_filename'])
-        output_file = os.path.join(data_folder, labor_config['output_filename'])
 
         if not os.path.exists(input_file):
             log_callback(f"[ERROR] 解压后的文件不存在: {input_file}")
@@ -159,44 +180,70 @@ def format_labor_hour() -> bool:
                 log_callback("[ERROR] 未能在文件中找到数据表")
                 return False
 
-            # Selector Strategy: Pick the table with the most cells (rows*cols)
+            # Selector Strategy: 找到包含数据的那张表（通常是最大的一张）
             target_df = max(dfs, key=lambda df: df.size)
-            
-            log_callback(f"[INFO] 找到 {len(dfs)} 个表格，选择了最大的一张 (行数: {len(target_df)})")
+            log_callback(f"[INFO] 找到 {len(dfs)} 个表格，选择了最大的一张 (尺寸: {target_df.size})")
 
-            # --- Data Cleaning & Header Detection ---
-            # SAP MHTML exports often have empty rows or metadata before the actual header.
-            # Pandas read_html might assign default integer headers (0, 1, 2...).
-            # We need to find the real header row (e.g. starting with "Plant" or "Work Center").
-            
-            header_keywords = ["Plant", "Work Center", "Cost Center"]
-            header_found = False
+            # --- 用户需求 1: 从第 7 行开始 (索引 6), 并统一命名 26 列 ---
+            # 直接跳过前 7 行，并应用完整的业务表头
+            SAP_YPP_M03_HEADERS = [
+                'Plant', 'WorkCenter', 'WorkCenterDesc', 'CostCenter', 'CostCenterDesc',
+                'Material', 'MaterialDesc', 'MaterialType', 'MRPController', 'MRPControllerDesc',
+                'ProductionScheduler', 'ProductionSchedulerDesc', 'OrderNumber', 'OrderType',
+                'OrderTypeDesc', 'Operation', 'OperationDesc', 'PostingDate', 'ActualStartTime', 
+                'ActualFinishTime', 'ActualFinishDate', 'EarnedLaborUnit', 'MachineTime', 
+                'EarnedLaborTime', 'ActualQuantity', 'ActualScrapQty', 'TargetQuantity'
+            ]
 
-            # Check if current columns allow us to identify directly (unlikely if they are 0,1,2, but check anyway)
-            if any(k in str(c) for c in target_df.columns for k in header_keywords):
-                header_found = True
-            else:
-                # Iterate through first 10 rows to find header
-                for i in range(min(20, len(target_df))):
-                    row_values = target_df.iloc[i].astype(str).values
-                    # Check if any keyword matches a value in this row
-                    if any(k in v for v in row_values for k in header_keywords):
-                        log_callback(f"[INFO] 在第 {i} 行找到表头，正在重置...")
-                        
-                        # Set this row as header
-                        target_df.columns = target_df.iloc[i]
-                        
-                        # Drop this row and all previous rows
-                        target_df = target_df.iloc[i+1:].reset_index(drop=True)
-                        header_found = True
-                        break
-            
-            if not header_found:
-                log_callback("[WARN] 未能自动识别表头 (未找到 'Plant'/'Work Center')，保留原始格式")
+            if len(target_df) > 7:
+                # 丢弃前 7 行 (metadata + 原表头)
+                target_df = target_df.iloc[7:].reset_index(drop=True)
+                
+                # 适配列数：如果列数刚好是 26 或更多，则应用表头
+                if target_df.shape[1] >= len(SAP_YPP_M03_HEADERS):
+                    # 只取前 26 列并重命名
+                    target_df = target_df.iloc[:, :len(SAP_YPP_M03_HEADERS)]
+                    target_df.columns = SAP_YPP_M03_HEADERS
+                    log_callback(f"[INFO] 已统一定义 27 列业务表头 (包括 OrderNumber, Machine Time 等)")
+                else:
+                    log_callback(f"[WARN] 数据列数 ({target_df.shape[1]}) 少于预期 ({len(SAP_YPP_M03_HEADERS)})，尝试强制赋值...")
+                    target_df.columns = [SAP_YPP_M03_HEADERS[i] if i < len(SAP_YPP_M03_HEADERS) else f"Col_{i}" 
+                                       for i in range(target_df.shape[1])]
 
             # Save to standard XLSX
             target_df.to_excel(output_file, index=False)
-            log_callback(f"[INFO] 成功转换为标准 Excel: {os.path.basename(output_file)}")
+            log_callback(f"[INFO] 成功导出文件: {output_filename}")
+
+            # --- 用户需求 2: 直接导入 SQL ---
+            try:
+                from data_pipelines.sources.sap.etl.etl_sap_labor_hours import (
+                    get_db_manager, clean_data, import_data, create_table
+                )
+                
+                log_callback("[INFO] 正在直接导入 SQL Server...")
+                db = get_db_manager()
+                create_table(db)
+                
+                # 数据此时已经是标准列名 (e.g. OrderNumber, MachineTime)，无需再次 RENAME
+                # 但为了兼容 clean_data 里的可能映射，可以保留一个简单的 strip
+                target_df.columns = target_df.columns.astype(str).str.strip()
+                
+                # 调用 ETL 脚本里的清洗和导入逻辑
+                cleaned_df = clean_data(target_df)
+                
+                # 执行导入
+                imported = import_data(db, cleaned_df)
+                
+                log_callback(f"[INFO] SQL 导入完成: 新增 {imported} 条记录")
+                
+                # 记录文件处理状态
+                db.mark_file_processed("sap_labor_hours", output_file)
+                
+                # 同时记录原始 ZIP 的处理状态，用于下次判断是否跳过
+                db.mark_file_processed("sap_labor_zip", target_zip_path)
+                
+            except Exception as e:
+                log_callback(f"[WARN] 自动导入 SQL 失败 (您可以后续手动运行 ETL 脚本): {e}")
 
             # Cleanup input file
             try:
@@ -216,5 +263,9 @@ def format_labor_hour() -> bool:
         return False
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="SAP Labor Hour Formatter")
+    parser.add_argument("--force", action="store_true", help="Force refresh even if ZIP is unchanged")
+    args = parser.parse_args()
+
     logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(message)s')
-    format_labor_hour()
+    format_labor_hour(force_refresh=args.force)

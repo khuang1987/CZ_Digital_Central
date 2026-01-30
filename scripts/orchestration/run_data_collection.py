@@ -8,6 +8,7 @@ Options:
     --headless    Run browsers in headless mode (default: True, use --no-headless to disable)
 """
 
+import os
 import sys
 import argparse
 import logging
@@ -17,6 +18,12 @@ from pathlib import Path
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
+
+# Ensure environment is loaded from env_utils
+try:
+    from shared_infrastructure.env_utils import PROJECT_ROOT as _ROOT, ENV_FILE
+except ImportError:
+    pass
 
 # Setup logging
 logging.basicConfig(
@@ -92,10 +99,19 @@ def main():
     parser = argparse.ArgumentParser(description="Run Data Collection Pipelines")
     # Updated choices to include 'tooling' and 'refresh'
     parser.add_argument("target", choices=["planner", "cmes", "labor", "tooling", "refresh", "all"], nargs='?', default='all', help="Target pipeline to run (default: all=planner+cmes+labor+tooling)")
-    parser.add_argument("--headless", action="store_true", default=True, help="Run in headless mode (default: True)")
-    parser.add_argument("--no-headless", action="store_false", dest="headless", help="Show browser UI (disable headless)")
+    parser.add_argument("--headless", action="store_true", default=False, help="Run in headless mode (default: False for debugging)")
+    parser.add_argument("--no-headless", action="store_false", dest="headless", help="Show browser UI (redundant if default is False)")
     
     args = parser.parse_args()
+    
+    # Pre-flight check for .env variables
+    ms_user = os.getenv("MDDAP_MS_USER")
+    if not ms_user:
+        logger.warning("="*50)
+        logger.warning("⚠️  WARNING: MDDAP_MS_USER not found in environment!")
+        logger.warning(f"Expected .env at: {PROJECT_ROOT / '.env'}")
+        logger.warning("Please ensure .env exists and is correctly synced to the server.")
+        logger.warning("="*50)
     
     final_headless = args.headless
     

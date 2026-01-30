@@ -24,12 +24,9 @@ if str(PROJECT_ROOT) not in sys.path:
 # Import shared Playwright Manager
 from shared_infrastructure.automation.playwright_manager import PlaywrightManager
 
-# Load environment variables
+# Ensure environment is loaded from shared utils
 try:
-    from dotenv import load_dotenv
-    env_path = PROJECT_ROOT / ".env"
-    if env_path.exists():
-        load_dotenv(env_path)
+    from shared_infrastructure.env_utils import PROJECT_ROOT as _ROOT, ENV_FILE
 except ImportError:
     pass
 
@@ -231,7 +228,8 @@ class CMESDataCollector:
             sample_filename = get_output_filename(self.config['filename_format'], self.config['name'], period=sample_period)
             
             self._log(f"[{report_name}] 启动历史数据检查 (2023年至今)...")
-            self._log(f"[{report_name}] 目标文件示例: {sample_filename}")
+            self._log(f"[{report_name}] 启动历史数据检查 (2023年至今)...")
+            # self._log(f"[{report_name}] 目标文件示例: {sample_filename}")
             
             browser_initialized = False
             manager = None
@@ -287,6 +285,13 @@ class CMESDataCollector:
                 # self._log(f"[{report_name}] 需检查 {len(periods_to_check)} 个周期: {[x[2] for x in periods_to_check]}")
                 
                 # 逐个检查本地文件是否存在
+                today = datetime.now()
+                if is_resource:
+                     current_period_str = f"{today.year}M{today.month:02d}"
+                else:
+                     curr_q = (today.month - 1) // 3 + 1
+                     current_period_str = f"{today.year}Q{curr_q}"
+
                 missing_periods = []
                 for *period_info, period_str, period_type in periods_to_check:
                     # 预测文件名
@@ -297,7 +302,12 @@ class CMESDataCollector:
                     )
                     target_path = Path(self.config['target_folder']) / filename
                     
-                    if not target_path.exists():
+                    # 强制更新当前周期 (即便文件已存在，也要覆盖以获取最新数据)
+                    is_current = (period_str == current_period_str)
+                    
+                    if not target_path.exists() or is_current:
+                        if is_current:
+                             pass # self._log(f"[{report_name}] 🔄 检测到当前周期 ({period_str})，强制加入更新队列。")
                         missing_periods.append((*period_info, period_str, period_type))
                     # else:
                     #    self._log(f"[{report_name}] 文件已存在: {filename}")
@@ -327,7 +337,8 @@ class CMESDataCollector:
                 
                 # 循环下载缺失周期
                 for *period_info, period_str, period_type in missing_periods:
-                    self._log(f">>> 开始补全: {period_str}")
+                    self._log(f"\n{'='*20} 开始下载: {report_name} - {period_str} {'='*20}")
+                    # self._log(f">>> 开始补全: {period_str}")
                     
                     if period_type == 'month':
                         # 月度：直接使用该月的起止日期
@@ -503,40 +514,74 @@ class CMESDataCollector:
         except: return False
 
     def _set_date_filter(self, page, start_date: str, end_date: str) -> bool:
-        try:
-            # Reverting to explicit JS event dispatching - The most efficient method
-            # Method Name: JS Injection with Event Dispatching (直接DOM操作+事件触发)
-            def _apply(val, selector):
-                # 1. Fill standard way (updates 'value' attribute)
-                try: page.locator(selector).fill(val)
-                except: pass
+        max_retries = 3
+        for attempt in range(max_retries):
+            try:
+                # Reverting to explicit JS event dispatching - The most efficient method
+                # Method Name: JS Injection with Event Dispatching (直接DOM操作+事件触发)
+                def _apply(val, selector):
+                    # 1. Fill standard way (updates 'value' attribute)
+                    try: page.locator(selector).fill(val)
+                    except: pass
+                    
+                    # 2. Force events using JS - critical for React/Angular to detect change
+                    page.locator(selector).evaluate("el => { el.dispatchEvent(new Event('input', {bubbles: true})); el.dispatchEvent(new Event('change', {bubbles: true})); el.blur(); }")
+                    time.sleep(0.5)
+
+                # Use "Sandwich" Strategy (Start -> End -> Start) to handle both Forward and Backward time shifts robustly.
+                # Forward: Start(fail) -> End(ok) -> Start(ok)
+                # Backward: Start(ok) -> End(ok) -> Start(ok)
                 
-                # 2. Force events using JS - critical for React/Angular to detect change
-                page.locator(selector).evaluate("el => { el.dispatchEvent(new Event('input', {bubbles: true})); el.dispatchEvent(new Event('change', {bubbles: true})); el.blur(); }")
-                time.sleep(0.5)
+                if attempt == 0:
+                     self._log(f"  正在设置日期: {start_date} ~ {end_date}")
+                else:
+                     self._log(f"  正在设置日期 (重试 {attempt}): {start_date} ~ {end_date}")
 
-            # Change order: Set END DATE first to avoid "Start Date > End Date" validation error
-            self._log(f"  正在设置日期: {start_date} ~ {end_date}")
-            _apply(end_date, SELECTORS["date_end_input"])
-            time.sleep(0.5) 
-            _apply(start_date, SELECTORS["date_start_input"])
-            return True
-
-            self._log(f"  正在设置日期: {start_date} ~ {end_date}")
-            _apply(start_date, SELECTORS["date_start_input"])
-            time.sleep(0.5) 
-            _apply(end_date, SELECTORS["date_end_input"])
-            return True
-
-            self._log(f"  正在设置日期: {start_date} ~ {end_date}")
-            _apply(start_date, SELECTORS["date_start_input"])
-            # Small delay between inputs
-            time.sleep(0.5) 
-            _apply(end_date, SELECTORS["date_end_input"])
-            return True
-        except Exception as e:
-            self._log(f"日期设置失败: {e}")
-            return False
+                _apply(start_date, SELECTORS["date_start_input"])
+                time.sleep(0.3)
+                _apply(end_date, SELECTORS["date_end_input"])
+                time.sleep(0.3)
+                # Redundant set to ensure Start didn't fail if we expanded range from End
+                _apply(start_date, SELECTORS["date_start_input"])
+                
+                # Wait for UI to react
+                time.sleep(1.0)
+                
+                # Validation Step: Check if the value was actually set
+                try:
+                    act_start = page.locator(SELECTORS["date_start_input"]).input_value()
+                    act_end = page.locator(SELECTORS["date_end_input"]).input_value()
+                    
+                    # Robust Date Comparison (Intelligent Parsing)
+                    def parse_date_loose(s):
+                        # Convert "2025/09/01" or "2025-9-1" to tuple (2025, 9, 1)
+                        parts = s.replace('-', '/').replace('.', '/').split('/')
+                        if len(parts) == 3:
+                            return (int(parts[0]), int(parts[1]), int(parts[2]))
+                        return None
+                    
+                    target_s = parse_date_loose(start_date)
+                    target_e = parse_date_loose(end_date)
+                    actual_s = parse_date_loose(act_start)
+                    actual_e = parse_date_loose(act_end)
+                    
+                    if target_s and actual_s and target_e and actual_e:
+                        if target_s == actual_s and target_e == actual_e:
+                            return True
+                    
+                    self._log(f"⚠️ 日期校验差异: 期望 {start_date} / {end_date}, 实际 {act_start} / {act_end}")
+                    
+                except Exception as e:
+                    # self._log(f"⚠️ 日期校验过程出错: {e}")
+                    pass
+            
+            except Exception as e:
+                self._log(f"日期设置异常: {e}")
+            
+            time.sleep(1) # Interval before retry
+            
+        self._log("❌ 日期设置最终失败")
+        return False
 
     def _export_data(self, page) -> Optional[Path]:
         try:

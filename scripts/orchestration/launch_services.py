@@ -40,7 +40,9 @@ def launch_dashboard(port=8501):
     if not os.path.exists(streamlit_exe):
         streamlit_exe = "streamlit"
     
-    cmd = f'start "MDDAP Dashboard" cmd /k "{streamlit_exe} run app.py --server.port {port}"'
+    # Robust quoting for Windows paths with spaces (OneDrive)
+    # cmd /k ""executable" args" preserves internal quotes
+    cmd = f'start "MDDAP Dashboard" cmd /k ""{streamlit_exe}" run app.py --server.port {port}"'
     
     # Use shell=True and OS-specific flags for true detachment
     # On Windows, 'start' via shell=True within Popen is usually enough, 
