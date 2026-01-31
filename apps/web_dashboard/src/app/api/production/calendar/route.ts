@@ -46,7 +46,8 @@ export async function GET(req: NextRequest) {
         return NextResponse.json({
             years,
             months,
-            weeks
+            weeks,
+            currentFiscalInfo: (await pool.request().query("SELECT TOP 1 fiscal_year, fiscal_month, fiscal_week FROM dim_calendar WHERE date = CAST(GETDATE() AS DATE)")).recordset[0]
         });
 
     } catch (error: any) {
