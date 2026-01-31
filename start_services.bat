@@ -44,7 +44,7 @@ echo ========================================================
 echo.
 echo [Local Access]
 echo   - Docs:      http://localhost:8000
-echo   - Dashboard: http://localhost:8501
+echo   - Dashboard: http://localhost:3000
 echo.
 
 :: Show all valid network IPs

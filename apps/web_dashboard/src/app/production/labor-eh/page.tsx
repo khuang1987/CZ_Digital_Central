@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import {
-    Calendar, RefreshCw, BarChart3, Clock, Table as TableIcon,
+    Calendar, RefreshCw, BarChart3, Clock, Table as TableIcon, Loader2,
     AlertCircle, ArrowRight, TrendingUp, TrendingDown, Factory, Activity, Download, ChevronLeft, ChevronRight,
     ChevronDown, ChevronUp, ChevronsDown, ChevronsUp
 } from 'lucide-react';
@@ -232,6 +232,7 @@ export default function LaborEhPage() {
 
     // --- Data State ---
     const [data, setData] = useState<LaborData | null>(null);
+    const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const { isFilterOpen } = useUI();
 
@@ -280,6 +281,7 @@ export default function LaborEhPage() {
         if (granularity === 'custom' && (!customRange.start || !customRange.end)) return;
 
         async function fetchLaborEHData() {
+            setIsLoading(true);
             setError(null);
             try {
                 let url = `/api/production/labor-eh?granularity=${granularity}&year=${selectedYear}&plant=${selectedPlant}`;
@@ -302,6 +304,8 @@ export default function LaborEhPage() {
             } catch (err: any) {
                 console.error('❌ Fetch error:', err);
                 setError(err.message);
+            } finally {
+                setIsLoading(false);
             }
         }
         fetchLaborEHData();
@@ -549,7 +553,8 @@ export default function LaborEhPage() {
             </aside>
 
             {/* Main Content (Scrollable Area) */}
-            <div className="flex-1 overflow-y-auto scroll-smooth">
+            <div className="flex-1 overflow-y-auto scroll-smooth relative">
+
                 {/* --- FOLD 1: EXECUTIVE OVERVIEW --- */}
                 <div className="min-h-screen p-8 space-y-6 flex flex-col">
 
@@ -581,8 +586,8 @@ export default function LaborEhPage() {
                             value={data?.summary?.actualEH || 0}
                             target={data?.summary?.targetEH}
                             ratio={data?.summary && data.summary.targetEH > 0 ? (data.summary.actualEH / data.summary.targetEH) * 100 : undefined}
-                            // Total Diff = Actual - (TargetAvg * ActualDays)
-                            diff={data?.summary ? data.summary.actualEH - (data.summary.targetAvgEH * data.summary.actualDays) : undefined}
+                            // Total Diff = Actual - Target
+                            diff={data?.summary ? data.summary.actualEH - data.summary.targetEH : undefined}
                             unit="H"
                             color="amber"
                             icon={<BarChart3 size={24} />}
@@ -657,9 +662,9 @@ export default function LaborEhPage() {
                                                     />
                                                     {/* Actual Bar */}
                                                     <div
-                                                        className={`absolute bottom-0 w-full rounded-t-lg transition-all duration-500 group-hover:brightness-110 z-10 shadow-md ${isAchievement
-                                                            ? 'bg-gradient-to-t from-blue-600 via-blue-500 to-medtronic shadow-blue-500/20'
-                                                            : 'bg-gradient-to-t from-red-600 via-orange-500 to-amber-500 shadow-red-500/20'
+                                                        className={`absolute bottom-0 w-full rounded-t-lg transition-all duration-500 group-hover:brightness-105 z-10 shadow-sm ${isAchievement
+                                                            ? 'bg-gradient-to-t from-blue-600 to-blue-400'
+                                                            : 'bg-gradient-to-t from-slate-500 to-slate-400'
                                                             }`}
                                                         style={{ height: `${actualPct}%`, minHeight: actual > 0 ? '4px' : '0' }}
                                                     >
@@ -682,39 +687,43 @@ export default function LaborEhPage() {
                         </div>
 
                         {/* Diagnostic Analysis - Area Distribution & Anomaly Analysis */}
-                        <div className="mt-8 pt-6 border-t border-slate-200/50 dark:border-slate-800">
-                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <div className="mt-4 pt-4 border-t border-slate-200/50 dark:border-slate-800 flex-1 overflow-hidden min-h-0">
+                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 h-full">
                                 {/* Area/Operation Distribution Table */}
-                                <div className="bg-slate-50 dark:bg-slate-900/50 p-5 rounded-2xl col-span-full">
-                                    <div className="flex justify-between items-center mb-5">
-                                        <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest">区域工序分布 (Area/Operation Distribution)</h3>
-                                        <div className="flex gap-2">
-                                            <button
-                                                onClick={() => {
-                                                    const allAreas = data?.areaOperationDetail?.map(a => a.area) || [];
+                                <div className="bg-slate-50 dark:bg-slate-900/50 p-5 rounded-2xl flex flex-col h-[500px]">
+                                    <div className="flex justify-between items-center mb-4 shrink-0">
+                                        <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest">区域工序分布 (Area Distribution)</h3>
+                                        <button
+                                            onClick={() => {
+                                                const allAreas = data?.areaOperationDetail?.map(a => a.area) || [];
+                                                if (expandedAreas.size > 0) {
+                                                    setExpandedAreas(new Set());
+                                                } else {
                                                     setExpandedAreas(new Set(allAreas));
-                                                }}
-                                                className="flex items-center gap-1 px-2 py-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded text-[10px] font-bold text-slate-500 hover:text-medtronic hover:border-medtronic transition-colors"
-                                            >
-                                                <ChevronsDown size={12} /> 展开全部
-                                            </button>
-                                            <button
-                                                onClick={() => setExpandedAreas(new Set())}
-                                                className="flex items-center gap-1 px-2 py-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded text-[10px] font-bold text-slate-500 hover:text-medtronic hover:border-medtronic transition-colors"
-                                            >
-                                                <ChevronsUp size={12} /> 收起全部
-                                            </button>
-                                        </div>
+                                                }
+                                            }}
+                                            className="flex items-center gap-1 px-2 py-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded text-[10px] font-bold text-slate-500 hover:text-medtronic hover:border-medtronic transition-colors"
+                                        >
+                                            {expandedAreas.size > 0 ? (
+                                                <>
+                                                    <ChevronsUp size={12} /> 收起全部
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <ChevronsDown size={12} /> 展开全部
+                                                </>
+                                            )}
+                                        </button>
                                     </div>
 
                                     {data?.areaOperationDetail && data.areaOperationDetail.length > 0 ? (
-                                        <div className="overflow-x-auto max-h-[600px] overflow-y-auto relative rounded-xl border border-slate-200 dark:border-slate-700">
+                                        <div className="overflow-x-auto overflow-y-auto relative rounded-xl border border-slate-200 dark:border-slate-700 flex-1">
                                             <table className="w-full text-[10px] border-separate border-spacing-0">
                                                 <thead className="sticky top-0 z-20 shadow-sm">
                                                     <tr className="bg-slate-50 dark:bg-slate-900/95">
-                                                        <th className="sticky left-0 z-30 bg-slate-50 dark:bg-slate-900/95 text-left py-3 px-3 font-black text-slate-400 uppercase border-b border-slate-200 dark:border-slate-700 min-w-[120px]">区域</th>
-                                                        <th className="sticky left-[120px] z-30 bg-slate-50 dark:bg-slate-900/95 text-left py-3 px-3 font-black text-slate-400 uppercase border-b border-slate-200 dark:border-slate-700 min-w-[120px] shadow-r-lg">工序</th>
-                                                        <th className="text-right py-3 px-3 font-black text-slate-400 uppercase border-b border-slate-200 dark:border-slate-700 min-w-[80px]">昨天(h)</th>
+                                                        <th className="sticky left-0 z-30 bg-slate-50 dark:bg-slate-900/95 text-left py-3 px-3 font-black text-slate-400 uppercase border-b border-slate-200 dark:border-slate-700 w-[80px] min-w-[80px]">区域 (Area)</th>
+                                                        <th className="sticky left-[80px] z-30 bg-slate-50 dark:bg-slate-900/95 text-left py-3 px-3 font-black text-slate-400 uppercase border-b border-slate-200 dark:border-slate-700 w-[150px] min-w-[150px] shadow-r-lg">工序 (Op)</th>
+                                                        <th className="text-right py-3 px-3 font-black text-slate-400 uppercase border-b border-slate-200 dark:border-slate-700 w-[80px] min-w-[80px]">昨天(h)</th>
                                                         {(() => {
                                                             const weeks = new Set<number>();
                                                             data.areaOperationDetail.forEach(area => {
@@ -722,9 +731,12 @@ export default function LaborEhPage() {
                                                                     op.weeklyData.forEach(w => weeks.add(w.fiscalWeek));
                                                                 });
                                                             });
-                                                            return Array.from(weeks).sort((a, b) => a - b).map(week => (
-                                                                <th key={week} className="text-right py-3 px-3 font-black text-slate-400 uppercase whitespace-nowrap border-b border-slate-200 dark:border-slate-700 min-w-[60px]">
-                                                                    W{week}
+                                                            const sortedWeeks = Array.from(weeks).sort((a, b) => a - b);
+                                                            const displayWeeks = [...sortedWeeks, ...Array(Math.max(0, 6 - sortedWeeks.length)).fill(null)];
+
+                                                            return displayWeeks.map((week, idx) => (
+                                                                <th key={idx} className="text-right py-3 px-3 font-black text-slate-400 uppercase whitespace-nowrap border-b border-slate-200 dark:border-slate-700 w-[80px] min-w-[80px]">
+                                                                    {week ? `W${week}` : ''}
                                                                 </th>
                                                             ));
                                                         })()}
@@ -739,17 +751,18 @@ export default function LaborEhPage() {
                                                             });
                                                         });
                                                         const sortedWeeks = Array.from(weeks).sort((a, b) => a - b);
+                                                        const displayWeeks = [...sortedWeeks, ...Array(Math.max(0, 6 - sortedWeeks.length)).fill(null)];
 
                                                         return data.areaOperationDetail.map((areaData) => {
                                                             const isExpanded = expandedAreas.has(areaData.area);
                                                             // Calculate summaries for the area row
                                                             const yesterdaySum = areaData.operations.reduce((sum, op) => sum + op.yesterday, 0);
-                                                            const weeklySums = sortedWeeks.map(week => ({
+                                                            const weeklySums = displayWeeks.map(week => ({
                                                                 week,
-                                                                hours: areaData.operations.reduce((sum, op) => {
+                                                                hours: week ? areaData.operations.reduce((sum, op) => {
                                                                     const w = op.weeklyData.find(wd => wd.fiscalWeek === week);
                                                                     return sum + (w ? w.hours : 0);
-                                                                }, 0)
+                                                                }, 0) : 0
                                                             }));
 
                                                             return (
@@ -764,27 +777,27 @@ export default function LaborEhPage() {
                                                                         }}
                                                                         className="group hover:bg-slate-100/80 dark:hover:bg-slate-800/50 cursor-pointer transition-colors"
                                                                     >
-                                                                        <td className="sticky left-0 z-10 bg-white/95 dark:bg-slate-900/95 group-hover:bg-slate-100/95 dark:group-hover:bg-slate-800/95 py-3 px-3 border-b border-slate-100 dark:border-slate-800 align-top">
-                                                                            <div className="flex items-start justify-between gap-2">
-                                                                                <div className="flex flex-col gap-0.5">
-                                                                                    <div className="font-black text-slate-700 dark:text-slate-200 text-xs">{areaData.area}</div>
-                                                                                    <div className="text-[10px] font-bold text-slate-500">{Math.round(areaData.totalHours)} h</div>
-                                                                                    <div className="text-[10px] font-bold text-medtronic">{areaData.percentage}%</div>
-                                                                                </div>
-                                                                                <div className="mt-1 text-slate-400 group-hover:text-medtronic transition-colors">
-                                                                                    {isExpanded ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
+                                                                        <td className="sticky left-0 z-10 bg-white/95 dark:bg-slate-900/95 group-hover:bg-slate-100/95 dark:group-hover:bg-slate-800/95 py-2 px-3 border-b border-slate-100 dark:border-slate-800 align-middle">
+                                                                            <div className="flex flex-col gap-0.5">
+                                                                                <div className="font-black text-slate-700 dark:text-slate-200 text-xs truncate max-w-[70px]" title={areaData.area}>{areaData.area}</div>
+                                                                                <div className="flex items-center gap-1 text-[10px] text-slate-500">
+                                                                                    <span className="font-bold">{Math.round(areaData.totalHours)}h</span>
+                                                                                    <span className="text-slate-300">|</span>
+                                                                                    <span className="font-bold text-medtronic">{areaData.percentage}%</span>
                                                                                 </div>
                                                                             </div>
                                                                         </td>
-                                                                        <td className="sticky left-[120px] z-10 bg-white/95 dark:bg-slate-900/95 group-hover:bg-slate-100/95 dark:group-hover:bg-slate-800/95 py-3 px-3 border-b border-slate-100 dark:border-slate-800 font-bold text-slate-400 italic align-middle shadow-r-lg">
-                                                                            汇总 (Summary)
+                                                                        <td className="sticky left-[80px] z-10 bg-white/95 dark:bg-slate-900/95 group-hover:bg-slate-100/95 dark:group-hover:bg-slate-800/95 py-2 px-3 border-b border-slate-100 dark:border-slate-800 font-bold text-center text-slate-400 align-middle shadow-r-lg">
+                                                                            <div className="flex justify-start">
+                                                                                {isExpanded ? <ChevronDown size={14} className="text-medtronic" /> : <ChevronRight size={14} />}
+                                                                            </div>
                                                                         </td>
-                                                                        <td className="text-right py-3 px-3 border-b border-slate-100 dark:border-slate-800 font-black text-slate-700 dark:text-slate-300 align-middle bg-slate-50/30 dark:bg-slate-900/30">
+                                                                        <td className="text-right py-2 px-3 border-b border-slate-100 dark:border-slate-800 font-black text-slate-700 dark:text-slate-300 align-middle bg-slate-50/30 dark:bg-slate-900/30">
                                                                             {yesterdaySum > 0 ? yesterdaySum.toFixed(1) : '—'}
                                                                         </td>
-                                                                        {weeklySums.map(w => (
-                                                                            <td key={w.week} className="text-right py-3 px-3 border-b border-slate-100 dark:border-slate-800 font-bold text-slate-600 dark:text-slate-400 align-middle bg-slate-50/30 dark:bg-slate-900/30 whitespace-nowrap">
-                                                                                {w.hours > 0 ? w.hours.toFixed(1) : '—'}
+                                                                        {weeklySums.map((w, idx) => (
+                                                                            <td key={idx} className="text-right py-2 px-3 border-b border-slate-100 dark:border-slate-800 font-bold text-slate-600 dark:text-slate-400 align-middle bg-slate-50/30 dark:bg-slate-900/30 whitespace-nowrap">
+                                                                                {w.week && w.hours > 0 ? w.hours.toFixed(1) : ''}
                                                                             </td>
                                                                         ))}
                                                                     </tr>
@@ -795,7 +808,7 @@ export default function LaborEhPage() {
                                                                             <td className="sticky left-0 bg-slate-50/50 dark:bg-slate-900/50 border-b border-slate-100 dark:border-slate-800 border-r border-slate-200/50 dark:border-slate-700/50">
                                                                                 {/* Empty cell for hierarchy indentation */}
                                                                             </td>
-                                                                            <td className="sticky left-[120px] bg-slate-50/80 dark:bg-slate-900/80 py-2 px-3 border-b border-slate-100 dark:border-slate-800 font-semibold text-slate-600 dark:text-slate-400 text-[10px] pl-6 shadow-r-lg">
+                                                                            <td className="sticky left-[120px] bg-slate-50/80 dark:bg-slate-900/80 py-2 px-3 border-b border-slate-100 dark:border-slate-800 font-semibold text-slate-600 dark:text-slate-400 text-[10px] pl-2 shadow-r-lg truncate max-w-[120px]" title={op.operationName}>
                                                                                 {op.operationName}
                                                                             </td>
                                                                             <td className="text-right py-2 px-3 border-b border-slate-100 dark:border-slate-800 font-medium text-slate-600 dark:text-slate-400">
@@ -819,14 +832,14 @@ export default function LaborEhPage() {
                                             </table>
                                         </div>
                                     ) : (
-                                        <p className="text-xs text-slate-400 italic">无区域分布数据 (No area distribution data available)</p>
+                                        <div className="flex-1 flex items-center justify-center text-xs text-slate-400 italic">无区域分布数据 (No area distribution data available)</div>
                                     )}
                                 </div>
 
                                 {/* Anomaly Table */}
-                                <div className="bg-slate-50 dark:bg-slate-900/50 p-5 rounded-2xl">
-                                    <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest mb-5">Top Production Anomalies (by Material)</h3>
-                                    <div className="space-y-3">
+                                <div className="bg-slate-50 dark:bg-slate-900/50 p-5 rounded-2xl lg:col-span-1 flex flex-col h-[500px]">
+                                    <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest mb-4 shrink-0">Anomaly Analysis</h3>
+                                    <div className="space-y-3 overflow-y-auto flex-1 pr-1">
                                         {data?.anomalies?.map((a, i) => (
                                             <div key={i} className="flex items-center justify-between p-3 bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-slate-100 dark:border-slate-800 group hover:border-red-200 transition-all">
                                                 <div className="flex items-center gap-3">
@@ -844,10 +857,11 @@ export default function LaborEhPage() {
                                                 </div>
                                             </div>
                                         ))}
-                                        {(!data?.anomalies || data.anomalies.length === 0) && <p className="text-xs text-slate-400 italic">No significant anomalies detected in this period.</p>}
+                                        {(!data?.anomalies || data.anomalies.length === 0) && <p className="text-xs text-slate-400 italic text-center py-10">No significant anomalies detected.</p>}
                                     </div>
                                 </div>
                             </div>
+
                         </div>
                     </div>
                 </div>
@@ -916,6 +930,16 @@ export default function LaborEhPage() {
                     <div>
                         <div className="text-xs font-black">Connection Failure</div>
                         <div className="text-[10px] opacity-90">{error}</div>
+                    </div>
+                </div>
+            )}
+            {/* Loading Overlay (Bottom Right) */}
+            {isLoading && (
+                <div className="fixed bottom-6 right-6 bg-blue-600/90 backdrop-blur-md text-white px-6 py-4 rounded-2xl shadow-2xl flex items-center gap-4 z-50 animate-in slide-in-from-bottom-10 border border-blue-500/50">
+                    <Loader2 className="animate-spin" size={20} />
+                    <div>
+                        <div className="text-xs font-black">正在刷新数据...</div>
+                        <div className="text-[10px] opacity-80">Syncing with server</div>
                     </div>
                 </div>
             )}

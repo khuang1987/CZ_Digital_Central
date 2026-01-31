@@ -14,35 +14,25 @@ def is_port_in_use(port: int) -> bool:
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         return s.connect_ex(('localhost', port)) == 0
 
-def launch_dashboard(port=8501):
+def launch_dashboard(port=3000):
     project_root = Path(__file__).resolve().parents[2]
-    dashboard_dir = project_root / "dashboard"
+    dashboard_dir = project_root / "apps" / "web_dashboard"
     
-    logger.info(f"Checking Dashboard Service Status on port {port}...")
+    logger.info(f"Checking Next.js Dashboard Status on port {port}...")
     
     if is_port_in_use(port):
         logger.info(f"✅ Dashboard Service is already running on port {port}. Skipping launch.")
         return
 
-    logger.info(f"Launching Dashboard from: {dashboard_dir}")
+    logger.info(f"Launching Next.js Dashboard from: {dashboard_dir}")
     
-    # Command for new window launch
-    # Determine streamlit executable path based on current python
-    # This ensures we use the same venv that the orchestrator is running in
+    # Use npm run dev for Next.js
     if os.name == 'nt':
-        # Windows: <venv>/Scripts/streamlit.exe
-        streamlit_exe = os.path.join(sys.prefix, 'Scripts', 'streamlit.exe')
+        # Windows: start cmd to run npm
+        cmd = f'start "MDDAP Dashboard" cmd /k "npm run dev"'
     else:
-        # Linux/Mac: <venv>/bin/streamlit
-        streamlit_exe = os.path.join(sys.prefix, 'bin', 'streamlit')
-        
-    # Fallback if not found (e.g. global install)
-    if not os.path.exists(streamlit_exe):
-        streamlit_exe = "streamlit"
-    
-    # Robust quoting for Windows paths with spaces (OneDrive)
-    # cmd /k ""executable" args" preserves internal quotes
-    cmd = f'start "MDDAP Dashboard" cmd /k ""{streamlit_exe}" run app.py --server.port {port}"'
+        # Linux/Mac
+        cmd = "npm run dev &"
     
     # Use shell=True and OS-specific flags for true detachment
     # On Windows, 'start' via shell=True within Popen is usually enough, 
