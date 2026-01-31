@@ -1,186 +1,137 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import {
-  LayoutDashboard,
-  BarChart3,
-  Settings,
-  FlaskConical,
-  ClipboardCheck,
-  Package,
-  RefreshCcw,
-  Rocket,
-  ChevronRight,
-  ShieldCheck,
-  Zap
+  ChevronUp, ChevronDown, Activity, AlertTriangle, Calendar
 } from 'lucide-react';
 
 export default function Home() {
-  const [logs, setLogs] = useState([
-    { time: '10:45:32', type: 'INFO', msg: 'System initialized.' }
-  ]);
-  const [isRefreshing, setIsRefreshing] = useState(false);
-
-  const addLog = (msg: string, type = 'INFO') => {
-    const time = new Date().toLocaleTimeString();
-    setLogs(prev => [...prev.slice(-4), { time, type, msg }]);
-  };
-
-  const handleRefresh = async () => {
-    if (isRefreshing) return;
-    setIsRefreshing(true);
-    addLog('Starting full system refresh...', 'PROC');
-
-    // Simulate steps
-    setTimeout(() => addLog('Connecting to SQL Server...', 'INFO'), 800);
-    setTimeout(() => addLog('Fetching Planner data (CZ-Machining)...', 'INFO'), 1800);
-    setTimeout(() => addLog('Planner Data: 45 tasks synchronized.', 'SUCCESS'), 3200);
-    setTimeout(() => {
-      addLog('System refresh completed successfully.', 'SUCCESS');
-      setIsRefreshing(false);
-    }, 4500);
-  };
-
   return (
-    <div className="flex h-screen overflow-hidden bg-slate-950 text-slate-100 font-sans">
-      {/* Sidebar */}
-      <aside className="w-64 glass-sidebar p-6 flex flex-col gap-8 shrink-0">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-cyan-500/20 flex items-center justify-center text-cyan-400 border border-cyan-500/30">
-            <ShieldCheck size={24} />
-          </div>
-          <h1 className="text-xl font-bold tracking-tight">CZ DIGITAL CENTRAL</h1>
-        </div>
+    <div className="p-8 overflow-y-auto w-full h-full max-w-[1920px] mx-auto space-y-6">
+      {/* KPI Grid */}
+      <section className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6">
+        <KpiWidget title="Yield (Last 30 Days)" value="98.5%" trend="+1.2%" status="success" />
+        <KpiWidget title="WIP (Work in Progress)" value="1,250 Units" trend="0% change" status="neutral" />
+        <KpiWidget title="OEE (Overall Efficiency)" value="87.2%" trend="+2.5%" status="success" />
+        <KpiWidget title="Planned downtime" value="4.2h" trend="-0.5h" status="warning" />
+      </section>
 
-        <nav className="flex-1 flex flex-col gap-2">
-          <NavItem icon={<LayoutDashboard size={20} />} label="Dashboard" active />
-          <NavItem icon={<BarChart3 size={20} />} label="Analytics" />
-          <NavItem icon={<Zap size={20} />} label="Production" />
-          <NavItem icon={<ClipboardCheck size={20} />} label="Quality" />
-          <NavItem icon={<Settings size={20} />} label="Maintenance" />
-          <NavItem icon={<Package size={20} />} label="Inventory" />
-        </nav>
-
-        <div className="mt-auto glass-card p-4 flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center">
-            <span className="text-xs font-bold font-mono">USER</span>
-          </div>
-          <div>
-            <p className="text-sm font-medium">B1 Project</p>
-            <p className="text-[10px] text-slate-400 uppercase tracking-widest">Administrator</p>
-          </div>
-        </div>
-      </aside>
-
-      {/* Main Content */}
-      <main className="flex-1 p-8 overflow-y-auto bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950">
-        <header className="flex justify-between items-center mb-8">
-          <div>
-            <h2 className="text-3xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-white to-slate-400">
-              Operations Center
-            </h2>
-            <p className="text-slate-400">Mission control for real-time manufacturing data</p>
-          </div>
-          <div className="flex gap-4">
-            <button
-              onClick={handleRefresh}
-              disabled={isRefreshing}
-              className={`flex items-center gap-2 px-6 py-2.5 rounded-xl transition-all font-semibold ${isRefreshing
-                  ? 'bg-slate-800 text-slate-500 cursor-not-allowed'
-                  : 'bg-cyan-600 hover:bg-cyan-500 text-white shadow-[0_0_20px_rgba(8,145,178,0.4)] active:scale-95'
-                }`}
-            >
-              <RefreshCcw size={18} className={isRefreshing ? 'animate-spin' : ''} />
-              <span>{isRefreshing ? 'Refreshing...' : 'System Refresh'}</span>
-            </button>
-            <button className="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 transition-all font-semibold border border-white/5">
-              <Rocket size={18} className="text-emerald-400" />
-              <span>Quick Deploy</span>
-            </button>
-          </div>
-        </header>
-
-        {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <StatCard title="YIELD" value="98.5%" trend="+1.2% from yesterday" color="text-cyan-400" bgColor="bg-cyan-400/10" />
-          <StatCard title="WIP" value="2,450" trend="+50 Units in progress" color="text-emerald-400" bgColor="bg-emerald-400/10" />
-          <StatCard title="OEE" value="94.2%" trend="+0.8% efficiency improvement" color="text-blue-400" bgColor="bg-blue-400/10" />
-        </div>
-
-        {/* Large Chart Placeholder */}
-        <div className="glass-card p-6 mb-8 border-l-4 border-l-cyan-500 shadow-cyan-900/10">
+      {/* Middle Section: Main Trend + Alerts */}
+      <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 h-auto xl:h-[400px]">
+        <article className="xl:col-span-2 ios-widget p-6 flex flex-col min-w-0">
           <div className="flex justify-between items-center mb-6">
-            <div className="flex items-baseline gap-3">
-              <h3 className="text-lg font-semibold">Production Analytics</h3>
-              <span className="text-xs text-slate-500">Live Trend / Last 30 Days</span>
+            <div>
+              <h3 className="font-bold text-sm">Production Trends (Daily Output)</h3>
+              <p className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">ROLLING 30-DAY PERFORMANCE</p>
             </div>
-            <div className="flex bg-slate-900 p-1 rounded-lg border border-white/5">
-              <button className="px-3 py-1 rounded-md text-xs text-slate-400 hover:text-white transition-colors">Daily</button>
-              <button className="px-3 py-1 rounded-md text-xs bg-cyan-500/20 text-cyan-400 font-semibold border border-cyan-500/30 shadow-inner">Monthly</button>
+            <div className="flex gap-2">
+              <select className="bg-slate-100 dark:bg-slate-800 px-3 py-1 rounded-lg text-[10px] font-bold outline-none border-none cursor-pointer">
+                <option>Last 30 Days</option>
+                <option>Year to Date</option>
+              </select>
             </div>
           </div>
-          <div className="w-full h-80 bg-slate-900/50 rounded-xl border border-dashed border-white/10 flex items-center justify-center relative overflow-hidden group">
-            <div className="absolute inset-0 bg-gradient-to-t from-cyan-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-            <p className="text-slate-500 text-sm font-medium z-10">Waiting for Data Pipeline Visualization...</p>
+          <div className="flex-1 min-h-[250px] bg-slate-50 dark:bg-slate-900/50 rounded-2xl border border-dashed border-[var(--border)] flex items-center justify-center relative group overflow-hidden">
+            <div className="text-slate-400 group-hover:text-medtronic transition-colors flex flex-col items-center gap-2">
+              <Activity size={32} />
+              <span className="text-xs font-medium">Rendering Real-time Production Graph...</span>
+            </div>
           </div>
-        </div>
+        </article>
 
-        {/* Real-time Console */}
-        <div className="glass-card p-4 border border-cyan-500/20 bg-slate-900/40">
-          <div className="flex items-center justify-between mb-3">
-            <div className="flex items-center gap-2">
-              <div className={`w-2 h-2 rounded-full ${isRefreshing ? 'bg-cyan-400 animate-pulse' : 'bg-emerald-400'}`} />
-              <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">
-                {isRefreshing ? 'Execution Stream [ACTIVE]' : 'System Terminal [IDLE]'}
-              </h4>
-            </div>
-            <span className="text-[10px] text-slate-600 font-mono">TTY-01</span>
+        <aside className="ios-widget p-6 flex flex-col min-w-0">
+          <h3 className="font-bold text-sm mb-4">Recent Alerts</h3>
+          <div className="space-y-4 flex-1 overflow-y-auto pr-1 max-h-[300px] xl:max-h-full">
+            <AlertItem type="critical" time="09:45 AM" msg="Machine 4 Overheating" lab="1303-CZM" />
+            <AlertItem type="warning" time="11:30 AM" msg="Material Shortage Line 2" lab="9997-CKH" />
+            <AlertItem type="info" time="12:15 PM" msg="System Maintenance Scheduled" lab="General" />
+            <AlertItem type="warning" time="01:20 PM" msg="SFC Sync Delay > 5min" lab="Infra" />
           </div>
-          <div className="font-mono text-[12px] min-h-[100px] flex flex-col gap-1.5">
-            {logs.map((log, i) => (
-              <div key={i} className="flex gap-4 animate-in slide-in-from-left-2 duration-300">
-                <span className="text-slate-600 shrink-0">{log.time}</span>
-                <span className={`font-bold shrink-0 ${log.type === 'SUCCESS' ? 'text-emerald-400' :
-                    log.type === 'PROC' ? 'text-cyan-400' : 'text-blue-400'
-                  }`}>[{log.type}]</span>
-                <span className="text-slate-300">{log.msg}</span>
-              </div>
+          <button className="mt-4 w-full py-2 bg-slate-100 dark:bg-slate-800 rounded-xl text-[10px] font-bold hover:bg-slate-200 dark:hover:bg-slate-700 transition-all shrink-0">
+            View All Notifications
+          </button>
+        </aside>
+      </div>
+
+      {/* Bottom Grid: Facility Status + Tasks */}
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 h-auto xl:h-[300px]">
+        <div className="ios-widget p-6 min-w-0 flex flex-col">
+          <div className="flex justify-between items-center mb-6">
+            <h3 className="font-bold text-sm">Facility Status</h3>
+            <div className="flex gap-4 text-[10px] font-bold uppercase tracking-wider overflow-hidden">
+              <span className="flex items-center gap-1.5 text-emerald-500 shrink-0"><div className="w-2 h-2 rounded-full bg-emerald-500" /> Active</span>
+              <span className="flex items-center gap-1.5 text-amber-500 shrink-0"><div className="w-2 h-2 rounded-full bg-amber-500" /> Maintenance</span>
+              <span className="flex items-center gap-1.5 text-red-500 shrink-0"><div className="w-2 h-2 rounded-full bg-red-400" /> Down</span>
+            </div>
+          </div>
+          <div className="flex-1 grid grid-cols-10 gap-2 overflow-hidden min-h-[150px]">
+            {Array.from({ length: 40 }).map((_, i) => (
+              <div key={i} className={`rounded-md ${i % 7 === 0 ? 'bg-amber-400/20 border border-amber-400/30' : i % 13 === 0 ? 'bg-red-400/20 border border-red-400/30' : 'bg-emerald-400/10 border border-emerald-400/20'} cursor-pointer hover:scale-110 transition-transform`} />
             ))}
           </div>
         </div>
-      </main>
+
+        <div className="ios-widget p-6 min-w-0 flex flex-col">
+          <div className="flex justify-between items-center mb-6">
+            <h3 className="font-bold text-sm">Scheduled Tasks</h3>
+            <button className="text-[10px] font-bold text-medtronic hover:underline">Full Calendar</button>
+          </div>
+          <div className="space-y-3 flex-1 overflow-y-auto pr-1 max-h-[200px] xl:max-h-full">
+            <TaskItem date="Tomorrow" task="Annual SAP Routing Audit" />
+            <TaskItem date="Feb 3" task="CZM Machine M-102 Calibration" />
+            <TaskItem date="Feb 5" task="Quarterly Quality Review" />
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
 
-function NavItem({ icon, label, active = false }: { icon: React.ReactNode, label: string, active?: boolean }) {
+// Reusable parts within this page (or move to components if shared)
+function KpiWidget({ title, value, trend, status }: { title: string, value: string, trend: string, status: 'success' | 'warning' | 'neutral' }) {
   return (
-    <div className={`flex items-center gap-3 px-4 py-3 rounded-xl cursor-pointer transition-all active:scale-95 ${active
-        ? 'bg-white/10 text-cyan-400 border border-white/10 shadow-lg glow-cyan'
-        : 'text-slate-400 hover:bg-white/5 hover:text-slate-200'
-      }`}>
-      {icon}
-      <span className="text-sm font-semibold">{label}</span>
-      {active && <ChevronRight className="ml-auto" size={16} />}
+    <div className="ios-widget p-6 group hover:translate-y-[-2px] hover:shadow-lg transition-all cursor-pointer">
+      <h3 className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">{title}</h3>
+      <div className="flex items-baseline gap-2 mb-2">
+        <span className="text-2xl font-black tracking-tight truncate">{value}</span>
+      </div>
+      <div className={`flex items-center gap-1 text-[10px] font-bold ${status === 'success' ? 'text-emerald-500' : status === 'warning' ? 'text-amber-500' : 'text-slate-400'
+        }`}>
+        {status === 'success' ? <ChevronUp size={12} /> : status === 'warning' ? <ChevronDown size={12} /> : null}
+        <span className="truncate">{trend}</span>
+      </div>
     </div>
   );
 }
 
-function StatCard({ title, value, trend, color, bgColor }: { title: string, value: string, trend: string, color: string, bgColor: string }) {
+function AlertItem({ type, time, msg, lab }: { type: 'critical' | 'warning' | 'info', time: string, msg: string, lab: string }) {
+  const color = type === 'critical' ? 'text-red-500 bg-red-500/10' : type === 'warning' ? 'text-amber-500 bg-amber-500/10' : 'text-blue-500 bg-blue-500/10';
   return (
-    <div className="glass-card p-6 flex flex-col gap-3 group hover:bg-white/10 transition-all cursor-pointer relative overflow-hidden">
-      <div className={`absolute top-0 right-0 w-24 h-24 blur-3xl opacity-20 -mr-8 -mt-8 ${bgColor}`} />
-      <h3 className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">{title}</h3>
-      <div className="flex items-baseline gap-2">
-        <div className={`text-4xl font-black ${color} tracking-tighter`}>{value}</div>
-        <div className={`w-2 h-2 rounded-full mb-1 ${color}`} />
+    <div className="flex gap-3 animate-in slide-in-from-right duration-300 overflow-hidden">
+      <div className={`w-8 h-8 rounded-xl ${color} flex items-center justify-center shrink-0`}>
+        <AlertTriangle size={16} />
       </div>
-      <p className="text-[11px] text-slate-400 font-medium">{trend}</p>
-
-      {/* Decorative Sparkline Placeholder */}
-      <div className="mt-2 h-1 w-full bg-slate-800 rounded-full overflow-hidden">
-        <div className={`h-full ${color.replace('text', 'bg')} opacity-40`} style={{ width: '70%' }} />
+      <div className="flex-1 min-w-0">
+        <div className="flex justify-between items-start">
+          <p className="text-[11px] font-bold truncate leading-tight uppercase">{msg}</p>
+          <span className="text-[9px] text-slate-400 font-medium shrink-0 ml-2">{time}</span>
+        </div>
+        <p className="text-[10px] text-slate-500 font-medium">{lab}</p>
       </div>
     </div>
   );
+}
+
+function TaskItem({ date, task }: { date: string, task: string }) {
+  return (
+    <div className="flex items-center gap-4 group cursor-pointer p-2 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-xl transition-all overflow-hidden">
+      <div className="w-10 h-10 rounded-2xl bg-slate-100 dark:bg-slate-900 border border-[var(--border)] flex flex-col items-center justify-center text-medtronic shrink-0 transition-colors group-hover:bg-medtronic group-hover:text-white">
+        <Calendar size={18} />
+      </div>
+      <div className="flex-1 min-w-0">
+        <p className="text-xs font-bold truncate leading-tight">{task}</p>
+        <p className="text-[10px] text-slate-500 font-medium">{date}</p>
+      </div>
+    </div>
+  )
 }

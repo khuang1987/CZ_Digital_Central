@@ -28,16 +28,14 @@ if defined VENV_DIR (
     start "MDDAP Docs" cmd /c "mkdocs serve -a 0.0.0.0:8000"
 )
 
-echo [2/2] Starting Dashboard Service (Port 8501)...
-set "SCRIPT_DIR=%~dp0dashboard\"
-cd /d "%SCRIPT_DIR%"
-if defined VENV_DIR (
-    REM Need to go back up two levels to find venv from dashboard dir, OR use absolute path from before
-    REM Easier: Use absolute path derived from %~dp0
-    start "MDDAP Dashboard" cmd /c ""..\%VENV_DIR%\Scripts\streamlit" run app.py"
-) else (
-    start "MDDAP Dashboard" cmd /c "streamlit run app.py"
-)
+echo [2/2] (Skip) Dashboard Service has been migrated to Next.js.
+REM set "SCRIPT_DIR=%~dp0dashboard\"
+REM cd /d "%SCRIPT_DIR%"
+REM if defined VENV_DIR (
+REM     start "MDDAP Dashboard" cmd /c "..\%VENV_DIR%\Scripts\streamlit" run app.py"
+REM ) else (
+REM     start "MDDAP Dashboard" cmd /c "streamlit run app.py"
+REM )
 
 echo.
 echo ========================================================
