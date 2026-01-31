@@ -246,8 +246,8 @@ export async function GET(req: NextRequest) {
         SELECT 
             c.fiscal_month as Label, 
             MIN(TRY_CAST(c.date AS DATE)) as SDate, 
-            ISNULL(ml.Actuals, 0) as actualEH, 
-            ISNULL(mt.Targets, 0) as targetEH
+            MAX(ISNULL(ml.Actuals, 0)) as actualEH, 
+            MAX(ISNULL(mt.Targets, 0)) as targetEH
         FROM dim_calendar c
         LEFT JOIN MonthlyLabor ml ON c.fiscal_month = ml.fiscal_month
         LEFT JOIN MonthlyTargets mt ON c.fiscal_month = mt.fiscal_month
@@ -279,8 +279,8 @@ export async function GET(req: NextRequest) {
         SELECT 
             FORMAT(TRY_CAST(c.date AS DATE), 'MM-dd') as Label, 
             TRY_CAST(c.date AS DATE) as SDate, 
-            ISNULL(dl.Actuals, 0) as actualEH, 
-            ISNULL(dt.Targets, 0) as targetEH
+            MAX(ISNULL(dl.Actuals, 0)) as actualEH, 
+            MAX(ISNULL(dt.Targets, 0)) as targetEH
         FROM dim_calendar c
         LEFT JOIN DailyLabor dl ON TRY_CAST(c.date AS DATE) = dl.PostDate
         LEFT JOIN DailyTargets dt ON TRY_CAST(c.date AS DATE) = dt.TDate
