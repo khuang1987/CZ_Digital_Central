@@ -224,25 +224,72 @@ export async function GET(req: NextRequest) {
     let trendQuery;
     if (granularity === 'year') {
       trendQuery = `
-        SELECT c.fiscal_month as Label, MIN(TRY_CAST(c.date AS DATE)) as SDate, ISNULL(SUM(l.EarnedLaborTime), 0) as actualEH, ISNULL(SUM(t.${targetCol}), 0) as targetEH
+        WITH MonthlyLabor AS (
+            SELECT 
+                dc.fiscal_month,
+                SUM(l.EarnedLaborTime) as Actuals
+            FROM raw_sap_labor_hours l
+            JOIN dim_calendar dc ON TRY_CAST(l.PostingDate AS DATE) = TRY_CAST(dc.date AS DATE)
+            LEFT JOIN dim_operation_mapping om ON l.OperationDesc = om.operation_name AND l.Plant = om.erp_code
+            WHERE l.Plant = @plant AND dc.fiscal_year = @year ${areaFilter}
+            GROUP BY dc.fiscal_month
+        ),
+        MonthlyTargets AS (
+            SELECT 
+                dc.fiscal_month,
+                SUM(t.${targetCol}) as Targets
+            FROM dim_production_targets t
+            JOIN dim_calendar dc ON TRY_CAST(t.Date AS DATE) = TRY_CAST(dc.date AS DATE)
+            WHERE dc.fiscal_year = @year
+            GROUP BY dc.fiscal_month
+        )
+        SELECT 
+            c.fiscal_month as Label, 
+            MIN(TRY_CAST(c.date AS DATE)) as SDate, 
+            ISNULL(ml.Actuals, 0) as actualEH, 
+            ISNULL(mt.Targets, 0) as targetEH
         FROM dim_calendar c
-        LEFT JOIN raw_sap_labor_hours l ON TRY_CAST(c.date AS DATE) = TRY_CAST(l.PostingDate AS DATE) AND l.Plant = @plant
-        LEFT JOIN dim_production_targets t ON TRY_CAST(c.date AS DATE) = TRY_CAST(t.Date AS DATE)
-        WHERE TRY_CAST(c.date AS DATE) BETWEEN @s AND @e
-        GROUP BY c.fiscal_month ORDER BY SDate
+        LEFT JOIN MonthlyLabor ml ON c.fiscal_month = ml.fiscal_month
+        LEFT JOIN MonthlyTargets mt ON c.fiscal_month = mt.fiscal_month
+        WHERE c.fiscal_year = @year
+        GROUP BY c.fiscal_month 
+        ORDER BY SDate
       `;
     } else {
       trendQuery = `
-        SELECT FORMAT(TRY_CAST(c.date AS DATE), 'MM-dd') as Label, TRY_CAST(c.date AS DATE) as SDate, ISNULL(SUM(l.EarnedLaborTime), 0) as actualEH, ISNULL(MAX(t.${targetCol}), 0) as targetEH
+        WITH DailyLabor AS (
+            SELECT 
+                TRY_CAST(l.PostingDate AS DATE) as PostDate,
+                SUM(l.EarnedLaborTime) as Actuals
+            FROM raw_sap_labor_hours l
+            LEFT JOIN dim_operation_mapping om ON l.OperationDesc = om.operation_name AND l.Plant = om.erp_code
+            WHERE l.Plant = @plant 
+              AND TRY_CAST(l.PostingDate AS DATE) BETWEEN @s AND @e
+              ${areaFilter}
+            GROUP BY TRY_CAST(l.PostingDate AS DATE)
+        ),
+        DailyTargets AS (
+            SELECT 
+                TRY_CAST(t.Date AS DATE) as TDate,
+                MAX(t.${targetCol}) as Targets
+            FROM dim_production_targets t
+            WHERE TRY_CAST(t.Date AS DATE) BETWEEN @s AND @e
+            GROUP BY TRY_CAST(t.Date AS DATE)
+        )
+        SELECT 
+            FORMAT(TRY_CAST(c.date AS DATE), 'MM-dd') as Label, 
+            TRY_CAST(c.date AS DATE) as SDate, 
+            ISNULL(dl.Actuals, 0) as actualEH, 
+            ISNULL(dt.Targets, 0) as targetEH
         FROM dim_calendar c
-        LEFT JOIN raw_sap_labor_hours l ON TRY_CAST(c.date AS DATE) = TRY_CAST(l.PostingDate AS DATE) AND l.Plant = @plant
-        LEFT JOIN dim_operation_mapping om ON l.OperationDesc = om.operation_name AND l.Plant = om.erp_code
-        LEFT JOIN dim_production_targets t ON TRY_CAST(c.date AS DATE) = TRY_CAST(t.Date AS DATE)
-        WHERE TRY_CAST(c.date AS DATE) BETWEEN @s AND @e ${areaFilter}
-        GROUP BY c.date ORDER BY SDate
+        LEFT JOIN DailyLabor dl ON TRY_CAST(c.date AS DATE) = dl.PostDate
+        LEFT JOIN DailyTargets dt ON TRY_CAST(c.date AS DATE) = dt.TDate
+        WHERE TRY_CAST(c.date AS DATE) BETWEEN @s AND @e 
+        GROUP BY c.date 
+        ORDER BY SDate
       `;
     }
-    const trend = await pool.request().input('s', sql.Date, startDay).input('e', sql.Date, endDay).input('plant', sql.NVarChar, plant).query(trendQuery);
+    const trend = await pool.request().input('s', sql.Date, startDay).input('e', sql.Date, endDay).input('plant', sql.NVarChar, plant).input('year', sql.NVarChar, year).query(trendQuery);
 
     // 4. Details (Top 50)
     const details = await pool.request().input('s', sql.Date, startDay).input('e', sql.Date, endDay).input('plant', sql.NVarChar, plant)
