@@ -5,25 +5,32 @@ export async function GET(req: NextRequest) {
     try {
         const pool = await getDbConnection();
 
-        // Fetch unique Fiscal Years, Months, and Weeks for the dropdowns
-        const query = `
-      SELECT 
-        fiscal_year,
-        fiscal_month,
-        fiscal_week,
-        fiscal_week_label
-      FROM dbo.dim_calendar
-      ORDER BY fiscal_year DESC, fiscal_month, fiscal_week
-    `;
+        // 1. Fetch distinct structure (Year -> Month -> Week)
+        // Optimization: Use DISTINCT at DB level to reduce thousands of rows to dozens
+        const qStructure = `
+            SELECT DISTINCT 
+                fiscal_year,
+                fiscal_month,
+                fiscal_week
+            FROM dbo.dim_calendar
+            ORDER BY fiscal_year DESC, fiscal_month, fiscal_week
+        `;
 
-        const result = await pool.request().query(query);
+        // 2. Fetch current info
+        const qCurrent = "SELECT TOP 1 fiscal_year, fiscal_month, fiscal_week FROM dim_calendar WHERE date = CAST(GETDATE() AS DATE)";
+
+        // Run in parallel for speed
+        const [resStructure, resCurrent] = await Promise.all([
+            pool.request().query(qStructure),
+            pool.request().query(qCurrent)
+        ]);
 
         // Grouping the data for the frontend
         const years: string[] = [];
         const months: Record<string, string[]> = {};
         const weeks: Record<string, number[]> = {};
 
-        result.recordset.forEach(row => {
+        resStructure.recordset.forEach(row => {
             if (!years.includes(row.fiscal_year)) {
                 years.push(row.fiscal_year);
             }
@@ -47,7 +54,7 @@ export async function GET(req: NextRequest) {
             years,
             months,
             weeks,
-            currentFiscalInfo: (await pool.request().query("SELECT TOP 1 fiscal_year, fiscal_month, fiscal_week FROM dim_calendar WHERE date = CAST(GETDATE() AS DATE)")).recordset[0] || null
+            currentFiscalInfo: resCurrent.recordset[0] || null
         });
 
     } catch (error: any) {

@@ -299,32 +299,26 @@ export default function LaborEhPage() {
 
     const handleAreaChange = (areas: string[]) => {
         setSelectedAreas(areas);
-        // If areas change, process selection might be invalid or should be cleared
-        // User requested: "Area switches... need to clear Process and Product Line"
-        // Clearing Product Line might be too aggressive if Product Line is "above" Area in hierarchy?
-        // But user explicitly said: "Area switches... need to clear Process and Product Line"
-        // Wait, User said: "当工厂切换时 区域切换的时候 需要清除工序和产品线"
-        // This could mean:
-        // 1. Factory Switch -> Clear Area, Process, Product Line
-        // 2. Area Switch -> Clear Process, Product Line
-        // I will follow instruction.
         setSelectedProcesses([]);
         setSelectedSchedulers([]);
-    };
-
-    const handleResetFilters = () => {
-        setSelectedAreas([]);
-        setSelectedProcesses([]);
-        setSelectedSchedulers([]);
-        // We don't reset Date/Plant usually, but user said "Reset Filters" (Screening bottom).
-        // Usually resets detailed filters.
     };
 
     // --- Data State ---
     const [data, setData] = useState<LaborData | null>(null);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
-    const { isFilterOpen } = useUI();
+    const { isFilterOpen, setResetHandler } = useUI();
+
+    const handleResetFilters = useCallback(() => {
+        setSelectedAreas([]);
+        setSelectedProcesses([]);
+        setSelectedSchedulers([]);
+        setSelectedDate(null);
+    }, []);
+
+    useEffect(() => {
+        setResetHandler(handleResetFilters);
+    }, [setResetHandler, handleResetFilters]);
 
     // --- Records Pagination State ---
     const [records, setRecords] = useState<any[]>([]);
@@ -918,14 +912,7 @@ export default function LaborEhPage() {
 
                     <div className="flex-1" />
 
-                    {/* Reset Button */}
-                    <button
-                        onClick={handleResetFilters}
-                        className="w-full flex items-center justify-center gap-2 py-3 mt-4 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-500 hover:text-medtronic hover:bg-slate-50 dark:hover:bg-slate-800 transition-all text-xs font-bold group"
-                    >
-                        <RefreshCw size={14} className="group-hover:rotate-180 transition-transform duration-500" />
-                        重置筛选器 (Reset Filters)
-                    </button>
+                    <div className="flex-1" />
                 </div>
             </aside>
 
@@ -1107,115 +1094,102 @@ export default function LaborEhPage() {
                                         </button>
                                     </div>
 
-                                    {activeData?.areaOperationDetail && activeData.areaOperationDetail.length > 0 ? (
-                                        <div className="overflow-x-auto overflow-y-auto relative rounded-xl border border-slate-200 dark:border-slate-700 flex-1">
-                                            <table className="w-full text-[10px] border-separate border-spacing-0">
-                                                <thead className="sticky top-0 z-20 shadow-sm">
-                                                    <tr className="bg-slate-50 dark:bg-slate-900/95">
-                                                        <th className="sticky left-0 z-30 bg-slate-50 dark:bg-slate-900/95 text-left py-3 px-3 font-black text-slate-400 uppercase border-b border-slate-200 dark:border-slate-700 w-[230px] min-w-[230px] shadow-r-lg">区域 / 工序 (Area / Op)</th>
-                                                        <th className="text-right py-3 px-3 font-black text-slate-400 uppercase border-b border-slate-200 dark:border-slate-700 w-[80px] min-w-[80px]">昨天(h)</th>
-                                                        {(() => {
-                                                            const weeks = new Set<number>();
-                                                            activeData?.areaOperationDetail?.forEach((area: any) => {
-                                                                area.operations.forEach((op: any) => {
-                                                                    op.weeklyData.forEach((w: any) => weeks.add(w.fiscalWeek));
-                                                                });
-                                                            });
-                                                            const sortedWeeks = Array.from(weeks).sort((a, b) => a - b);
-                                                            const displayWeeks = [...sortedWeeks, ...Array(Math.max(0, 6 - sortedWeeks.length)).fill(null)];
+                                    {(activeData?.areaOperationDetail?.length ?? 0) > 0 ? (
+                                        (() => {
+                                            const weeks = new Set<number>();
+                                            activeData?.areaOperationDetail?.forEach((area: any) => {
+                                                area?.operations?.forEach((op: any) => {
+                                                    op?.weeklyData?.forEach((w: any) => weeks.add(w.fiscalWeek));
+                                                });
+                                            });
+                                            const sortedWeeks = Array.from(weeks).sort((a, b) => (a || 0) - (b || 0));
+                                            const displayWeeks = [...sortedWeeks, ...Array(Math.max(0, 6 - sortedWeeks.length)).fill(null)];
 
-                                                            return displayWeeks.map((week, idx) => (
-                                                                <th key={idx} className="text-right py-3 px-3 font-black text-slate-400 uppercase whitespace-nowrap border-b border-slate-200 dark:border-slate-700 w-[80px] min-w-[80px]">
-                                                                    {week ? `W${week}` : ''}
-                                                                </th>
-                                                            ));
-                                                        })()}
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    {(() => {
-                                                        const weeks = new Set<number>();
-                                                        activeData?.areaOperationDetail?.forEach((a: any) => {
-                                                            a.operations.forEach((o: any) => {
-                                                                o.weeklyData.forEach((w: any) => weeks.add(w.fiscalWeek));
-                                                            });
-                                                        });
-                                                        const sortedWeeks = Array.from(weeks).sort((a, b) => a - b);
-                                                        const displayWeeks = [...sortedWeeks, ...Array(Math.max(0, 6 - sortedWeeks.length)).fill(null)];
+                                            return (
+                                                <div className="overflow-x-auto overflow-y-auto relative rounded-xl border border-slate-200 dark:border-slate-700 flex-1">
+                                                    <table className="w-full text-[10px] border-separate border-spacing-0">
+                                                        <thead className="sticky top-0 z-20 shadow-sm">
+                                                            <tr className="bg-slate-50 dark:bg-slate-900/95">
+                                                                <th className="sticky left-0 z-30 bg-slate-50 dark:bg-slate-900/95 text-left py-3 px-3 font-black text-slate-400 uppercase border-b border-slate-200 dark:border-slate-700 w-[230px] min-w-[230px] shadow-r-lg">区域 / 工序 (Area / Op)</th>
+                                                                <th className="text-right py-3 px-3 font-black text-slate-400 uppercase border-b border-slate-200 dark:border-slate-700 w-[80px] min-w-[80px]">昨天(h)</th>
+                                                                {displayWeeks.map((week, idx) => (
+                                                                    <th key={idx} className="text-right py-3 px-3 font-black text-slate-400 uppercase whitespace-nowrap border-b border-slate-200 dark:border-slate-700 w-[80px] min-w-[80px]">
+                                                                        {week ? `W${week}` : ''}
+                                                                    </th>
+                                                                ))}
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            {activeData?.areaOperationDetail?.map((areaData: any) => {
+                                                                const isExpanded = expandedAreas.has(areaData.area);
+                                                                const yesterdaySum = areaData?.operations?.reduce((acc: number, item: any) => acc + (item.yesterday || 0), 0) || 0;
+                                                                const weeklySums = displayWeeks.map(week => ({
+                                                                    week,
+                                                                    hours: week ? areaData?.operations?.reduce((acc: number, item: any) => {
+                                                                        const w = item?.weeklyData?.find((wd: any) => wd.fiscalWeek === week);
+                                                                        return acc + (w ? w.hours : 0);
+                                                                    }, 0) : 0
+                                                                }));
 
-                                                        return activeData?.areaOperationDetail?.map((areaData: any) => {
-                                                            const isExpanded = expandedAreas.has(areaData.area);
-                                                            // Calculate summaries for the area row
-                                                            const yesterdaySum = areaData.operations.reduce((sum, op) => sum + op.yesterday, 0);
-                                                            const weeklySums = displayWeeks.map(week => ({
-                                                                week,
-                                                                hours: week ? areaData.operations.reduce((sum, op) => {
-                                                                    const w = op.weeklyData.find(wd => wd.fiscalWeek === week);
-                                                                    return sum + (w ? w.hours : 0);
-                                                                }, 0) : 0
-                                                            }));
-
-                                                            return (
-                                                                <React.Fragment key={areaData.area}>
-                                                                    {/* Area Summary Row */}
-                                                                    <tr
-                                                                        onClick={() => {
-                                                                            const newSet = new Set(expandedAreas);
-                                                                            if (newSet.has(areaData.area)) newSet.delete(areaData.area);
-                                                                            else newSet.add(areaData.area);
-                                                                            setExpandedAreas(newSet);
-                                                                        }}
-                                                                        className="group hover:bg-slate-100/80 dark:hover:bg-slate-800/50 cursor-pointer transition-colors"
-                                                                    >
-                                                                        <td className="sticky left-0 z-10 bg-white/95 dark:bg-slate-900/95 group-hover:bg-slate-100/95 dark:group-hover:bg-slate-800/95 py-2 px-3 border-b border-slate-100 dark:border-slate-800 align-middle shadow-r-lg">
-                                                                            <div className="flex items-center gap-2">
-                                                                                <div className="flex justify-center w-4 text-medtronic shrink-0">
-                                                                                    {isExpanded ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
+                                                                return (
+                                                                    <React.Fragment key={areaData.area}>
+                                                                        <tr
+                                                                            onClick={() => {
+                                                                                const newSet = new Set(expandedAreas);
+                                                                                if (newSet.has(areaData.area)) newSet.delete(areaData.area);
+                                                                                else newSet.add(areaData.area);
+                                                                                setExpandedAreas(newSet);
+                                                                            }}
+                                                                            className="group hover:bg-slate-100/80 dark:hover:bg-slate-800/50 cursor-pointer transition-colors"
+                                                                        >
+                                                                            <td className="sticky left-0 z-10 bg-white/95 dark:bg-slate-900/95 group-hover:bg-slate-100/95 dark:group-hover:bg-slate-800/95 py-2 px-3 border-b border-slate-100 dark:border-slate-800 align-middle shadow-r-lg">
+                                                                                <div className="flex items-center gap-2">
+                                                                                    <div className="flex justify-center w-4 text-medtronic shrink-0">
+                                                                                        {isExpanded ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
+                                                                                    </div>
+                                                                                    <div className="font-black text-slate-700 dark:text-slate-200 text-xs truncate max-w-[90px]" title={areaData.area}>{areaData.area}</div>
+                                                                                    <div className="flex items-center gap-1 text-[10px] text-slate-500 bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded-full ml-auto shrink-0">
+                                                                                        <span className="font-bold">{Math.round(areaData.totalHours)}h</span>
+                                                                                        <span className="text-slate-300">|</span>
+                                                                                        <span className="font-bold text-medtronic">{areaData.percentage}%</span>
+                                                                                    </div>
                                                                                 </div>
-                                                                                <div className="font-black text-slate-700 dark:text-slate-200 text-xs truncate max-w-[90px]" title={areaData.area}>{areaData.area}</div>
-                                                                                <div className="flex items-center gap-1 text-[10px] text-slate-500 bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded-full ml-auto shrink-0">
-                                                                                    <span className="font-bold">{Math.round(areaData.totalHours)}h</span>
-                                                                                    <span className="text-slate-300">|</span>
-                                                                                    <span className="font-bold text-medtronic">{areaData.percentage}%</span>
-                                                                                </div>
-                                                                            </div>
-                                                                        </td>
-                                                                        <td className="text-right py-2 px-3 border-b border-slate-100 dark:border-slate-800 font-black text-slate-700 dark:text-slate-300 align-middle bg-slate-50/30 dark:bg-slate-900/30">
-                                                                            {yesterdaySum > 0 ? yesterdaySum.toFixed(1) : '—'}
-                                                                        </td>
-                                                                        {weeklySums.map((w, idx) => (
-                                                                            <td key={idx} className="text-right py-2 px-3 border-b border-slate-100 dark:border-slate-800 font-bold text-slate-600 dark:text-slate-400 align-middle bg-slate-50/30 dark:bg-slate-900/30 whitespace-nowrap">
-                                                                                {w.week && w.hours > 0 ? w.hours.toFixed(1) : ''}
                                                                             </td>
-                                                                        ))}
-                                                                    </tr>
-
-                                                                    {/* Operation Detail Rows (only if expanded) */}
-                                                                    {isExpanded && areaData.operations.map((op: any) => (
-                                                                        <tr key={`${areaData.area}-${op.operationName}`} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition-colors">
-                                                                            <td className="sticky left-0 bg-slate-50/80 dark:bg-slate-900/80 py-2 px-3 border-b border-slate-100 dark:border-slate-800 font-semibold text-slate-600 dark:text-slate-400 text-[10px] pl-10 shadow-r-lg truncate max-w-[230px]" title={op.operationName}>
-                                                                                {op.operationName}
+                                                                            <td className="text-right py-2 px-3 border-b border-slate-100 dark:border-slate-800 font-black text-slate-700 dark:text-slate-300 align-middle bg-slate-50/30 dark:bg-slate-900/30">
+                                                                                {yesterdaySum > 0 ? yesterdaySum.toFixed(1) : '—'}
                                                                             </td>
-                                                                            <td className="text-right py-2 px-3 border-b border-slate-100 dark:border-slate-800 font-medium text-slate-600 dark:text-slate-400">
-                                                                                {op.yesterday > 0 ? op.yesterday.toFixed(1) : '—'}
-                                                                            </td>
-                                                                            {displayWeeks.map((week: any, idx: number) => {
-                                                                                const weekData = op.weeklyData.find((w: any) => w.fiscalWeek === week);
-                                                                                return (
-                                                                                    <td key={idx} className="text-right py-2 px-3 border-b border-slate-100 dark:border-slate-800 font-medium text-slate-500 dark:text-slate-500 whitespace-nowrap">
-                                                                                        {weekData && weekData.hours > 0 ? weekData.hours.toFixed(1) : '—'}
-                                                                                    </td>
-                                                                                );
-                                                                            })}
+                                                                            {weeklySums.map((w, idx) => (
+                                                                                <td key={idx} className="text-right py-2 px-3 border-b border-slate-100 dark:border-slate-800 font-bold text-slate-600 dark:text-slate-400 align-middle bg-slate-50/30 dark:bg-slate-900/30 whitespace-nowrap">
+                                                                                    {w.week && w.hours > 0 ? w.hours.toFixed(1) : ''}
+                                                                                </td>
+                                                                            ))}
                                                                         </tr>
-                                                                    ))}
-                                                                </React.Fragment>
-                                                            );
-                                                        });
-                                                    })()}
-                                                </tbody>
-                                            </table>
-                                        </div>
+                                                                        {isExpanded && areaData?.operations?.map((op: any) => (
+                                                                            <tr key={`${areaData.area}-${op.operationName}`} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition-colors">
+                                                                                <td className="sticky left-0 bg-slate-50/80 dark:bg-slate-900/80 py-2 px-3 border-b border-slate-100 dark:border-slate-800 font-semibold text-slate-600 dark:text-slate-400 text-[10px] pl-10 shadow-r-lg truncate max-w-[230px]" title={op.operationName}>
+                                                                                    {op.operationName}
+                                                                                </td>
+                                                                                <td className="text-right py-2 px-3 border-b border-slate-100 dark:border-slate-800 font-medium text-slate-600 dark:text-slate-400">
+                                                                                    {op.yesterday > 0 ? op.yesterday.toFixed(1) : '—'}
+                                                                                </td>
+                                                                                {displayWeeks.map((week: any, idx: number) => {
+                                                                                    const weekData = op?.weeklyData?.find((wd: any) => wd.fiscalWeek === week);
+                                                                                    return (
+                                                                                        <td key={idx} className="text-right py-2 px-3 border-b border-slate-100 dark:border-slate-800 font-medium text-slate-500 dark:text-slate-500 whitespace-nowrap">
+                                                                                            {weekData && weekData.hours > 0 ? weekData.hours.toFixed(1) : '—'}
+                                                                                        </td>
+                                                                                    );
+                                                                                })}
+                                                                            </tr>
+                                                                        ))}
+                                                                    </React.Fragment>
+                                                                );
+                                                            })}
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            );
+                                        })()
                                     ) : (
                                         <div className="flex-1 flex items-center justify-center text-xs text-slate-400 italic">No area distribution data available</div>
                                     )}

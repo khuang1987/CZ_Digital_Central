@@ -8,6 +8,8 @@ interface UIContextType {
     isFilterOpen: boolean;
     setFilterOpen: (open: boolean) => void;
     toggleFilter: () => void;
+    resetFilters: () => void;
+    setResetHandler: (handler: () => void) => void;
 }
 
 const UIContext = createContext<UIContextType | undefined>(undefined);
@@ -15,9 +17,13 @@ const UIContext = createContext<UIContextType | undefined>(undefined);
 export function UIProvider({ children }: { children: ReactNode }) {
     const [isSidebarCollapsed, setSidebarCollapsed] = useState(false);
     const [isFilterOpen, setFilterOpen] = useState(true);
+    const [resetHandler, setResetHandler] = useState<(() => void) | null>(null);
 
     const toggleSidebar = () => setSidebarCollapsed(prev => !prev);
     const toggleFilter = () => setFilterOpen(prev => !prev);
+    const resetFilters = () => {
+        if (resetHandler) resetHandler();
+    };
 
     return (
         <UIContext.Provider value={{
@@ -25,7 +31,9 @@ export function UIProvider({ children }: { children: ReactNode }) {
             toggleSidebar,
             isFilterOpen,
             setFilterOpen,
-            toggleFilter
+            toggleFilter,
+            resetFilters,
+            setResetHandler
         }}>
             {children}
         </UIContext.Provider>

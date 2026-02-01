@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Sidebar from '@/components/Sidebar';
-import { Search, Moon, Sun, Bell, ExternalLink, Activity, Zap, BarChart, Package } from 'lucide-react';
+import { Search, Moon, Sun, Bell, ExternalLink, Activity, Zap, BarChart, Package, ShieldCheck, Maximize } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { useUI } from '@/context/UIContext';
@@ -39,12 +39,19 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
         if (pathname === '/') return 'Executive Dashboard';
         if (pathname.includes('/production/labor-eh')) return 'Labor EH Analysis';
         if (pathname.includes('/production/changeover')) return 'Setup & Changeover Report';
+        if (pathname.includes('/production/ehs')) return (
+            <div className="flex items-center gap-2">
+                <ShieldCheck className="text-emerald-500" size={24} />
+                <span className="text-xl font-black tracking-tight text-slate-900 dark:text-white">EHS Safety Center</span>
+            </div>
+        );
         if (isProduction) return 'Production Management';
         return 'Medtronic Digital Central';
     };
 
     const productionTabs = [
         { label: '工时分析 (Labor EH)', href: '/production/labor-eh', icon: <Activity size={14} /> },
+        { label: 'EHS 安全 (Safety)', href: '/production/ehs', icon: <ShieldCheck size={14} /> },
         { label: '调试换型 (Changeover)', href: '/production/changeover', icon: <Zap size={14} /> },
         { label: 'OEE 看板', href: '/production/oee', icon: <BarChart size={14} />, disabled: true },
         { label: '物料查询', href: '/production/material', icon: <Package size={14} />, disabled: true },
@@ -57,9 +64,9 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
             <main className="flex-1 flex flex-col min-w-0">
                 <header className="glass-header flex flex-col shrink-0 px-8 border-b border-slate-200 dark:border-slate-800">
                     <div className="h-12 flex items-center justify-between">
-                        <h2 className="text-xl font-black tracking-tight text-slate-900 dark:text-white transition-all">
+                        <div className="text-xl font-black tracking-tight text-slate-900 dark:text-white transition-all">
                             {getPageTitle()}
-                        </h2>
+                        </div>
 
                         <div className="flex items-center gap-3">
                             <div className="relative hidden md:block w-64 mr-2">
@@ -86,6 +93,20 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
                                 <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-red-500 rounded-full border border-white dark:border-slate-900" />
                             </button>
 
+                            <button
+                                onClick={() => {
+                                    if (!document.fullscreenElement) {
+                                        document.documentElement.requestFullscreen();
+                                    } else {
+                                        document.exitFullscreen();
+                                    }
+                                }}
+                                className="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-all text-slate-600 dark:text-slate-400 mr-2"
+                                title="全屏显示"
+                            >
+                                <Maximize size={18} />
+                            </button>
+
                             <button className="flex items-center gap-2 ml-2 px-4 py-1.5 rounded-full bg-medtronic text-white text-[11px] font-black hover:brightness-110 transition-all shadow-sm active:scale-95">
                                 <span className="hidden sm:inline">导出报告</span>
                                 <ExternalLink size={12} />
@@ -93,7 +114,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
                         </div>
                     </div>
 
-                    {isProduction && (
+                    {isProduction && !pathname.includes('/production/ehs') && (
                         <nav className="h-8 flex items-center gap-5 -mb-[1px]">
                             {productionTabs.map((tab) => {
                                 const active = pathname === tab.href;
@@ -102,8 +123,8 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
                                         key={tab.label}
                                         href={tab.disabled ? '#' : tab.href}
                                         className={`flex items-center gap-2 h-full text-[11px] font-black transition-all border-b-2 relative ${active
-                                                ? 'border-medtronic text-medtronic'
-                                                : 'border-transparent text-slate-800 dark:text-slate-400 hover:text-medtronic dark:hover:text-slate-200'
+                                            ? 'border-medtronic text-medtronic'
+                                            : 'border-transparent text-slate-800 dark:text-slate-400 hover:text-medtronic dark:hover:text-slate-200'
                                             } ${tab.disabled ? 'opacity-30 cursor-not-allowed' : 'cursor-pointer'}`}
                                     >
                                         {tab.icon}
