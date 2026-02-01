@@ -519,6 +519,14 @@ class PlaywrightManager:
         sel_kmsi = "input[name='DontShowAgain']"
         sel_submit = "input[type='submit'], button#idSIButton9, button.pbi-button"
         
+        # FIX: Ensure we are not on a blank page, otherwise elements won't load
+        try:
+             if page.url == "about:blank":
+                 self._log("页面为空，导航到 PowerBI 主页...", "DEBUG")
+                 page.goto("https://app.powerbi.com/home")
+        except: pass
+
+        
         start_time = time.time()
         timeout = 60
         

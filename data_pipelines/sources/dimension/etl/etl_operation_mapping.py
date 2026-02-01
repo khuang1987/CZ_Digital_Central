@@ -5,6 +5,13 @@
 import pandas as pd
 from pathlib import Path
 import logging
+import sys
+import re
+
+# Add project root to path
+PROJECT_ROOT = Path(__file__).resolve().parents[4]
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
 
 from shared_infrastructure.utils.db_sqlserver_only import SQLServerOnlyManager
 
@@ -35,6 +42,7 @@ def ensure_tables(db: SQLServerOnlyManager):
                 CREATE TABLE dbo.dim_operation_mapping (
                     id int IDENTITY(1,1) PRIMARY KEY,
                     operation_name nvarchar(255) NOT NULL,
+                    display_name nvarchar(255) NULL,
                     standard_routing nvarchar(255) NULL,
                     area nvarchar(255) NULL,
                     lead_time float NULL,
@@ -79,6 +87,21 @@ def import_operation_mapping(conn):
     # 重命名列为英文
     df.columns = ['no', 'operation_name', 'standard_routing', 'area', 'lead_time', 'erp_code']
     
+    # --- 加载清洗规则 ---
+    cleaning_map = {}
+    if CLEANING_RULES_CSV.exists():
+        try:
+            rules_df = pd.read_csv(CLEANING_RULES_CSV)
+            # Filter valid rules
+            rules_df = rules_df[rules_df['Step_Name'].notna() & rules_df['Cleaned_Operation'].notna()]
+            # Create dict: {original: cleaned}
+            cleaning_map = dict(zip(rules_df['Step_Name'].astype(str).str.strip(), 
+                                  rules_df['Cleaned_Operation'].astype(str).str.strip()))
+            logger.info(f"Loaded {len(cleaning_map)} cleaning rules.")
+        except Exception as e:
+            logger.error(f"Failed to load cleaning rules: {e}")
+
+    
     # 清洗数据
     df = df[df['operation_name'].notna()]
     df['operation_name'] = df['operation_name'].astype(str).str.strip()
@@ -86,12 +109,33 @@ def import_operation_mapping(conn):
     df['area'] = df['area'].astype(str).str.strip()
     df['erp_code'] = df['erp_code'].astype(str).str.strip()
     
+    
     cursor = conn.cursor()
     for _, row in df.iterrows():
+        op_name = row['operation_name']
+        
+        # 1. Priority: Dictionary Lookup (Manually defined rules)
+        # If the name exists in the CSV map, use that result; otherwise use original
+        display_name = cleaning_map.get(op_name, op_name)
+
+        # 2. Universal Polish: Auto-Regex Cleaning (Pattern based)
+        # Apply this to the RESULT of the lookup to ensure even dictionary entries are stripped of unwanted tags.
+        # Regex explanation:
+        # [\(（] : Match opening bracket (English or Chinese)
+        # (?: ... ) : Non-capturing group for OR logic
+        # 外协|OEM|可外协 : Keywords to identify outsourced ops
+        # .*? : Match anything lazy until closing bracket
+        # [\)）] : Match closing bracket
+        display_name = re.sub(r'[\(（](?:外协|OEM|可外协)[^\)）]*[\)）]', '', display_name).strip()
+             
+        # Also clean common copy-paste artifacts if needed, e.g. "WI-..." suffix if strictly requested,
+        # but strictly speaking user only asked for Outsourced merging.
+        # Keeping it safe: Only strip the Outsourced tags.
+        
         cursor.execute('''
-            INSERT INTO dbo.dim_operation_mapping (operation_name, standard_routing, area, lead_time, erp_code)
-            VALUES (?, ?, ?, ?, ?)
-        ''', (row['operation_name'], row['standard_routing'], row['area'], row['lead_time'], row['erp_code']))
+            INSERT INTO dbo.dim_operation_mapping (operation_name, display_name, standard_routing, area, lead_time, erp_code)
+            VALUES (?, ?, ?, ?, ?, ?)
+        ''', (op_name, display_name, row['standard_routing'], row['area'], row['lead_time'], row['erp_code']))
     
     conn.commit()
     logger.info(f'导入工序名称映射: {len(df)} 条')
@@ -167,6 +211,15 @@ def main():
     else:
         logger.info("强制刷新模式")
 
+    # FIX: Drop table to ensure schema update (adding display_name)
+    with db.get_connection() as conn:
+        try:
+            conn.cursor().execute("DROP TABLE IF EXISTS dbo.dim_operation_mapping")
+            conn.commit()
+            logger.info("Dropped dim_operation_mapping for schema update.")
+        except Exception as e:
+            logger.warning(f"Drop table failed: {e}")
+
     ensure_tables(db)
 
     with db.get_connection() as conn:
@@ -180,17 +233,15 @@ def main():
                 cur.execute(f"DELETE FROM {t}")
         conn.commit()
     
-    # 导入数据
-    df_op = pd.read_excel(SOURCE_FILE, sheet_name='工序名称')
-    df_op.columns = ['no', 'operation_name', 'standard_routing', 'area', 'lead_time', 'erp_code']
-    df_op = df_op[df_op['operation_name'].notna()].copy()
-    df_op['operation_name'] = df_op['operation_name'].astype(str).str.strip()
-    df_op['standard_routing'] = df_op['standard_routing'].astype(str).str.strip()
-    df_op['area'] = df_op['area'].astype(str).str.strip()
-    df_op['erp_code'] = df_op['erp_code'].astype(str).str.strip()
-    df_op['lead_time'] = pd.to_numeric(df_op['lead_time'], errors='coerce')
-    df_op = df_op[['operation_name', 'standard_routing', 'area', 'lead_time', 'erp_code']]
-    op_count = db.bulk_insert(df_op, "dim_operation_mapping", if_exists="append")
+    import_count = import_operation_mapping(conn)
+    op_count = import_count # Update counter
+    
+    # Remove the duplicate inline logic
+    # df_op = pd.read_excel(SOURCE_FILE, sheet_name='工序名称') ... db.bulk_insert(...)
+    # The previous code lines 184-193 were doing bulk insert.
+    # My Chunk 3 modified 'import_operation_mapping'. 
+    # So I will replace lines 184-193 with just calling that function.
+
     
     # 记录处理状态
     db.mark_file_processed("dim_operation_mapping", SOURCE_FILE)

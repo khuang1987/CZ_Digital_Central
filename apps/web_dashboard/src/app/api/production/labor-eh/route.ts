@@ -50,9 +50,13 @@ export async function GET(req: NextRequest) {
       const areas = areasParam.split(',').map(a => `'${a.replace(/'/g, "''")}'`).join(',');
       areaFilter += ` AND om.area IN (${areas})`;
     }
+
+    // FIX: Globally exclude No Area and Outsourced
+    areaFilter += ` AND (om.area IS NULL OR om.area NOT IN (N'无区域 NA', N'外协 OS'))`;
+
     if (processesParam) {
       const processes = processesParam.split(',').map(p => `'${p.replace(/'/g, "''")}'`).join(',');
-      areaFilter += ` AND om.operation_name IN (${processes})`;
+      areaFilter += ` AND om.display_name IN (${processes})`;
     }
 
     let schedulerFilter = '';
@@ -71,6 +75,9 @@ export async function GET(req: NextRequest) {
                 SUM(l.EarnedLaborTime) as Actuals
             FROM raw_sap_labor_hours l
             JOIN dim_calendar dc ON TRY_CAST(l.PostingDate AS DATE) = TRY_CAST(dc.date AS DATE)
+            -- FIX: Use display_name for join/grouping if desired, but here we just need sum.
+            -- Actually, if we want to filter by PROCESS using display name, we should map valid processes.
+            -- But for total sum, we just need the area filter which is applied below.
             LEFT JOIN dim_operation_mapping om ON l.OperationDesc = om.operation_name AND l.Plant = om.erp_code
             WHERE l.Plant = @plant AND dc.fiscal_year = @year ${areaFilter}
             GROUP BY dc.fiscal_month
@@ -132,181 +139,259 @@ export async function GET(req: NextRequest) {
       `;
     }
 
-    // 4. Parallel Execution (All independent Queries)
-    const [summaryRes, yesterdayRes, weeklyRes, areaDistRes, filterOptionsRes, trendRes, detailsRes, anomaliesRes] = await Promise.all([
-      // A. Summary
-      pool.request()
-        .input('s', sql.Date, startDay)
-        .input('e', sql.Date, endDay)
-        .input('plant', sql.NVarChar, plant)
-        .input('year', sql.NVarChar, year)
-        .query(`
-                DECLARE @FYStart DATE;
-                SELECT @FYStart = MIN(TRY_CAST(date AS DATE)) FROM dim_calendar WHERE fiscal_year = @year;
+    // 4. Parallel Execution (Conditional based on mode)
+    const mode = searchParams.get('mode') || 'dashboard'; // 'dashboard' or 'records'
+    const page = parseInt(searchParams.get('page') || '1');
+    const pageSize = parseInt(searchParams.get('pageSize') || '50');
+    const offset = (page - 1) * pageSize;
 
-                SELECT 
-                  ISNULL(SUM(l.EarnedLaborTime), 0) as actualEH,
-                  (SELECT ISNULL(SUM(${targetCol}), 0) FROM dim_production_targets WHERE TRY_CAST(Date AS DATE) BETWEEN @s AND @e) as targetEH,
-                  COUNT(DISTINCT TRY_CAST(l.PostingDate AS DATE)) as actualDays,
-                  (SELECT ISNULL(SUM(is_workday), 0) FROM dim_production_targets WHERE TRY_CAST(Date AS DATE) BETWEEN @s AND @e) as targetDays,
-                  (SELECT ISNULL(SUM(l2.EarnedLaborTime), 0) 
-                   FROM raw_sap_labor_hours l2
-                   LEFT JOIN (SELECT operation_name, erp_code, MAX(area) as area FROM dim_operation_mapping WHERE erp_code = @plant GROUP BY operation_name, erp_code) om2 
-                      ON l2.OperationDesc = om2.operation_name AND l2.Plant = om2.erp_code
-                   WHERE TRY_CAST(l2.PostingDate AS DATE) BETWEEN @FYStart AND @e AND l2.Plant = @plant ${areaFilter.replace('om.', 'om2.')} ${schedulerFilter.replace('rslh.', 'l2.')}) as ytdActualEH,
-                  (SELECT ISNULL(SUM(${targetCol}), 0) FROM dim_production_targets WHERE TRY_CAST(Date AS DATE) BETWEEN @FYStart AND @e) as ytdTargetEH
-                FROM raw_sap_labor_hours l
-                LEFT JOIN (SELECT operation_name, erp_code, MAX(area) as area FROM dim_operation_mapping WHERE erp_code = @plant GROUP BY operation_name, erp_code) om 
-                    ON l.OperationDesc = om.operation_name AND l.Plant = om.erp_code
-                WHERE TRY_CAST(l.PostingDate AS DATE) BETWEEN @s AND @e AND l.Plant = @plant ${areaFilter} ${schedulerFilter.replace('rslh.', 'l.')}
-            `),
+    let promises = [];
 
-      // B. Yesterday
-      pool.request()
-        .input('plant', sql.NVarChar, plant)
-        .query(`
-                SELECT 
-                  ISNULL(om.area, 'Unknown') as area,
-                  ISNULL(om.operation_name, 'Unknown') as operationName,
-                  ISNULL(SUM(rslh.EarnedLaborTime), 0) as yesterdayHours
-                FROM raw_sap_labor_hours rslh
-                LEFT JOIN (SELECT operation_name, erp_code, MAX(area) as area FROM dim_operation_mapping WHERE erp_code = @plant GROUP BY operation_name, erp_code) om 
-                    ON rslh.OperationDesc = om.operation_name AND rslh.Plant = om.erp_code
-                WHERE TRY_CAST(rslh.PostingDate AS DATE) = DATEADD(day, -1, CAST(GETDATE() AS DATE))
-                  AND rslh.Plant = @plant
-                  ${areaFilter.replace('om.', 'om.')}
-                  ${schedulerFilter}
-                GROUP BY om.area, om.operation_name
-            `),
-
-      // C. Weekly
-      pool.request()
-        .input('s', sql.Date, startDay)
-        .input('e', sql.Date, endDay)
-        .input('plant', sql.NVarChar, plant)
-        .query(`
-                SELECT 
-                  ISNULL(om.area, 'Unknown') as area,
-                  ISNULL(om.operation_name, 'Unknown') as operationName,
-                  dc.fiscal_week as fiscalWeek,
-                  ISNULL(SUM(rslh.EarnedLaborTime), 0) as weeklyHours
-                FROM raw_sap_labor_hours rslh
-                LEFT JOIN dim_calendar dc ON TRY_CAST(rslh.PostingDate AS DATE) = TRY_CAST(dc.date AS DATE)
-                LEFT JOIN (SELECT operation_name, erp_code, MAX(area) as area FROM dim_operation_mapping WHERE erp_code = @plant GROUP BY operation_name, erp_code) om 
-                    ON rslh.OperationDesc = om.operation_name AND rslh.Plant = om.erp_code
-                WHERE TRY_CAST(dc.date AS DATE) BETWEEN @s AND @e
-                  AND rslh.Plant = @plant
-                  ${areaFilter.replace('om.', 'om.')}
-                  ${schedulerFilter}
-                GROUP BY om.area, om.operation_name, dc.fiscal_week
-                ORDER BY om.area, om.operation_name, dc.fiscal_week
-            `),
-
-      // D. Area Dist
-      pool.request()
-        .input('s', sql.Date, startDay)
-        .input('e', sql.Date, endDay)
-        .input('plant', sql.NVarChar, plant)
-        .query(`
-                SELECT 
-                  ISNULL(om.area, 'Unknown') as area,
-                  ISNULL(SUM(l.EarnedLaborTime), 0) as earnedHours
-                FROM raw_sap_labor_hours l
-                LEFT JOIN (SELECT operation_name, erp_code, MAX(area) as area FROM dim_operation_mapping WHERE erp_code = @plant GROUP BY operation_name, erp_code) om 
-                    ON l.OperationDesc = om.operation_name AND l.Plant = om.erp_code
-                WHERE TRY_CAST(l.PostingDate AS DATE) BETWEEN @s AND @e AND l.Plant = @plant ${areaFilter} ${schedulerFilter.replace('rslh.', 'l.')}
-                GROUP BY om.area
-                ORDER BY earnedHours DESC
-            `),
-
-      // E. Filter Options
-      pool.request()
-        .input('plant', sql.NVarChar, plant)
-        .query(`
-                SELECT DISTINCT area
-                FROM dim_operation_mapping
-                WHERE erp_code = @plant AND area IS NOT NULL
-                ORDER BY area;
-
-                SELECT DISTINCT operation_name
-                FROM dim_operation_mapping
-                WHERE erp_code = @plant AND operation_name IS NOT NULL
-                ${areasParam ? `AND area IN (${areasParam.split(',').map(a => `'${a.replace(/'/g, "''")}'`).join(',')})` : ''}
-                ORDER BY operation_name;
-                
-                SELECT DISTINCT ProductionScheduler
-                FROM raw_sap_labor_hours
-                WHERE Plant = @plant AND ProductionScheduler IS NOT NULL AND ProductionScheduler <> ''
-                ORDER BY ProductionScheduler;
-            `),
-
-      // F. Trend
-      pool.request()
-        .input('s', sql.Date, startDay)
-        .input('e', sql.Date, endDay)
-        .input('plant', sql.NVarChar, plant)
-        .input('year', sql.NVarChar, year)
-        .query(trendQuery),
-
-      // G. Details
-      pool.request()
-        .input('s', sql.Date, startDay)
-        .input('e', sql.Date, endDay)
-        .input('plant', sql.NVarChar, plant)
-        .query(`
-                SELECT TOP 50 
-                  TRY_CAST(l.PostingDate AS DATE) as PostingDate, 
-                  l.OrderNumber, l.Material, l.EarnedLaborTime as actualEH, 
-                  l.WorkCenter, l.Plant, om.area, om.operation_name as operationDesc
-                FROM raw_sap_labor_hours l
-                LEFT JOIN (SELECT operation_name, erp_code, MAX(area) as area FROM dim_operation_mapping WHERE erp_code = @plant GROUP BY operation_name, erp_code) om 
-                    ON l.OperationDesc = om.operation_name AND l.Plant = om.erp_code
-                WHERE TRY_CAST(l.PostingDate AS DATE) BETWEEN @s AND @e AND l.Plant = @plant ${areaFilter}
-                ORDER BY l.PostingDate DESC
-            `),
-
-      // H. Anomalies
-      pool.request()
-        .input('s', sql.Date, startDay)
-        .input('e', sql.Date, endDay)
-        .input('plant', sql.NVarChar, plant)
-        .query(`
-                SELECT TOP 5 
-                  l.Material, 
-                  ISNULL(SUM(l.EarnedLaborTime), 0) as actualEH, 
-                  COUNT(*) as orderCount
-                FROM raw_sap_labor_hours l
-                LEFT JOIN (SELECT operation_name, erp_code, MAX(area) as area FROM dim_operation_mapping WHERE erp_code = @plant GROUP BY operation_name, erp_code) om 
-                    ON l.OperationDesc = om.operation_name AND l.Plant = om.erp_code
-                WHERE TRY_CAST(l.PostingDate AS DATE) BETWEEN @s AND @e AND l.Plant = @plant ${areaFilter}
-                GROUP BY l.Material 
-                ORDER BY actualEH DESC
-            `),
-
-      // I. DEBUG: Data Accuracy Check (Check for duplication on specific date)
-      pool.request()
-        .input('plant', sql.NVarChar, plant)
-        .query(`
-                SELECT 
-                    '2024-10-26' as CheckDate,
-                    (SELECT SUM(EarnedLaborTime) FROM raw_sap_labor_hours WHERE TRY_CAST(PostingDate AS DATE) = '2024-10-26' AND Plant = @plant) as RawSum,
-                    (SELECT SUM(l.EarnedLaborTime) 
-                     FROM raw_sap_labor_hours l 
-                     LEFT JOIN (SELECT operation_name, erp_code, MAX(area) as area FROM dim_operation_mapping WHERE erp_code = @plant GROUP BY operation_name, erp_code) om 
+    if (mode === 'records') {
+      // Records Mode: Only fetch details (paginated)
+      promises = [
+        Promise.resolve(null), // summary
+        Promise.resolve(null), // yesterday
+        Promise.resolve(null), // weekly
+        Promise.resolve(null), // areaDist
+        Promise.resolve(null), // filterOptions
+        Promise.resolve(null), // trend
+        pool.request()
+          .input('s', sql.Date, startDay)
+          .input('e', sql.Date, endDay)
+          .input('plant', sql.NVarChar, plant)
+          .input('offset', sql.Int, offset)
+          .input('limit', sql.Int, pageSize)
+          .query(`
+                    SELECT 
+                        TRY_CAST(l.PostingDate AS DATE) as PostingDate, 
+                        l.OrderNumber, m.BatchNumber, l.Material, l.EarnedLaborTime as actualEH, l.ActualQuantity,
+                        l.WorkCenter, l.Plant, l.ProductionScheduler as productLine,
+                        l.Operation, l.OperationDesc as rawOpDesc, 
+                        om.area, 
+                        om.display_name as operationDesc
+                    FROM raw_sap_labor_hours l
+                    LEFT JOIN (SELECT operation_name, display_name, erp_code, MAX(area) as area FROM dim_operation_mapping WHERE erp_code = @plant GROUP BY operation_name, display_name, erp_code) om 
                         ON l.OperationDesc = om.operation_name AND l.Plant = om.erp_code
-                     WHERE TRY_CAST(l.PostingDate AS DATE) = '2024-10-26' AND l.Plant = @plant) as JoinedSum,
-                     (SELECT COUNT(*) FROM dim_operation_mapping WHERE erp_code = @plant) as TotalMappings,
-                     (SELECT COUNT(*) FROM (SELECT operation_name, COUNT(*) as c FROM dim_operation_mapping WHERE erp_code = @plant GROUP BY operation_name HAVING COUNT(*) > 1) as Dups) as DuplicateMappingsCount
-            `)
-    ]);
+                    OUTER APPLY (
+                        SELECT TOP 1 BatchNumber 
+                        FROM raw_mes m
+                        WHERE m.ProductionOrder = l.OrderNumber
+                    ) m
+                    WHERE TRY_CAST(l.PostingDate AS DATE) BETWEEN @s AND @e AND l.Plant = @plant ${areaFilter}
+                    ORDER BY l.PostingDate DESC
+                    OFFSET @offset ROWS FETCH NEXT @limit ROWS ONLY
+                `), // details
+        Promise.resolve(null), // anomalies
+        Promise.resolve(null), // debug
+        Promise.resolve(null)  // heatmap
+      ];
+    } else {
+      // Dashboard Mode: Fetch everything EXCEPT details (return empty array for details)
+      promises = [
+        // A. Summary
+        pool.request()
+          .input('s', sql.Date, startDay)
+          .input('e', sql.Date, endDay)
+          .input('plant', sql.NVarChar, plant)
+          .input('year', sql.NVarChar, year)
+          .query(`
+                        DECLARE @FYStart DATE;
+                        SELECT @FYStart = MIN(TRY_CAST(date AS DATE)) FROM dim_calendar WHERE fiscal_year = @year;
+
+                        SELECT 
+                        ISNULL(SUM(l.EarnedLaborTime), 0) as actualEH,
+                        (SELECT ISNULL(SUM(${targetCol}), 0) FROM dim_production_targets WHERE TRY_CAST(Date AS DATE) BETWEEN @s AND @e) as targetEH,
+                        (SELECT COUNT(*) 
+                        FROM dim_production_targets 
+                        WHERE TRY_CAST(Date AS DATE) >= @s 
+                            AND TRY_CAST(Date AS DATE) <= @e 
+                            AND TRY_CAST(Date AS DATE) < CAST(GETDATE() AS DATE) 
+                            AND ${targetCol} > 0
+                        ) as actualDays,
+                        (SELECT ISNULL(SUM(is_workday), 0) FROM dim_production_targets WHERE TRY_CAST(Date AS DATE) BETWEEN @s AND @e) as targetDays,
+                        (SELECT ISNULL(SUM(l2.EarnedLaborTime), 0) 
+                        FROM raw_sap_labor_hours l2
+                        LEFT JOIN (SELECT operation_name, erp_code, MAX(area) as area FROM dim_operation_mapping WHERE erp_code = @plant GROUP BY operation_name, erp_code) om2 
+                            ON l2.OperationDesc = om2.operation_name AND l2.Plant = om2.erp_code
+                        WHERE TRY_CAST(l2.PostingDate AS DATE) BETWEEN @FYStart AND @e AND l2.Plant = @plant ${areaFilter.replace(/om\./g, 'om2.')} ${schedulerFilter.replace('rslh.', 'l2.')}) as ytdActualEH,
+                        (SELECT ISNULL(SUM(${targetCol}), 0) FROM dim_production_targets WHERE TRY_CAST(Date AS DATE) BETWEEN @FYStart AND @e) as ytdTargetEH
+                        FROM raw_sap_labor_hours l
+                        LEFT JOIN (SELECT operation_name, erp_code, MAX(area) as area FROM dim_operation_mapping WHERE erp_code = @plant GROUP BY operation_name, erp_code) om 
+                            ON l.OperationDesc = om.operation_name AND l.Plant = om.erp_code
+                        WHERE TRY_CAST(l.PostingDate AS DATE) BETWEEN @s AND @e AND l.Plant = @plant ${areaFilter} ${schedulerFilter.replace('rslh.', 'l.')}
+                    `),
+
+        // B. Yesterday
+        pool.request()
+          .input('plant', sql.NVarChar, plant)
+          .query(`
+                        SELECT 
+                        ISNULL(om.area, 'Unknown') as area,
+                        ISNULL(om.display_name, 'Unknown') as operationName,
+                        ISNULL(SUM(rslh.EarnedLaborTime), 0) as yesterdayHours
+                        FROM raw_sap_labor_hours rslh
+                        LEFT JOIN (SELECT operation_name, display_name, erp_code, MAX(area) as area FROM dim_operation_mapping WHERE erp_code = @plant GROUP BY operation_name, display_name, erp_code) om 
+                            ON rslh.OperationDesc = om.operation_name AND rslh.Plant = om.erp_code
+                        WHERE TRY_CAST(rslh.PostingDate AS DATE) = DATEADD(day, -1, CAST(GETDATE() AS DATE))
+                        AND rslh.Plant = @plant
+                        ${areaFilter.replace('om.', 'om.')}
+                        ${schedulerFilter}
+                        GROUP BY om.area, om.display_name
+                    `),
+
+        // C. Weekly
+        pool.request()
+          .input('s', sql.Date, startDay)
+          .input('e', sql.Date, endDay)
+          .input('plant', sql.NVarChar, plant)
+          .query(`
+                        SELECT 
+                        ISNULL(om.area, 'Unknown') as area,
+                        ISNULL(om.display_name, 'Unknown') as operationName,
+                        dc.fiscal_week as fiscalWeek,
+                        ISNULL(SUM(rslh.EarnedLaborTime), 0) as weeklyHours
+                        FROM raw_sap_labor_hours rslh
+                        LEFT JOIN dim_calendar dc ON TRY_CAST(rslh.PostingDate AS DATE) = TRY_CAST(dc.date AS DATE)
+                        LEFT JOIN (SELECT operation_name, display_name, erp_code, MAX(area) as area FROM dim_operation_mapping WHERE erp_code = @plant GROUP BY operation_name, display_name, erp_code) om 
+                            ON rslh.OperationDesc = om.operation_name AND rslh.Plant = om.erp_code
+                        WHERE TRY_CAST(dc.date AS DATE) BETWEEN @s AND @e
+                        AND rslh.Plant = @plant
+                        ${areaFilter.replace('om.', 'om.')}
+                        ${schedulerFilter}
+                        GROUP BY om.area, om.display_name, dc.fiscal_week
+                        ORDER BY om.area, om.display_name, dc.fiscal_week
+                    `),
+
+        // D. Area Dist
+        pool.request()
+          .input('s', sql.Date, startDay)
+          .input('e', sql.Date, endDay)
+          .input('plant', sql.NVarChar, plant)
+          .query(`
+                        SELECT 
+                        ISNULL(om.area, 'Unknown') as area,
+                        ISNULL(SUM(l.EarnedLaborTime), 0) as earnedHours
+                        FROM raw_sap_labor_hours l
+                        LEFT JOIN (SELECT operation_name, erp_code, MAX(area) as area FROM dim_operation_mapping WHERE erp_code = @plant GROUP BY operation_name, erp_code) om 
+                            ON l.OperationDesc = om.operation_name AND l.Plant = om.erp_code
+                        WHERE TRY_CAST(l.PostingDate AS DATE) BETWEEN @s AND @e AND l.Plant = @plant ${areaFilter} ${schedulerFilter.replace('rslh.', 'l.')}
+                        GROUP BY om.area
+                        ORDER BY earnedHours DESC
+                    `),
+
+        // E. Filter Options
+        pool.request()
+          .input('plant', sql.NVarChar, plant)
+          .query(`
+                        SELECT DISTINCT area
+                        FROM dim_operation_mapping
+                        WHERE erp_code = @plant AND area IS NOT NULL
+                        ORDER BY area;
+
+                        SELECT DISTINCT operation_name
+                        FROM dim_operation_mapping
+                        WHERE erp_code = @plant AND operation_name IS NOT NULL
+                        ${areasParam ? `AND area IN (${areasParam.split(',').map(a => `'${a.replace(/'/g, "''")}'`).join(',')})` : ''}
+                        ORDER BY operation_name;
+
+                        /* Additional logic for cleaned names list if UI needs it */
+                        SELECT DISTINCT display_name as operation_name
+                        FROM dim_operation_mapping
+                        WHERE erp_code = @plant AND display_name IS NOT NULL
+                        ${areasParam ? `AND area IN (${areasParam.split(',').map(a => `'${a.replace(/'/g, "''")}'`).join(',')})` : ''}
+                        ORDER BY display_name;
+                        
+                        SELECT DISTINCT ProductionScheduler
+                        FROM raw_sap_labor_hours
+                        WHERE Plant = @plant AND ProductionScheduler IS NOT NULL AND ProductionScheduler <> ''
+                        ORDER BY ProductionScheduler;
+                    `),
+
+        // F. Trend
+        pool.request()
+          .input('s', sql.Date, startDay)
+          .input('e', sql.Date, endDay)
+          .input('plant', sql.NVarChar, plant)
+          .input('year', sql.NVarChar, year)
+          .query(trendQuery),
+
+        // G. Details - SKIPPED IN DASHBOARD MODE
+        Promise.resolve({ recordset: [] }),
+
+        // H. Anomalies
+        pool.request()
+          .input('s', sql.Date, startDay)
+          .input('e', sql.Date, endDay)
+          .input('plant', sql.NVarChar, plant)
+          .query(`
+                        SELECT TOP 5 
+                        l.Material, 
+                        ISNULL(SUM(l.EarnedLaborTime), 0) as actualEH, 
+                        COUNT(*) as orderCount
+                        FROM raw_sap_labor_hours l
+                        LEFT JOIN (SELECT operation_name, display_name, erp_code, MAX(area) as area FROM dim_operation_mapping WHERE erp_code = @plant GROUP BY operation_name, display_name, erp_code) om 
+                            ON l.OperationDesc = om.operation_name AND l.Plant = om.erp_code
+                        WHERE TRY_CAST(l.PostingDate AS DATE) BETWEEN @s AND @e AND l.Plant = @plant ${areaFilter}
+                        GROUP BY l.Material 
+                        ORDER BY actualEH DESC
+                    `),
+
+        // I. DEBUG: Data Accuracy Check
+        pool.request()
+          .input('plant', sql.NVarChar, plant)
+          .query(`
+                        SELECT 
+                            '2024-10-26' as CheckDate,
+                            (SELECT SUM(EarnedLaborTime) FROM raw_sap_labor_hours WHERE TRY_CAST(PostingDate AS DATE) = '2024-10-26' AND Plant = @plant) as RawSum,
+                            0 as JoinedSum, 0 as TotalMappings, 0 as DuplicateMappingsCount
+                    `),
+        // J. Heatmap Data (Last 20 Days from EndDate, but capped at today)
+        pool.request()
+          .input('e', sql.Date, endDay)
+          .input('plant', sql.NVarChar, plant)
+          .query(`
+                        -- Use the earlier of endDay or today to avoid querying future dates
+                        DECLARE @effectiveEnd DATE = CASE WHEN @e > CAST(GETDATE() AS DATE) THEN CAST(GETDATE() AS DATE) ELSE @e END;
+                        
+                        SELECT 
+                            COALESCE(om.display_name, l.OperationDesc) as op,
+                            MAX(om.area) as area,
+                            CAST(l.PostingDate AS DATE) as date,
+                            SUM(l.EarnedLaborTime) as val
+                        FROM raw_sap_labor_hours l
+                        LEFT JOIN (SELECT operation_name, display_name, erp_code, MAX(area) as area FROM dim_operation_mapping WHERE erp_code = @plant GROUP BY operation_name, display_name, erp_code) om 
+                            ON LTRIM(RTRIM(l.OperationDesc)) = LTRIM(RTRIM(om.operation_name)) AND l.Plant = om.erp_code
+                        WHERE l.Plant = @plant
+                        AND CAST(l.PostingDate AS DATE) BETWEEN DATEADD(day, -20, @effectiveEnd) AND @effectiveEnd
+                        ${areaFilter}
+                        ${processesParam ? `AND COALESCE(om.display_name, l.OperationDesc) IN (${processesParam.split(',').map(p => `'${p.replace(/'/g, "''")}'`).join(',')})` : ''}
+                        ${productSchedulersParam ? `AND l.ProductionScheduler IN (${productSchedulersParam.split(',').map(s => `'${s.replace(/'/g, "''")}'`).join(',')})` : ''}
+                        GROUP BY COALESCE(om.display_name, l.OperationDesc), CAST(l.PostingDate AS DATE)
+                        ORDER BY op, date
+                    `)
+      ];
+    }
+
+    const [summaryRes, yesterdayRes, weeklyRes, areaDistRes, filterOptionsRes, trendRes, detailsRes, anomaliesRes, debugRes, heatmapRes] = await Promise.all(promises);
 
     // 5. Post-Processing & Transformations
-    const summary = summaryRes.recordset[0];
-    const totalEH = areaDistRes.recordset.reduce((sum: number, r: any) => sum + (r.earnedHours || 0), 0);
+    // If mode is records, return simplified JSON
+    if (mode === 'records') {
+      return NextResponse.json({
+        details: (detailsRes as any).recordset,
+        page,
+        pageSize,
+        hasMore: (detailsRes as any).recordset.length === pageSize
+      });
+    }
+
+    const summary = (summaryRes as any).recordset[0];
+    const totalEH = (areaDistRes as any).recordset.reduce((sum: number, r: any) => sum + (r.earnedHours || 0), 0);
 
     // Build area distribution structure
     const areaMap = new Map();
-    areaDistRes.recordset.forEach((r: any) => {
+    (areaDistRes as any).recordset.forEach((r: any) => {
       areaMap.set(r.area, {
         area: r.area,
         totalHours: r.earnedHours,
@@ -317,17 +402,19 @@ export async function GET(req: NextRequest) {
 
     // Group yesterday and weekly data
     const operationMap = new Map();
-    yesterdayRes.recordset.forEach((r: any) => {
+    (yesterdayRes as any).recordset.forEach((r: any) => {
       const key = `${r.area}|${r.operationName}`;
-      operationMap.set(key, { area: r.area, operationName: r.operationName, yesterday: r.yesterdayHours, weeklyData: [] });
+      operationMap.set(key, { area: r.area, operationName: r.operationName, yesterday: r.yesterdayHours, weeklyData: [], totalHours: 0 });
     });
 
-    weeklyRes.recordset.forEach((r: any) => {
+    (weeklyRes as any).recordset.forEach((r: any) => {
       const key = `${r.area}|${r.operationName}`;
       if (!operationMap.has(key)) {
-        operationMap.set(key, { area: r.area, operationName: r.operationName, yesterday: 0, weeklyData: [] });
+        operationMap.set(key, { area: r.area, operationName: r.operationName, yesterday: 0, weeklyData: [], totalHours: 0 });
       }
-      operationMap.get(key).weeklyData.push({ fiscalWeek: r.fiscalWeek, hours: r.weeklyHours });
+      const item = operationMap.get(key);
+      item.weeklyData.push({ fiscalWeek: r.fiscalWeek, hours: r.weeklyHours });
+      item.totalHours += r.weeklyHours;
     });
 
     // Populate operations into areas
@@ -336,27 +423,29 @@ export async function GET(req: NextRequest) {
         areaMap.get(op.area).operations.push({
           operationName: op.operationName,
           yesterday: op.yesterday,
+          actualEH: op.totalHours, // Include the total EH for this operation
           weeklyData: op.weeklyData
         });
       }
     });
 
     const areaOperationDetail = Array.from(areaMap.values());
-    const availableAreas = (filterOptionsRes.recordsets as any)[0].map((r: any) => r.area);
-    const availableOperations = (filterOptionsRes.recordsets as any)[1].map((r: any) => r.operation_name);
-    const availableSchedulers = (filterOptionsRes.recordsets as any)[2].map((r: any) => r.ProductionScheduler);
+    const availableAreas = (filterOptionsRes as any).recordsets[0].map((r: any) => r.area);
+    const availableOperations = (filterOptionsRes as any).recordsets[2].map((r: any) => r.operation_name);
+    const availableSchedulers = (filterOptionsRes as any).recordsets[3].map((r: any) => r.ProductionScheduler);
 
     return NextResponse.json({
       summary: { ...summary, actualAvgEH: summary.actualEH / (summary.actualDays || 1), targetAvgEH: summary.targetEH / (summary.targetDays || 1) },
-      trend: trendRes.recordset,
-      anomalies: anomaliesRes.recordset,
-      details: detailsRes.recordset,
+      trend: (trendRes as any).recordset,
+      anomalies: (anomaliesRes as any).recordset,
+      details: [], // Skip details in dashboard mode
       areaOperationDetail,
       filterOptions: {
         areas: availableAreas,
         operations: availableOperations,
         schedulers: availableSchedulers
-      }
+      },
+      heatmap: (heatmapRes as any).recordset
     });
 
   } catch (error: any) {

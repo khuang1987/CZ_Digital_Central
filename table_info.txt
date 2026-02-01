@@ -1,0 +1,35 @@
+--- Columns in raw_sap_labor_hours ---
+- id
+- Plant
+- WorkCenter
+- WorkCenterDesc
+- CostCenter
+- CostCenterDesc
+- Material
+- MaterialDesc
+- MaterialType
+- MRPController
+- MRPControllerDesc
+- ProductionScheduler
+- ProductionSchedulerDesc
+- OrderNumber
+- OrderType
+- OrderTypeDesc
+- Operation
+- OperationDesc
+- PostingDate
+- EarnedLaborUnit
+- MachineTime
+- EarnedLaborTime
+- ActualQuantity
+- ActualScrapQty
+- TargetQuantity
+- record_hash
+
+--- Sample Data ---
+   id Plant     WorkCenter WorkCenterDesc CostCenter CostCenterDesc Material MaterialDesc MaterialType MRPController MRPControllerDesc ProductionScheduler    ProductionSchedulerDesc  OrderNumber OrderType OrderTypeDesc  Operation OperationDesc PostingDate EarnedLaborUnit  MachineTime  EarnedLaborTime  ActualQuantity  ActualScrapQty  TargetQuantity                record_hash
+0   1  1303    1303/OSP-CH           None       None           None     None         None         None          None              None            1303/CIN  Instrument VS SUPV CZ OPS    222677501      None          None         80        镀铬（外协）  2021-09-14            Hour          0.0            0.000         54648.0         43056.0         99360.0   222677501|80|2021-09-14|
+1   2  1303    1303/C01-08           None       None           None     None         None         None          None              None            1303/CIN  Instrument VS SUPV CZ OPS    222677501      None          None         90            清洗  2021-09-15            Hour          0.0            1.650            33.0             0.0            60.0   222677501|90|2021-09-15|
+2   3  1303  1303/KPL08-03           None       None           None     None         None         None          None              None            1303/CIN  Instrument VS SUPV CZ OPS    222677501      None          None        100            钝化  2021-09-15            Hour          0.0            2.475            33.0             0.0            60.0  222677501|100|2021-09-15|
+3   4  1303    1303/I01-08           None       None           None     None         None         None          None              None            1303/CIN  Instrument VS SUPV CZ OPS    222677501      None          None        110            终检  2021-09-15            Hour          0.0            2.750            33.0             0.0            60.0  222677501|110|2021-09-15|
+4   5  1303    1303/B01-10           None       None           None     None         None         None          None              None            1303/CIM     Implant VS SUPV CZ OPS    222763694      None          None         40            钳工  2021-10-13            Hour          0.0            6.667           381.0            19.0           500.0   222763694|40|2021-10-13|

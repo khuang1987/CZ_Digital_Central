@@ -200,13 +200,24 @@ def format_labor_hour(force_refresh: bool = False) -> bool:
                 target_df = target_df.iloc[7:].reset_index(drop=True)
                 
                 # 适配列数：如果列数刚好是 26 或更多，则应用表头
-                if target_df.shape[1] >= len(SAP_YPP_M03_HEADERS):
-                    # 只取前 26 列并重命名
-                    target_df = target_df.iloc[:, :len(SAP_YPP_M03_HEADERS)]
-                    target_df.columns = SAP_YPP_M03_HEADERS
-                    log_callback(f"[INFO] 已统一定义 27 列业务表头 (包括 OrderNumber, Machine Time 等)")
+                # FIX: Relaxed check to >= 26 (Allow missing TargetQuantity)
+                if target_df.shape[1] >= 26:
+                    # 动态适配表头长度
+                    current_cols_count = target_df.shape[1]
+                    expected_count = len(SAP_YPP_M03_HEADERS) # 27
+                    
+                    if current_cols_count >= expected_count:
+                        # 只有当列数足够时才截断
+                        target_df = target_df.iloc[:, :expected_count]
+                        target_df.columns = SAP_YPP_M03_HEADERS
+                    else:
+                        # 列数不够 (e.g. 26)，只应用前 N 个表头
+                        log_callback(f"[INFO] 列数 ({current_cols_count}) 少于标准 ({expected_count})，应用部分表头")
+                        target_df.columns = SAP_YPP_M03_HEADERS[:current_cols_count]
+
+                    log_callback(f"[INFO] 已统一定义业务表头")
                 else:
-                    log_callback(f"[WARN] 数据列数 ({target_df.shape[1]}) 少于预期 ({len(SAP_YPP_M03_HEADERS)})，尝试强制赋值...")
+                    log_callback(f"[WARN] 数据列数 ({target_df.shape[1]}) 少于预期 (26)，尝试强制赋值...")
                     target_df.columns = [SAP_YPP_M03_HEADERS[i] if i < len(SAP_YPP_M03_HEADERS) else f"Col_{i}" 
                                        for i in range(target_df.shape[1])]
 
@@ -250,6 +261,30 @@ def format_labor_hour(force_refresh: bool = False) -> bool:
                 os.remove(input_file)
             except: pass
             
+            # --- Cleanup Old SAP Export Files (Keep Latest Only) ---
+            try:
+                # Find all SAP_laborhour_*.xlsx files
+                sap_files = []
+                for f in os.listdir(data_folder):
+                    if f.startswith('SAP_laborhour_') and f.endswith('.xlsx'):
+                        full_path = os.path.join(data_folder, f)
+                        sap_files.append((full_path, os.path.getmtime(full_path)))
+                
+                # Sort by mtime descending (Newest first)
+                sap_files.sort(key=lambda x: x[1], reverse=True)
+                
+                # Keep index 0, delete the rest
+                if len(sap_files) > 1:
+                    for i in range(1, len(sap_files)):
+                        file_to_del = sap_files[i][0]
+                        try:
+                            os.remove(file_to_del)
+                            log_callback(f"[INFO] 自动清理旧备份: {os.path.basename(file_to_del)}")
+                        except Exception as e:
+                            log_callback(f"[WARN] 清理文件失败: {e}")
+            except Exception as e:
+                log_callback(f"[WARN] 清理过程异常: {e}")
+
             return True
 
         except Exception as e:
