@@ -79,19 +79,60 @@ def resolve_path(path_str: str) -> Path:
         
     on_drive_root = str(get_onedrive_root()).replace("\\", "/")
     
-    # Simple replace
+    # Use denormalize logic for consistent result
+    resolved = denormalize_path(path_str)
+    return Path(resolved)
+
+def normalize_path(path_str: str) -> str:
+    """
+    Convert an absolute OneDrive path into a placeholder-based path.
+    Example: C:/Users/huangk14/OneDrive... -> ${MDDAP_ONEDRIVE_ROOT}/...
+    """
+    if not path_str:
+        return path_str
+        
+    on_drive_root = str(get_onedrive_root()).replace("\\", "/")
+    path_str = path_str.replace("\\", "/")
+    
+    # 1. Check current user's root
+    if path_str.startswith(on_drive_root):
+        return path_str.replace(on_drive_root, "${MDDAP_ONEDRIVE_ROOT}")
+        
+    # 2. Check hardcoded legacy roots (for migration)
+    legacy_roots = [
+        "C:/Users/huangk14/OneDrive - Medtronic PLC",
+        "C:/Users/czxmfg/OneDrive - Medtronic PLC"
+    ]
+    
+    for legacy in legacy_roots:
+        if path_str.startswith(legacy):
+            return path_str.replace(legacy, "${MDDAP_ONEDRIVE_ROOT}")
+            
+    return path_str
+
+def denormalize_path(path_str: str) -> str:
+    """
+    Convert a placeholder-based path back to an absolute path for the current user.
+    """
+    if not path_str:
+        return path_str
+        
+    on_drive_root = str(get_onedrive_root()).replace("\\", "/")
+    
+    # Replace placeholder
     resolved = path_str.replace("${MDDAP_ONEDRIVE_ROOT}", on_drive_root)
     
-    # Also handle the hardcoded legacy string widely used in config
-    legacy_root = "C:/Users/huangk14/OneDrive - Medtronic PLC"
-    legacy_root_win = r"C:\Users\huangk14\OneDrive - Medtronic PLC"
+    # Also handle legacy hardcoded strings in case they are still in config
+    legacy_roots = [
+        "C:/Users/huangk14/OneDrive - Medtronic PLC",
+        "C:/Users/czxmfg/OneDrive - Medtronic PLC"
+    ]
     
-    if path_str.startswith(legacy_root):
-        resolved = path_str.replace(legacy_root, on_drive_root)
-    elif path_str.startswith(legacy_root_win):
-        resolved = path_str.replace(legacy_root_win, on_drive_root)
-        
-    return Path(resolved)
+    for legacy in legacy_roots:
+        if resolved.startswith(legacy):
+            resolved = resolved.replace(legacy, on_drive_root)
+            
+    return resolved.replace("\\", "/")
 
 def load_yaml_with_env(file_path: Path) -> Dict[str, Any]:
     """

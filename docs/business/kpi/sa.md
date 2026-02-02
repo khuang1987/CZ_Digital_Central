@@ -1,52 +1,60 @@
-# SA - 计划达成率
+# 🎯 SA - 计划达成率 (Schedule Adherence)
 
-**Schedule Adherence（SA）** 是供应链 KPI 体系中的核心指标，用于衡量生产是否按照既定生产计划执行。
-
-!!! success "多工厂支持"
-    🏭 **当前支持CZM工厂(ERPCode 1303) + CKH工厂(ERPCode 9997)数据统一处理**
-    
-    - **CZM工厂**: 108,992条记录，36个工序
-    - **CKH工厂**: 62,059条记录，38个工序  
-    - **管理区域**: 9个标准化管理区域分类
-    - **数据整合**: 统一的SA指标计算和分析
-
-!!! info "指标归属"
-    SA 指标属于 **[供应链部门 KPI](supply-chain.md)** 体系，是评估生产计划执行情况的关键指标。
+> [!NOTE]
+> **业务核心**：SA 不仅仅是一个百分比，它是我们车间“言行一致”的考量。高 SA 意味着我们能够准时交付产品给客户，减少不必要的催货成本。
 
 ---
 
-## 什么是 SA 指标？
+## 🚀 业务全景：我的操作如何影响 SA？
 
-### 官方定义
+对于业务人员，请关注以下“因果关系”：
 
-!!! quote "英文原文"
-    Schedule Adherence is a metric revealing whether or not production is adhering to the scheduled operating plan. The metric is defined as a percentage of output over demand. Schedule Adherence plays an important role in production performance.
+```mermaid
+graph TD
+    %% 行为
+    Action1[及时报工] --> Result1(SA 提升)
+    Action2[SAP 标准不准] --> Result2(SA 虚高或虚低)
+    Action3[周末加班未记录] --> Result3(SA 下降)
 
-!!! info "中文解读"
-    Schedule Adherence（计划达成率）是衡量生产是否按照既定生产计划执行的重要指标。该指标通常以"产出/需求"的百分比来表示，反映了生产实际完成情况与计划之间的吻合程度。计划达成率在生产绩效中起着重要作用。
+    %% 影响
+    Result1 --> Value1{客户满意}
+    Result2 --> Value2{决策失误}
+    Result3 --> Value3{管理浪费}
+
+    style Result1 fill:#e8f5e9
+    style Action1 fill:#e1f5fe
+```
 
 ---
 
-## 核心概念
+## 🛠️ 逻辑直击：为什么我的单子逾期了？
 
-### 计算公式
+系统采用以下逻辑判定一个批次是否“按期”：
 
-SA 指标的基本计算公式：
+### 1. 核心判定公式
+> **SA 状态 = 实际完工时间是否小于“应完工时间”**
 
-\[
-SA(\%) = \frac{\text{按期完成的批次数}}{\text{总批次数}} \times 100\%
-\]
+### 2. 应完工时间 (DueTime) 是怎么算的？
+应完工时间 = **开始时间** + **标准耗时 (ST)** + **非工作日宽限**。
 
-### 判断标准
+*   **案例 1：正常工作周**
+    *   开始：周一 08:00
+    *   ST：24 小时
+    *   应完工：周二 08:00
+*   **案例 2：跨周末生产 (系统自动处理)**
+    *   开始：周五 08:00
+    *   ST：48 小时
+    *   应完工：**下周二 08:00** (系统自动扣除了周六、周日的 48 小时非工作时间)
 
-单个批次的 SA 状态判断：
+---
 
-- **按期（OnTime）**：实际完工时间 ≤ 应完工时间
-- **逾期（Overdue）**：实际完工时间 > 应完工时间
+## 💡 业务优化指南：如何提升 SA？
 
-其中：
-- **实际完工时间**：TrackOutTime（工序报工时间）
-- **应完工时间**：DueTime = TrackInTime + ST(d) + Weekend(d)
+| 观察到的现象 | 可能的原因 | 建议采取的行动 |
+| :--- | :--- | :--- |
+| **SA 长期维持在 100%** | 标准可能过松，存在产能浪费。 | IE 团队重新评估 SAP 标准工时 (ST)。 |
+| **SA 突然大幅下滑** | 可能是设备故障或物料短缺。 | 查看 [智能监控](../monitoring/overview.md) 触发的 Planner 异常单。 |
+| **SA 正常但库存积压** | 可能是“为了达标而达标”，导致 Lead Time 过长。 | 交叉检查 [生产周期 (LT)](cycle-time.md) 指标。 |
 
 ---
 

@@ -2,11 +2,11 @@
 
 # 数据源配置
 source:
-  product_inspection_path: "C:/Users/huangk14/OneDrive - Medtronic PLC/CZ Production - 文档/General/POWER BI 数据源 V2/70-SFC导出数据/班组合格率数据/*.xlsx"
+  product_inspection_path: "${MDDAP_ONEDRIVE_ROOT}/CZ Production - 文档/General/POWER BI 数据源 V2/70-SFC导出数据/班组合格率数据/*.xlsx"
 
 # 输出配置
 output:
-  base_dir: "C:/Users/huangk14/OneDrive - Medtronic PLC/CZ Production - 文档/General/POWER BI 数据源 V2/30-MES导出数据/publish"
+  base_dir: "${MDDAP_ONEDRIVE_ROOT}/CZ Production - 文档/General/POWER BI 数据源 V2/30-MES导出数据/publish"
   file_name: "SFC_Product_Inspection_latest.parquet"
   excel_file: "SFC_Product_Inspection_latest.xlsx"
 

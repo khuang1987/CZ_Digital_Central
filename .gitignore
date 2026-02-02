@@ -93,4 +93,6 @@ clienttest/
 server_deploy_package/
 
 # Temporary Scripts
-*_extensions_v2.ps1
+# JavaScript Dependencies
+node_modules/
+.next/

@@ -1,0 +1,38 @@
+# Unified Configuration for CZ Digital Central
+# This file consolidates settings for all data sources and platform services.
+
+platform:
+  version: "1.5.0"
+  rebranding_date: "2026-01-30"
+  owner: "CZ Digital Team"
+
+# Orchestration Settings
+orchestration:
+  max_parallel_tasks: 5
+  default_max_retries: 1
+  log_retention_days: 7
+
+# Data Source Specific Overrides
+# These will eventually replace individual source config files
+sources:
+  sfc:
+    batch_raw:
+      max_new_files: 22
+    inspection_raw:
+      max_new_files: 22
+  mes:
+    wip_days: 7
+  sap:
+    labor_hours:
+      mode: "ypp"
+
+# Validation Thresholds
+validation:
+  consistency_error_threshold: 0.005 # 0.5%
+  check_last_n_partitions: 2
+
+# Export Settings
+export:
+  format: "parquet"
+  compression: "snappy"
+  upload_to_sharepoint: true

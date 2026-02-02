@@ -513,11 +513,11 @@ class PlaywrightManager:
         self._log(f"启动自动登录流程 (用户: {username})")
         
         # Selectors
-        sel_email = "input[name='loginfmt'], input#email, input[type='email']"
+        sel_email = "input[name='loginfmt'], input#email, input[type='email'], input[placeholder*='email'], input[placeholder*='邮件'], input.pbi-text-input"
         sel_picker = f"div[role='listitem']:has-text('{username}')" # Specific user tile
         sel_password = "input[name='passwd'], input[type='password'], #i0118"
         sel_kmsi = "input[name='DontShowAgain']"
-        sel_submit = "input[type='submit'], button#idSIButton9, button.pbi-button"
+        sel_submit = "input[type='submit'], button#idSIButton9, button.pbi-button, button:has-text('传送'), button:has-text('傳送'), button#submitBtn, button:has-text('Submit'), button:has-text('Send')"
         
         # FIX: Ensure we are not on a blank page, otherwise elements won't load
         try:
@@ -544,7 +544,7 @@ class PlaywrightManager:
 
                 # --- 2. Login Page Logic ---
                 # If we are on a login page (Microsoft or PowerBI SSO)
-                if "login.microsoft" in current_url or "oauth2" in current_url or "signin" in current_url:
+                if any(kw in current_url for kw in ["login.microsoft", "oauth2", "signin", "singlesignon", "powerbi.com/singlesignon"]):
                     
                     # A. Email Input
                     # User feedback: Prioritize checking input if on login page

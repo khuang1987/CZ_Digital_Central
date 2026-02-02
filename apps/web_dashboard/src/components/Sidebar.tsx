@@ -25,7 +25,8 @@ export default function Sidebar() {
 
     const isActive = (href: string) => {
         if (href === '/') return pathname === '/';
-        return pathname.startsWith(href.split('/').slice(0, 2).join('/'));
+        // Use exact check or specific prefix check to avoid highlighting multiple items in /production/
+        return pathname === href;
     };
 
     return (

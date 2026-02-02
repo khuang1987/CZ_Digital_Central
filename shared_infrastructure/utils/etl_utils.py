@@ -43,7 +43,7 @@ def setup_logging(cfg: Dict[str, Any], base_dir: str = None) -> None:
 
 
 
-from shared_infrastructure.env_utils import load_yaml_with_env
+from shared_infrastructure.env_utils import load_yaml_with_env, normalize_path, denormalize_path
 
 def load_config(config_path: str) -> Dict[str, Any]:
     """加载配置文件 (支持环境变量替换)"""
@@ -717,11 +717,14 @@ class IncrementalProcessor:
         current_mtime = os.path.getmtime(file_path)
         current_size = os.path.getsize(file_path)
         
+        # 使用归一化路径作为状态键值
+        norm_path = normalize_path(file_path)
         processed_files = self.state.get("processed_files", {})
-        if file_path not in processed_files:
+        
+        if norm_path not in processed_files:
             return True  # 新文件
         
-        file_info = processed_files[file_path]
+        file_info = processed_files[norm_path]
         stored_mtime = file_info.get("mtime")
         stored_size = file_info.get("size")
         
@@ -758,10 +761,12 @@ class IncrementalProcessor:
     def mark_file_processed(self, file_path: str) -> None:
         """标记文件为已处理"""
         if os.path.exists(file_path):
-            self.state["processed_files"][file_path] = {
+            norm_path = normalize_path(file_path)
+            self.state["processed_files"][norm_path] = {
                 "mtime": os.path.getmtime(file_path),
                 "size": os.path.getsize(file_path),
-                "processed_time": datetime.now().isoformat()
+                "processed_time": datetime.now().isoformat(),
+                "original_path": file_path # 保留原始路径供参考，但主键是归一化的
             }
     
     def _generate_record_id(self, row: pd.Series) -> str:

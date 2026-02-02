@@ -51,7 +51,6 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
 
     const productionTabs = [
         { label: '工时分析 (Labor EH)', href: '/production/labor-eh', icon: <Activity size={14} /> },
-        { label: 'EHS 安全 (Safety)', href: '/production/ehs', icon: <ShieldCheck size={14} /> },
         { label: '调试换型 (Changeover)', href: '/production/changeover', icon: <Zap size={14} /> },
         { label: 'OEE 看板', href: '/production/oee', icon: <BarChart size={14} />, disabled: true },
         { label: '物料查询', href: '/production/material', icon: <Package size={14} />, disabled: true },

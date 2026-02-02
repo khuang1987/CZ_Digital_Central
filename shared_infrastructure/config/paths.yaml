@@ -8,6 +8,21 @@ base_paths:
   business_domains: "../../../business_domains"
   data_pipelines: ".."
 
+# 环境上下文 (Environment Context)
+environment:
+  current: "dev" # options: dev, prod
+  dev:
+    sql_server: "localhost\\SQLEXPRESS"
+    sharepoint_base: "https://medtronic.sharepoint.com/teams/CZ_Digital"
+  prod:
+    sql_server: "CZ-PROD-SQL-01"
+    sharepoint_base: "https://medtronic.sharepoint.com/teams/CZ_Digital_Prod"
+
+# 外部资源链接 (External Resources)
+external_resources:
+  cmes_portal: "https://cmes.medtronic.com/reports"
+  planner_hub: "https://tasks.office.com/medtronic.com"
+
 # 共享基础设施路径
 shared_infrastructure_paths:
   config: "../../../shared_infrastructure/config"

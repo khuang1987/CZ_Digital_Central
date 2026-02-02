@@ -59,45 +59,39 @@ markdown_extensions:
 nav:
   - 🏠 首页: index.md
 
-  - 💼 数据聚合 (Data Aggregation):
-    - 数据定义与来源: business/data-definitions.md
-    - 核心计算逻辑: business/logic.md
+  - 📖 用户手册 (User Guide):
+    - 📈 KPI 指标概览: business/kpi/index.md
+    - 达成率 (SA): business/kpi/sa.md
+    - 质量与生产: business/kpi/quality.md
+    - 💡 核心计算逻辑: business/logic.md
+    - 📂 数据源定义: business/data-definitions.md
+    - 📊 报表使用指南: reports/guides/index.md
 
-  - 📈 KPI 指标体系 (KPI Metrics):
-    - 指标概览: business/kpi/index.md
-    - SA (达成率): business/kpi/sa.md
-    - 生产与质量: business/kpi/quality.md
+  - 🛠️ 运维手册 (Operations Manual):
+    - 🔍 运维概览: developer/ops/index.md
+    - 🚀 日常刷新流程: developer/ops/operations.md
+    - 🚑 故障排查: developer/ops/troubleshooting.md
+    - ❓ 常见问题 (FAQ): developer/ops/faq.md
+    - 📦 环境迁移指南: MIGRATION_GUIDE.md
+    - 🚨 监控管理 (Monitoring):
+      - 监控概览: monitoring/overview.md
+      - 预警规则: monitoring/triggers.md
+      - Planner 集成: monitoring/planner-integration.md
 
-  - 📊 报表看板 (Dashboard):
-    - 报表总览: reports/index.md
-    - 已完成报表: reports/completed/index.md
-    - 报表使用指南: reports/guides/index.md
-    - 报表维护: reports/maintenance/index.md
-
-  - 🚨 智能监控 (Monitoring):
-    - 监控体系概览: monitoring/overview.md
-    - 预警规则 (Rules): monitoring/triggers.md
-    - Planner 闭环集成: monitoring/planner-integration.md
-
-  - 🛠️ 开发与运维 (Dev & Ops):
-    - 架构设计: developer/data-architecture.md
-    - 并行调度器: developer/orchestrator.md
-    - 自动化逻辑 (Logic): developer/automation_logic.md
-    - ETL 流程详解: developer/etl-process.md
-    - 🔍 原始数据处理 (Raw ETL):
+  - 💻 技术文档 (Developer Guide):
+    - 🏗️ 架构设计: developer/data-architecture.md
+    - ⚙️ ETL 流程详解: developer/etl-process.md
+    - ⚡ 并行调度架构: developer/orchestrator.md
+    - 🤖 自动化逻辑: developer/automation_logic.md
+    - 🧹 原始数据处理:
       - SAP Routing: developer/raw_etl/sap_routing.md
       - MES Batch: developer/raw_etl/mes_batch.md
       - SFC Batch: developer/raw_etl/sfc_batch.md
       - Planner Tasks: developer/raw_etl/planner_tasks.md
-    - 代码规范: developer/standards/index.md
-    - Power Query:
+    - 📐 代码规范: developer/standards/index.md
+    - 💾 Power Query 指南:
       - 概览: developer/pq/index.md
       - 增量刷新: developer/pq/incremental-refresh.md
-    - 运维知识库 (Operations):
-      - 运维首页: developer/ops/index.md
-      - 操作与运维: developer/ops/operations.md
-      - 故障排查: developer/ops/troubleshooting.md
-      - 常见问题 (FAQ): developer/ops/faq.md
 
 
 

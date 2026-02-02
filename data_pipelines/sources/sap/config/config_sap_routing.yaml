@@ -5,7 +5,7 @@ logging:
   file: ../06_日志文件/etl_sap_routing.log
 
 output:
-  base_dir: "C:/Users/huangk14/OneDrive - Medtronic PLC/CZ Production - 文档/General/POWER BI 数据源 V2/30-MES导出数据/publish"
+  base_dir: "${MDDAP_ONEDRIVE_ROOT}/CZ Production - 文档/General/POWER BI 数据源 V2/30-MES导出数据/publish"
   parquet:
     compression: snappy
   excel:
@@ -14,7 +14,7 @@ output:
     include_stats: true
 
 source:
-  excel_base_dir: "C:/Users/huangk14/OneDrive - Medtronic PLC/General - CZ OPS生产每日产出登记"
+  excel_base_dir: "${MDDAP_ONEDRIVE_ROOT}/General - CZ OPS生产每日产出登记"
   factory_files:
     - file: "1303 Routing及机加工产品清单.xlsx"
       factory_code: "1303"

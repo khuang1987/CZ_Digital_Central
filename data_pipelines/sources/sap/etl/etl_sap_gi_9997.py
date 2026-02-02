@@ -285,7 +285,8 @@ def _table_row_count(db: SQLServerOnlyManager) -> int:
 
 def import_file(db: SQLServerOnlyManager, *, file_path: str, sheet: Optional[str], rebuild: bool) -> int:
     if not os.path.exists(file_path):
-        raise FileNotFoundError(file_path)
+        logger.warning(f"跳过任务: 源文件未找到 -> {file_path}")
+        return 0
 
     if rebuild:
         logger.info(f"Rebuild mode: truncating table {TABLE_NAME}")

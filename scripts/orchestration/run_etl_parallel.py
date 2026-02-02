@@ -60,7 +60,7 @@ STAGES = [
             # Warning: Browsers are heavy, running in parallel might be risky if resources are low, 
             # but orchestrator runs stages sequentially so it's fine.
             # Within this stage, we only have one task 'Data Collection (All)' to keep it simple.
-            {"name": "Data Collection (All)", "script": "scripts/orchestration/run_data_collection.py", "args": ["all"]},
+            {"name": "Data Collection (All)", "script": "scripts/orchestration/run_data_collection.py", "args": ["all"], "max_retries": 2},
         ]
     },
     {
@@ -113,6 +113,47 @@ STAGES = [
 ]
 
 # ============================================================
+# Pre-flight Checks
+# ============================================================
+def preflight_check() -> bool:
+    """Verifies environment and connectivity before execution."""
+    logging.info("Running pre-flight checks...")
+    
+    # 1. Check critical environment variables
+    critical_vars = ["MDDAP_SQL_SERVER", "MDDAP_SQL_DATABASE"]
+    missing = [v for v in critical_vars if not os.getenv(v)]
+    if missing:
+        # We don't necessarily fail if missing, but we warn
+        logging.warning(f"Missing recommended environment variables: {', '.join(missing)}")
+        logging.warning("Orchestrator will use defaults (localhost\\SQLEXPRESS).")
+
+    # 2. Test DB Connectivity
+    server = os.getenv("MDDAP_SQL_SERVER", r"localhost\SQLEXPRESS")
+    database = os.getenv("MDDAP_SQL_DATABASE", "mddap_v2")
+    driver = os.getenv("MDDAP_SQL_DRIVER", "ODBC Driver 17 for SQL Server")
+    
+    conn_str = (
+        f"DRIVER={{{driver}}};"
+        f"SERVER={server};"
+        f"DATABASE={database};"
+        "Trusted_Connection=yes;"
+        "Encrypt=no;"
+        "TrustServerCertificate=yes;"
+    )
+    
+    try:
+        logging.info(f"Testing connectivity to {server}/{database}...")
+        with pyodbc.connect(conn_str, timeout=3) as conn:
+            logging.info("  Connectivity test: SUCCESS")
+    except Exception as e:
+        logging.error(f"  Connectivity test: FAILED - {e}")
+        # Depending on requirements, we might want to exit here. 
+        # For now, we continue but with a loud error.
+        logging.warning("Proceeding anyway, but expect SQL tasks to fail.")
+
+    return True
+
+# ============================================================
 # Logging Setup (Queue-based)
 # ============================================================
 # ============================================================
@@ -138,120 +179,139 @@ def setup_logging():
 # Execution Logic
 # ============================================================
 def run_task(task: Dict[str, Any]) -> Dict[str, Any]:
-    """Runs a single task in a subprocess, capturing output."""
+    """Runs a single task in a subprocess, capturing output, with optional retries."""
     name = task["name"]
     script_rel_path = task["script"]
     args = task.get("args", [])
     stream_output = task.get("stream_output", False)
+    max_retries = task.get("max_retries", 0)
     
-    # Buffer for logs
-    log_buffer = []
+    attempt = 0
+    final_result = None
 
-    def log(msg):
-        timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        full_msg = f"[{timestamp}] [{name}] {msg}"
-        log_buffer.append(full_msg)
-        if stream_output:
-            print(full_msg)
+    while attempt <= max_retries:
+        if attempt > 0:
+            print(f"[{name}] RETRY ATTEMPT {attempt}/{max_retries}...")
+            time.sleep(2) # Small delay before retry
 
-    log(f"STARTING...")
-    start_time = time.time()
-    
-    script_path = os.path.join(PROJECT_ROOT, script_rel_path)
-    if not os.path.exists(script_path):
-        log(f"ERROR: Script not found: {script_path}")
-        return {
-            'name': name, 
-            'success': False, 
-            'duration': 0, 
-            'error': 'Script not found',
-            'output': "\n".join(log_buffer),
-            'streamed': stream_output
-        }
+        # Buffer for logs
+        log_buffer = []
 
-    # Use the same python interpreter as the orchestrator
-    cmd = [sys.executable, script_path] + args
-    
-    # Set environment variables for encoding
-    env = os.environ.copy()
-    current_pythonpath = env.get("PYTHONPATH", "")
-    env["PYTHONPATH"] = f"{PROJECT_ROOT}{os.pathsep}{current_pythonpath}"
-    env["PYTHONUTF8"] = "1"
-    env["PYTHONIOENCODING"] = "utf-8"
+        def log(msg):
+            timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            full_msg = f"[{timestamp}] [{name}] {msg}"
+            log_buffer.append(full_msg)
+            if stream_output:
+                print(full_msg)
 
-    try:
-        # Run and capture output
-        if stream_output:
-            process = subprocess.Popen(
-                cmd,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.STDOUT,
-                cwd=PROJECT_ROOT,
-                env=env,
-                text=True,
-                encoding='utf-8',
-                errors='replace',
-                bufsize=1  # Line buffered
-            )
-            
-            # Read stdout line by line
-            for line in process.stdout:
-                line_stripped = line.strip()
-                if line_stripped:
-                    print(line_stripped)  # Real-time print
-                    log_buffer.append(line_stripped)
-            
-            process.wait()
-            process_returncode = process.returncode
-            success = process_returncode == 0
-            
-        else:
-            # Traditional capture
-            process = subprocess.run(
-                cmd,
-                capture_output=True,
-                cwd=PROJECT_ROOT,
-                env=env,
-                text=True,
-                encoding='utf-8',
-                errors='replace'
-            )
-            
-            if process.stdout:
-                log_buffer.append(process.stdout.strip())
-            if process.stderr:
-                log_buffer.append(process.stderr.strip())
+        log(f"STARTING (Attempt {attempt+1}/{max_retries+1})...")
+        start_time = time.time()
+        
+        script_path = os.path.join(PROJECT_ROOT, script_rel_path)
+        if not os.path.exists(script_path):
+            log(f"ERROR: Script not found: {script_path}")
+            return {
+                'name': name, 
+                'success': False, 
+                'duration': 0, 
+                'error': 'Script not found',
+                'output': "\n".join(log_buffer),
+                'streamed': stream_output
+            }
+
+        # Use the same python interpreter as the orchestrator
+        cmd = [sys.executable, script_path] + args
+        
+        # Set environment variables for encoding
+        env = os.environ.copy()
+        current_pythonpath = env.get("PYTHONPATH", "")
+        env["PYTHONPATH"] = f"{PROJECT_ROOT}{os.pathsep}{current_pythonpath}"
+        env["PYTHONUTF8"] = "1"
+        env["PYTHONIOENCODING"] = "utf-8"
+
+        try:
+            # Run and capture output
+            if stream_output:
+                process = subprocess.Popen(
+                    cmd,
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.STDOUT,
+                    cwd=PROJECT_ROOT,
+                    env=env,
+                    text=True,
+                    encoding='utf-8',
+                    errors='replace',
+                    bufsize=1  # Line buffered
+                )
                 
-            process_returncode = process.returncode
-            success = process.returncode == 0
+                # Read stdout line by line
+                for line in process.stdout:
+                    line_stripped = line.strip()
+                    if line_stripped:
+                        print(line_stripped)  # Real-time print
+                        log_buffer.append(line_stripped)
+                
+                process.wait()
+                process_returncode = process.returncode
+                success = process_returncode == 0
+                
+            else:
+                # Traditional capture
+                process = subprocess.run(
+                    cmd,
+                    capture_output=True,
+                    cwd=PROJECT_ROOT,
+                    env=env,
+                    text=True,
+                    encoding='utf-8',
+                    errors='replace'
+                )
+                
+                if process.stdout:
+                    log_buffer.append(process.stdout.strip())
+                if process.stderr:
+                    log_buffer.append(process.stderr.strip())
+                    
+                process_returncode = process.returncode
+                success = process_returncode == 0
 
-        duration = time.time() - start_time
-        status = "SUCCESS" if success else "FAILED"
-        
-        if not success:
-            log(f"Task failed with return code {process_returncode}")
-        
-        log(f"FINISHED - {status} ({duration:.2f}s)")
-        
-        return {
-            'name': name,
-            'success': success,
-            'returncode': process_returncode,
-            'duration': duration,
-            'output': "\n".join(log_buffer),
-            'streamed': stream_output
-        }
+            duration = time.time() - start_time
+            status = "SUCCESS" if success else "FAILED"
+            
+            if not success:
+                log(f"Task failed with return code {process_returncode}")
+            
+            log(f"FINISHED - {status} ({duration:.2f}s)")
+            
+            final_result = {
+                'name': name,
+                'success': success,
+                'returncode': process_returncode,
+                'duration': duration,
+                'output': "\n".join(log_buffer),
+                'streamed': stream_output,
+                'attempts': attempt + 1
+            }
 
-    except Exception as e:
-        log(f"Exception launching task: {e}")
-        return {
-            'name': name,
-            'success': False,
-            'duration': time.time() - start_time,
-            'error': str(e),
-            'output': "\n".join(log_buffer),
-            'streamed': stream_output
-        }
+            if success:
+                return final_result
+            
+            attempt += 1
+
+        except Exception as e:
+            log(f"Exception launching task: {e}")
+            final_result = {
+                'name': name,
+                'success': False,
+                'duration': time.time() - start_time,
+                'error': str(e),
+                'output': "\n".join(log_buffer),
+                'streamed': stream_output,
+                'attempts': attempt + 1
+            }
+            attempt += 1
+
+    return final_result
 
 def run_stage(stage: Dict[str, Any], pool: concurrent.futures.ProcessPoolExecutor) -> Tuple[bool, List[Dict]]:
     stage_name = stage["name"]
@@ -411,6 +471,11 @@ def main():
     logging.info("MDDAP ETL Orchestrator Started")
     if args.only_collection:
         logging.info(">>> MODE: ONLY COLLECTION (System logic will skip SQL/DB stages)")
+    
+    # Run pre-flight checks
+    if not preflight_check():
+        logging.error("Pre-flight checks failed. Aborting.")
+        sys.exit(1)
     
     logging.info(f"Project Root: {PROJECT_ROOT}")
     logging.info(f"Log File: {LOG_FILE}")

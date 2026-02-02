@@ -86,22 +86,22 @@ export default function GreenCross({ year, month, data, onUpdate }: GreenCrossPr
     };
 
     return (
-        <div className="flex flex-col h-full bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 p-6 relative">
-            <div className="mb-6 flex justify-between items-center">
-                <h3 className="text-lg font-black text-slate-800 dark:text-white uppercase tracking-widest flex items-center gap-2">
-                    <div className="w-8 h-8 bg-emerald-500 rounded flex items-center justify-center text-white font-bold text-xl">+</div>
+        <div className="flex flex-col h-full bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 p-4 relative overflow-hidden">
+            <div className="mb-4 flex justify-between items-center shrink-0">
+                <h3 className="text-sm font-black text-slate-800 dark:text-white uppercase tracking-widest flex items-center gap-2">
+                    <div className="w-6 h-6 bg-emerald-500 rounded flex items-center justify-center text-white font-bold text-lg">+</div>
                     Safety Green Cross
                 </h3>
-                <div className="text-xs font-bold text-slate-400 uppercase">
+                <div className="text-[10px] font-bold text-slate-400 uppercase">
                     {year} / {String(month).padStart(2, '0')}
                 </div>
             </div>
 
             {/* Grid Container */}
-            <div className="grid grid-cols-7 gap-3 flex-1 auto-rows-fr">
+            <div className="grid grid-cols-7 gap-2 flex-1 auto-rows-fr min-h-0">
                 {/* Weekday Headers */}
                 {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(d => (
-                    <div key={d} className="text-center text-[10px] font-black text-slate-300 uppercase tracking-wider py-1">
+                    <div key={d} className="text-center text-[9px] font-black text-slate-300 uppercase tracking-wider py-0.5">
                         {d}
                     </div>
                 ))}
@@ -121,12 +121,18 @@ export default function GreenCross({ year, month, data, onUpdate }: GreenCrossPr
                     const isToday = checkDate.getTime() === today.getTime();
 
                     let bgClass = 'bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-400';
-                    if (status === 'Safe') bgClass = 'bg-emerald-500 border-emerald-600 text-white shadow-lg shadow-emerald-500/30';
-                    if (status === 'Incident') bgClass = 'bg-red-500 border-red-600 text-white shadow-lg shadow-red-500/30 animate-pulse';
 
-                    // Highlight Today slightly if it's default safe (just to show where we are)
-                    if (isToday && status === 'Safe') {
-                        bgClass += ' ring-2 ring-emerald-300 dark:ring-emerald-700 ring-offset-2 dark:ring-offset-slate-900';
+                    if (status === 'Safe') {
+                        if (isToday) {
+                            // Today - Outline only, no fill per user request
+                            bgClass = 'bg-white dark:bg-slate-900 border-2 border-emerald-500 text-emerald-600 shadow-sm ring-2 ring-emerald-500/10';
+                        } else {
+                            bgClass = 'bg-emerald-500 border-emerald-600 text-white shadow shadow-emerald-500/30';
+                        }
+                    }
+
+                    if (status === 'Incident') {
+                        bgClass = 'bg-red-500 border-red-600 text-white shadow shadow-red-500/30 animate-pulse';
                     }
 
                     return (
@@ -135,25 +141,25 @@ export default function GreenCross({ year, month, data, onUpdate }: GreenCrossPr
                             onClick={() => handleDayClick(day)}
                             disabled={isFuture}
                             className={`
-                                relative rounded-xl border flex flex-col items-center justify-center p-2 transition-all
+                                relative rounded-xl border flex flex-col items-center justify-center p-1.5 transition-all
                                 ${bgClass}
                                 ${isFuture ? 'opacity-30 cursor-not-allowed' : 'hover:scale-105 active:scale-95 cursor-pointer'}
-                                min-h-[60px]
+                                min-h-[45px]
                             `}
                         >
-                            <span className="text-lg font-black">{day}</span>
-                            {status === 'Incident' && <AlertTriangle size={14} className="mt-1" />}
-                            {status === 'Safe' && <Check size={14} className="mt-1" />}
+                            <span className="text-base font-black leading-none">{day}</span>
+                            {status === 'Incident' && <AlertTriangle size={12} className="mt-1" />}
+                            {status === 'Safe' && !isToday && <Check size={12} className="mt-1" />}
+                            {isToday && <span className="text-[8px] font-black uppercase mt-1 leading-none">Today</span>}
                         </button>
                     );
                 })}
             </div>
 
             {/* Legend */}
-            <div className="mt-6 flex gap-4 text-[10px] font-bold uppercase text-slate-500 justify-center text-center">
-                <div className="flex items-center gap-2"><div className="w-3 h-3 rounded bg-emerald-500" /> Safe</div>
-                <div className="flex items-center gap-2"><div className="w-3 h-3 rounded bg-red-500" /> Incident</div>
-                <div className="flex items-center gap-2 italic ml-4 text-[9px]">* Only incidents are stored in DB</div>
+            <div className="mt-4 flex gap-4 text-[9px] font-bold uppercase text-slate-500 justify-center text-center shrink-0">
+                <div className="flex items-center gap-1.5"><div className="w-2.5 h-2.5 rounded bg-emerald-500" /> Safe</div>
+                <div className="flex items-center gap-1.5"><div className="w-2.5 h-2.5 rounded bg-red-500" /> Incident</div>
             </div>
 
             {/* Edit Dialog (Simple Overlay) */}
