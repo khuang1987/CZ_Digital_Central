@@ -160,12 +160,12 @@ export async function GET(req: NextRequest) {
             filterOptions: { areas: [] }
         });
 
-    } catch (error: any) {
+    } catch (error: any) { // eslint-disable-line @typescript-eslint/no-explicit-any
         console.error('[EHS API] ERROR:', error);
         return NextResponse.json({ error: error.message }, { status: 500 });
     }
 }
 
-export async function POST(req: NextRequest) {
+export async function POST() {
     return NextResponse.json({ success: true });
 }

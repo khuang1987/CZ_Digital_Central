@@ -373,25 +373,25 @@ export async function GET(req: NextRequest) {
       ];
     }
 
-    const [summaryRes, yesterdayRes, weeklyRes, areaDistRes, filterOptionsRes, trendRes, detailsRes, anomaliesRes, debugRes, heatmapRes] = await Promise.all(promises);
+    const [summaryRes, yesterdayRes, weeklyRes, areaDistRes, filterOptionsRes, trendRes, detailsRes, anomaliesRes, , heatmapRes] = await Promise.all(promises);
 
     // 5. Post-Processing & Transformations
     // If mode is records, return simplified JSON
     if (mode === 'records') {
       return NextResponse.json({
-        details: (detailsRes as any).recordset,
+        details: (detailsRes as any).recordset, // eslint-disable-line @typescript-eslint/no-explicit-any
         page,
         pageSize,
-        hasMore: (detailsRes as any).recordset.length === pageSize
+        hasMore: (detailsRes as any).recordset.length === pageSize // eslint-disable-line @typescript-eslint/no-explicit-any
       });
     }
 
-    const summary = (summaryRes as any).recordset[0];
-    const totalEH = (areaDistRes as any).recordset.reduce((sum: number, r: any) => sum + (r.earnedHours || 0), 0);
+    const summary = (summaryRes as any).recordset[0]; // eslint-disable-line @typescript-eslint/no-explicit-any
+    const totalEH = (areaDistRes as any).recordset.reduce((sum: number, r: any) => sum + (r.earnedHours || 0), 0); // eslint-disable-line @typescript-eslint/no-explicit-any
 
     // Build area distribution structure
     const areaMap = new Map();
-    (areaDistRes as any).recordset.forEach((r: any) => {
+    (areaDistRes as any).recordset.forEach((r: any) => { // eslint-disable-line @typescript-eslint/no-explicit-any
       areaMap.set(r.area, {
         area: r.area,
         totalHours: r.earnedHours,
@@ -402,12 +402,12 @@ export async function GET(req: NextRequest) {
 
     // Group yesterday and weekly data
     const operationMap = new Map();
-    (yesterdayRes as any).recordset.forEach((r: any) => {
+    (yesterdayRes as any).recordset.forEach((r: any) => { // eslint-disable-line @typescript-eslint/no-explicit-any
       const key = `${r.area}|${r.operationName}`;
       operationMap.set(key, { area: r.area, operationName: r.operationName, yesterday: r.yesterdayHours, weeklyData: [], totalHours: 0 });
     });
 
-    (weeklyRes as any).recordset.forEach((r: any) => {
+    (weeklyRes as any).recordset.forEach((r: any) => { // eslint-disable-line @typescript-eslint/no-explicit-any
       const key = `${r.area}|${r.operationName}`;
       if (!operationMap.has(key)) {
         operationMap.set(key, { area: r.area, operationName: r.operationName, yesterday: 0, weeklyData: [], totalHours: 0 });
@@ -430,14 +430,14 @@ export async function GET(req: NextRequest) {
     });
 
     const areaOperationDetail = Array.from(areaMap.values());
-    const availableAreas = (filterOptionsRes as any).recordsets[0].map((r: any) => r.area);
-    const availableOperations = (filterOptionsRes as any).recordsets[2].map((r: any) => r.operation_name);
-    const availableSchedulers = (filterOptionsRes as any).recordsets[3].map((r: any) => r.ProductionScheduler);
+    const availableAreas = (filterOptionsRes as any).recordsets[0].map((r: any) => r.area); // eslint-disable-line @typescript-eslint/no-explicit-any
+    const availableOperations = (filterOptionsRes as any).recordsets[2].map((r: any) => r.operation_name); // eslint-disable-line @typescript-eslint/no-explicit-any
+    const availableSchedulers = (filterOptionsRes as any).recordsets[3].map((r: any) => r.ProductionScheduler); // eslint-disable-line @typescript-eslint/no-explicit-any
 
     return NextResponse.json({
       summary: { ...summary, actualAvgEH: summary.actualEH / (summary.actualDays || 1), targetAvgEH: summary.targetEH / (summary.targetDays || 1) },
-      trend: (trendRes as any).recordset,
-      anomalies: (anomaliesRes as any).recordset,
+      trend: (trendRes as any).recordset, // eslint-disable-line @typescript-eslint/no-explicit-any
+      anomalies: (anomaliesRes as any).recordset, // eslint-disable-line @typescript-eslint/no-explicit-any
       details: [], // Skip details in dashboard mode
       areaOperationDetail,
       filterOptions: {
@@ -445,10 +445,10 @@ export async function GET(req: NextRequest) {
         operations: availableOperations,
         schedulers: availableSchedulers
       },
-      heatmap: (heatmapRes as any).recordset
+      heatmap: (heatmapRes as any).recordset // eslint-disable-line @typescript-eslint/no-explicit-any
     });
 
-  } catch (error: any) {
+  } catch (error: any) { // eslint-disable-line @typescript-eslint/no-explicit-any
     console.error('Labor API Error:', error);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }

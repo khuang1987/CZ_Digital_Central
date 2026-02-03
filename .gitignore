@@ -96,3 +96,5 @@ server_deploy_package/
 # JavaScript Dependencies
 node_modules/
 .next/
+
+node_modules_dashboard/

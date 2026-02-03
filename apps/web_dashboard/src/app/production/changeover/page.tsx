@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import {
-    Calendar, Filter, Clock, Zap, AlertCircle, ChevronUp, ChevronDown, Table as TableIcon, MoreHorizontal, Loader2
+    Calendar, Filter, Clock, Zap, AlertCircle, Table as TableIcon, MoreHorizontal, Loader2
 } from 'lucide-react';
 import { useUI } from '@/context/UIContext';
 

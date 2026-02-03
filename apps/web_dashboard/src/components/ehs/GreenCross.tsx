@@ -19,7 +19,7 @@ export default function GreenCross({ year, month, data, onUpdate }: GreenCrossPr
     today.setHours(0, 0, 0, 0);
 
     const isCurrentMonth = today.getFullYear() === year && (today.getMonth() + 1) === month;
-    const currentDay = today.getDate();
+    // const currentDay = today.getDate(); // Unused
 
     const [selectedDay, setSelectedDay] = useState<number | null>(null);
     const [selectedStatus, setSelectedStatus] = useState<DailyStatus>(null);

@@ -1,13 +1,13 @@
 
 import { NextResponse } from 'next/server';
-import { getDbConnection, sql } from '@/lib/db';
+import { getDbConnection } from '@/lib/db';
 
 export const dynamic = 'force-dynamic';
 
 export async function GET() {
     try {
         const pool = await getDbConnection();
-        
+
         // 1. Summary Metrics
         const summaryResult = await pool.request().query(`
             SELECT 
@@ -16,7 +16,7 @@ export async function GET() {
                 (SELECT SUM(size * 8) / 1024 FROM sys.database_files WHERE type_desc = 'ROWS') as data_size_mb,
                 (SELECT SUM(size * 8) / 1024 FROM sys.database_files WHERE type_desc = 'LOG') as log_size_mb
         `);
-        
+
         const summary = summaryResult.recordset[0];
 
         // 2. Top Tables by Size/Rows

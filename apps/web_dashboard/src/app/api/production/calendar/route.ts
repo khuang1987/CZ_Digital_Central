@@ -1,7 +1,7 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { getDbConnection, sql } from '@/lib/db';
+import { NextResponse } from 'next/server';
+import { getDbConnection } from '@/lib/db';
 
-export async function GET(req: NextRequest) {
+export async function GET() {
     try {
         const pool = await getDbConnection();
 
@@ -57,7 +57,7 @@ export async function GET(req: NextRequest) {
             currentFiscalInfo: resCurrent.recordset[0] || null
         });
 
-    } catch (error: any) {
+    } catch (error: any) { // eslint-disable-line @typescript-eslint/no-explicit-any
         console.error('Calendar API Error:', error);
         return NextResponse.json({ error: error.message }, { status: 500 });
     }

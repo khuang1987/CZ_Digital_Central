@@ -9,7 +9,7 @@ import { useUI } from '@/context/UIContext';
 
 export default function AppShell({ children }: { children: React.ReactNode }) {
     const [theme, setTheme] = useState<'light' | 'dark'>('light');
-    const { isSidebarCollapsed } = useUI();
+    // const { isSidebarCollapsed } = useUI(); // Unused
     const pathname = usePathname();
 
     useEffect(() => {

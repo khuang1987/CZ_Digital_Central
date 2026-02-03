@@ -65,7 +65,7 @@ export async function GET(req: NextRequest) {
       topCfns: topCfnResult.recordset
     });
 
-  } catch (error: any) {
+  } catch (error: any) { // eslint-disable-line @typescript-eslint/no-explicit-any
     console.error('API Error:', error);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
