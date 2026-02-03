@@ -101,9 +101,9 @@ export default function ChangeoverPage() {
     };
 
     return (
-        <div className="flex w-full h-full overflow-hidden bg-white dark:bg-transparent">
+        <div className="flex flex-1 overflow-hidden min-h-[calc(100vh-140px)] rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm bg-white dark:bg-slate-900">
             {/* 筛选面板 */}
-            <aside className={`${isFilterOpen ? 'w-72 opacity-100' : 'w-0 opacity-0 overflow-hidden'} border-r border-slate-200 dark:border-slate-800 bg-slate-50/80 dark:bg-slate-900/30 backdrop-blur-sm flex flex-col transition-all duration-300 shrink-0`}>
+            <aside className={`${isFilterOpen ? 'w-72 opacity-100' : 'w-0 opacity-0 overflow-hidden'} border-r border-slate-200 dark:border-slate-800 bg-slate-50/30 dark:bg-slate-800/20 flex flex-col transition-all duration-300 shrink-0`}>
                 <div className="p-6 space-y-8 w-72">
                     <section>
                         <h3 className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-4 flex items-center gap-2">
@@ -169,128 +169,130 @@ export default function ChangeoverPage() {
                 </div>
             </aside>
 
-            {/* 报表内容 */}
-            <div className="flex-1 p-8 overflow-y-auto space-y-7 bg-slate-50/30 dark:bg-transparent relative">
-                {error && (
-                    <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-2xl p-4 flex items-center gap-3 text-red-600 dark:text-red-400">
-                        <AlertCircle size={20} />
-                        <div>
-                            <p className="text-sm font-bold">SQL Analytics Error: {error}</p>
-                            <p className="text-[10px] opacity-70 mt-1">请验证 SQL Server 已开启 TCP/IP 协议并允许 Windows 身份验证。</p>
+            {/* Main Content */}
+            <div className="flex-1 overflow-y-auto min-w-0 bg-white dark:bg-slate-900 rounded-r-2xl border-l border-slate-100 dark:border-slate-800">
+                <div className="p-8 space-y-8 min-h-full">
+                    {error && (
+                        <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-2xl p-4 flex items-center gap-3 text-red-600 dark:text-red-400">
+                            <AlertCircle size={20} />
+                            <div>
+                                <p className="text-sm font-bold">SQL Analytics Error: {error}</p>
+                                <p className="text-[10px] opacity-70 mt-1">请验证 SQL Server 已开启 TCP/IP 协议并允许 Windows 身份验证。</p>
+                            </div>
                         </div>
-                    </div>
-                )}
+                    )}
 
-                {loading && !data && (
-                    <div className="absolute inset-0 flex items-center justify-center bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm z-50">
-                        <div className="flex flex-col items-center gap-4">
-                            <Loader2 className="animate-spin text-amber-500" size={40} />
-                            <p className="text-sm font-bold text-slate-500 animate-pulse">正在从 MES/v_metrics 计算换型效率...</p>
+                    {loading && !data && (
+                        <div className="absolute inset-0 flex items-center justify-center bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm z-50">
+                            <div className="flex flex-col items-center gap-4">
+                                <Loader2 className="animate-spin text-amber-500" size={40} />
+                                <p className="text-sm font-bold text-slate-500 animate-pulse">正在从 MES/v_metrics 计算换型效率...</p>
+                            </div>
                         </div>
+                    )}
+
+                    {/* KPI Row */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+                        <KpiTile
+                            title="总换型次数"
+                            value={data?.summary?.setupCount?.toString() || '0'}
+                            sub="Total Cycles"
+                            icon={<Zap className="text-amber-500" size={18} />}
+                        />
+                        <KpiTile
+                            title="按时完成"
+                            value={data?.summary?.onTimeCount?.toString() || '0'}
+                            sub={`${data?.summary?.setupCount ? Math.round((data.summary.onTimeCount! / data.summary.setupCount) * 100) : 0}% Rate`}
+                            status="positive"
+                            icon={<Clock className="text-emerald-500" size={18} />}
+                        />
+                        <KpiTile
+                            title="平均耗时"
+                            value={`${data?.summary?.avgSetupDuration || '0'}h`}
+                            sub="Avg Duration"
+                            icon={<Clock className="text-blue-500" size={18} />}
+                        />
+                        <KpiTile
+                            title="换型效率异常"
+                            value="10"
+                            sub="Setup Delays"
+                            status="negative"
+                            icon={<AlertCircle className="text-red-500" size={18} />}
+                        />
                     </div>
-                )}
 
-                {/* KPI Row */}
-                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
-                    <KpiTile
-                        title="总换型次数"
-                        value={data?.summary?.setupCount?.toString() || '0'}
-                        sub="Total Cycles"
-                        icon={<Zap className="text-amber-500" size={18} />}
-                    />
-                    <KpiTile
-                        title="按时完成"
-                        value={data?.summary?.onTimeCount?.toString() || '0'}
-                        sub={`${data?.summary?.setupCount ? Math.round((data.summary.onTimeCount! / data.summary.setupCount) * 100) : 0}% Rate`}
-                        status="positive"
-                        icon={<Clock className="text-emerald-500" size={18} />}
-                    />
-                    <KpiTile
-                        title="平均耗时"
-                        value={`${data?.summary?.avgSetupDuration || '0'}h`}
-                        sub="Avg Duration"
-                        icon={<Clock className="text-blue-500" size={18} />}
-                    />
-                    <KpiTile
-                        title="换型效率异常"
-                        value="10"
-                        sub="Setup Delays"
-                        status="negative"
-                        icon={<AlertCircle className="text-red-500" size={18} />}
-                    />
-                </div>
-
-                {/* Charts Row */}
-                <div className="grid grid-cols-1 xl:grid-cols-5 gap-6 h-[450px]">
-                    <section className="xl:col-span-3 ios-widget p-8 flex flex-col bg-white dark:bg-slate-900 border-slate-200/60 dark:border-slate-800 shadow-xl shadow-slate-200/40 dark:shadow-none">
-                        <h3 className="text-sm font-bold text-slate-800 dark:text-slate-200 mb-8">调试次数趋势统计 (by FW)</h3>
-                        <div className="flex-1 flex items-end gap-3 px-2 pb-6">
-                            {data?.trend?.map((v, i) => {
-                                const maxSetups = Math.max(...data.trend.map(t => t.setups), 5);
-                                return (
-                                    <div key={i} className="flex-1 flex flex-col items-center gap-4 group">
-                                        <div className="w-full bg-slate-50 dark:bg-slate-800/50 rounded-t-xl relative overflow-hidden h-full flex items-end">
-                                            <div
-                                                className={`w-full bg-amber-500 rounded-t-xl transition-all duration-500 group-hover:scale-y-105 shadow-lg shadow-amber-500/10 ${v.fiscal_week === selectedWeek ? 'brightness-125' : 'opacity-60'}`}
-                                                style={{ height: `${(v.setups / maxSetups) * 100}%` }}
-                                            >
-                                                <div className="absolute top-[-26px] left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity text-[10px] font-black text-amber-600">{v.setups}</div>
+                    {/* Charts Row */}
+                    <div className="grid grid-cols-1 xl:grid-cols-5 gap-6 h-[450px]">
+                        <section className="xl:col-span-3 ios-widget p-8 flex flex-col bg-white dark:bg-slate-900 border-slate-200/60 dark:border-slate-800 shadow-xl shadow-slate-200/40 dark:shadow-none">
+                            <h3 className="text-sm font-bold text-slate-800 dark:text-slate-200 mb-8">调试次数趋势统计 (by FW)</h3>
+                            <div className="flex-1 flex items-end gap-3 px-2 pb-6">
+                                {data?.trend?.map((v, i) => {
+                                    const maxSetups = Math.max(...data.trend.map(t => t.setups), 5);
+                                    return (
+                                        <div key={i} className="flex-1 flex flex-col items-center gap-4 group">
+                                            <div className="w-full bg-slate-50 dark:bg-slate-800/50 rounded-t-xl relative overflow-hidden h-full flex items-end">
+                                                <div
+                                                    className={`w-full bg-amber-500 rounded-t-xl transition-all duration-500 group-hover:scale-y-105 shadow-lg shadow-amber-500/10 ${v.fiscal_week === selectedWeek ? 'brightness-125' : 'opacity-60'}`}
+                                                    style={{ height: `${(v.setups / maxSetups) * 100}%` }}
+                                                >
+                                                    <div className="absolute top-[-26px] left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity text-[10px] font-black text-amber-600">{v.setups}</div>
+                                                </div>
                                             </div>
+                                            <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500">{v.fiscal_week}FW</span>
                                         </div>
-                                        <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500">{v.fiscal_week}FW</span>
-                                    </div>
-                                );
-                            })}
-                            {(!data || data.trend.length === 0) && !loading && (
-                                <div className="flex-1 self-center text-center text-slate-400 py-10 italic">暂无年度趋势数据</div>
-                            )}
-                        </div>
-                    </section>
+                                    );
+                                })}
+                                {(!data || data.trend.length === 0) && !loading && (
+                                    <div className="flex-1 self-center text-center text-slate-400 py-10 italic">暂无年度趋势数据</div>
+                                )}
+                            </div>
+                        </section>
 
-                    <section className="xl:col-span-2 ios-widget p-8 flex flex-col bg-white dark:bg-slate-900 border-slate-200/60 dark:border-slate-800 shadow-xl shadow-slate-200/40 dark:shadow-none">
-                        <h3 className="text-sm font-bold text-slate-800 dark:text-slate-200 mb-8">调试耗时对比 (Top CFN)</h3>
-                        <div className="flex-1 space-y-6 overflow-y-auto pr-3">
-                            {data?.topCfns?.map((item) => (
-                                <div key={item.CFN} className="space-y-2 group cursor-pointer">
-                                    <div className="flex justify-between text-[11px] font-bold">
-                                        <span className="text-slate-700 dark:text-slate-300 group-hover:text-medtronic transition-colors">{item.CFN}</span>
-                                        <span className="text-slate-900 dark:text-white font-black">{item.totalDuration}h</span>
+                        <section className="xl:col-span-2 ios-widget p-8 flex flex-col bg-white dark:bg-slate-900 border-slate-200/60 dark:border-slate-800 shadow-xl shadow-slate-200/40 dark:shadow-none">
+                            <h3 className="text-sm font-bold text-slate-800 dark:text-slate-200 mb-8">调试耗时对比 (Top CFN)</h3>
+                            <div className="flex-1 space-y-6 overflow-y-auto pr-3">
+                                {data?.topCfns?.map((item) => (
+                                    <div key={item.CFN} className="space-y-2 group cursor-pointer">
+                                        <div className="flex justify-between text-[11px] font-bold">
+                                            <span className="text-slate-700 dark:text-slate-300 group-hover:text-medtronic transition-colors">{item.CFN}</span>
+                                            <span className="text-slate-900 dark:text-white font-black">{item.totalDuration}h</span>
+                                        </div>
+                                        <div className="h-2.5 w-full bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden shadow-inner relative">
+                                            <div className="h-full bg-blue-500 group-hover:brightness-110 transition-all duration-700" style={{ width: `${(item.totalDuration / 50) * 100}%` }} />
+                                        </div>
                                     </div>
-                                    <div className="h-2.5 w-full bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden shadow-inner relative">
-                                        <div className="h-full bg-blue-500 group-hover:brightness-110 transition-all duration-700" style={{ width: `${(item.totalDuration / 50) * 100}%` }} />
-                                    </div>
-                                </div>
-                            ))}
-                            {(!data || data.topCfns.length === 0) && !loading && (
-                                <div className="text-center text-slate-400 py-10 italic">本周无换型记录</div>
-                            )}
+                                ))}
+                                {(!data || data.topCfns.length === 0) && !loading && (
+                                    <div className="text-center text-slate-400 py-10 italic">本周无换型记录</div>
+                                )}
+                            </div>
+                        </section>
+                    </div>
+
+                    {/* Detailed Table (Placeholder for dynamic audit logs) */}
+                    <section className="ios-widget p-8 bg-white dark:bg-slate-900 border-slate-200/60 dark:border-slate-800">
+                        <h3 className="text-sm font-bold text-slate-800 dark:text-slate-200 mb-6 flex items-center gap-2"><TableIcon size={16} className="text-medtronic" /> 调试详情审计表</h3>
+                        <div className="overflow-x-auto">
+                            <table className="w-full text-left text-[11px] font-semibold border-collapse">
+                                <thead>
+                                    <tr className="border-b border-slate-100 dark:border-slate-800 text-slate-400 uppercase tracking-wider">
+                                        <th className="py-4 px-3">Lot #</th>
+                                        <th className="py-4 px-3">产品图号</th>
+                                        <th className="py-4 px-3 text-center">机库</th>
+                                        <th className="py-4 px-3 text-center">状态</th>
+                                        <th className="py-4 px-3 text-center">实际(H)</th>
+                                        <th className="py-4 px-3">调试问题 / 备注</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="text-slate-600 dark:text-slate-400">
+                                    <tr className="border-b border-slate-50 dark:border-slate-800/50 hover:bg-slate-50/50 dark:hover:bg-slate-800/20 transition-all group">
+                                        <td className="py-5 px-3 italic" colSpan={6}>数据同步中，请稍后...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
                         </div>
                     </section>
                 </div>
-
-                {/* Detailed Table (Placeholder for dynamic audit logs) */}
-                <section className="ios-widget p-8 bg-white dark:bg-slate-900 border-slate-200/60 dark:border-slate-800">
-                    <h3 className="text-sm font-bold text-slate-800 dark:text-slate-200 mb-6 flex items-center gap-2"><TableIcon size={16} className="text-medtronic" /> 调试详情审计表</h3>
-                    <div className="overflow-x-auto">
-                        <table className="w-full text-left text-[11px] font-semibold border-collapse">
-                            <thead>
-                                <tr className="border-b border-slate-100 dark:border-slate-800 text-slate-400 uppercase tracking-wider">
-                                    <th className="py-4 px-3">Lot #</th>
-                                    <th className="py-4 px-3">产品图号</th>
-                                    <th className="py-4 px-3 text-center">机库</th>
-                                    <th className="py-4 px-3 text-center">状态</th>
-                                    <th className="py-4 px-3 text-center">实际(H)</th>
-                                    <th className="py-4 px-3">调试问题 / 备注</th>
-                                </tr>
-                            </thead>
-                            <tbody className="text-slate-600 dark:text-slate-400">
-                                <tr className="border-b border-slate-50 dark:border-slate-800/50 hover:bg-slate-50/50 dark:hover:bg-slate-800/20 transition-all group">
-                                    <td className="py-5 px-3 italic" colSpan={6}>数据同步中，请稍后...</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </section>
             </div>
         </div>
     );

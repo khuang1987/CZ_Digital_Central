@@ -917,10 +917,8 @@ export default function LaborEhPage() {
             </aside>
 
             {/* Main Content (Scrollable Area) */}
-            <div className="flex-1 overflow-y-auto scroll-smooth relative">
-
-                {/* --- FOLD 1: EXECUTIVE OVERVIEW --- */}
-                <div className="min-h-screen p-8 space-y-6 flex flex-col">
+            <div className="flex-1 overflow-y-auto min-w-0 bg-white dark:bg-slate-900 rounded-r-2xl border-l border-slate-100 dark:border-slate-800">
+                <div className="p-8 space-y-8 min-h-full">
 
                     {/* KPI Tiles */}
                     {(() => {
