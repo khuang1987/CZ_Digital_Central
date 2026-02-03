@@ -10,6 +10,7 @@ $DashboardDir = Join-Path $ProjectRoot "apps\web_dashboard"
 $AppsBase = "C:\Apps\CZ_Digital_Central"
 $VenvStore = Join-Path $AppsBase ".venv"
 $NodeModulesStore = Join-Path $AppsBase "node_modules_dashboard"
+$NextStore = Join-Path $AppsBase "next_build_cache"
 
 Write-Host "--- Initializing Dev Environment Isolation (C:\Apps) ---" -ForegroundColor Cyan
 
@@ -59,6 +60,27 @@ if (Test-Path $NodeModulesPath) {
 } 
 else {
     Write-Host "Note: No node_modules found in apps\web_dashboard, skipping."
+}
+
+# 5. Handle Dashboard Build Cache (.next)
+Write-Host "`n[3/3] Processing Dashboard Build Cache (.next)..." -ForegroundColor Yellow
+$NextPath = Join-Path $DashboardDir ".next"
+if (Test-Path $NextPath) {
+    if ((Get-Item $NextPath).Attributes -match "ReparsePoint") {
+        Write-Host "Success: .next is already isolated (linked)." -ForegroundColor Green
+    } 
+    else {
+        Write-Host "Moving .next files to $NextStore ..."
+        if (Test-Path $NextStore) { Remove-Item -Recurse -Force $NextStore }
+        Move-Item -Path $NextPath -Destination $NextStore -Force
+        
+        Write-Host "Creating Junction link..."
+        cmd /c "mklink /j ""$NextPath"" ""$NextStore"""
+        Write-Host "Success: .next isolation completed." -ForegroundColor Green
+    }
+} 
+else {
+    Write-Host "Note: No .next folder found in apps\web_dashboard, skipping."
 }
 
 Write-Host "`n--- Setup Completed Successfully! ---" -ForegroundColor Cyan

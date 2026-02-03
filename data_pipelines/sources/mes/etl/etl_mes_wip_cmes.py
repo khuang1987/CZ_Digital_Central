@@ -138,6 +138,13 @@ def _clean_wip_df(df: pd.DataFrame, *, file_path: str) -> Tuple[pd.DataFrame, da
     df2["snapshot_date"] = snap
     df2["source_file"] = os.path.basename(file_path)
 
+    # Capture file modification time as downloaded_at
+    try:
+        mtime_ts = os.path.getmtime(file_path)
+        df2["downloaded_at"] = datetime.fromtimestamp(mtime_ts)
+    except Exception:
+        df2["downloaded_at"] = pd.NaT
+
     # Best-effort datetime parsing for common columns
     for c in ["TrackInDate", "TrackOutDate", "DateEnteredStep", "LastProcessedTime"]:
         if c in df2.columns:
@@ -174,6 +181,7 @@ def ensure_table(db: SQLServerOnlyManager, df_sample: pd.DataFrame) -> None:
                     id INT IDENTITY(1,1) NOT NULL PRIMARY KEY,
                     snapshot_date DATE NOT NULL,
                     source_file NVARCHAR(260) NULL,
+                    downloaded_at DATETIME2 NULL,
                     created_at DATETIME2 NOT NULL DEFAULT GETDATE(),
                     updated_at DATETIME2 NOT NULL DEFAULT GETDATE()
                 );
@@ -197,8 +205,19 @@ def ensure_table(db: SQLServerOnlyManager, df_sample: pd.DataFrame) -> None:
                 continue
             if col == "source_file":
                 continue
+            if col == "downloaded_at":
+                # Ensure it exists (manual check below if needed, but implicit infer handling covers generic cols)
+                # But since we added it to CREATE TABLE, we usually skip it here if it matches schema. 
+                # However, for evolution, we just let it fall through or strictly skip.
+                # Let's skip it here and handle it manually or let generic logic handle it if it wasn't in CREATE.
+                # Actually, best to add explicit check.
+                continue
             sql_type = _infer_sql_type(df_sample[col])
             cur.execute(f"ALTER TABLE dbo.{TABLE_NAME} ADD [{col}] {sql_type};")
+
+        # Explicitly check for downloaded_at (in case table already exists without it)
+        if "downloaded_at" not in existing:
+             cur.execute(f"ALTER TABLE dbo.{TABLE_NAME} ADD downloaded_at DATETIME2 NULL;")
 
         # Ensure snapshot_date index for cleanup/query
         try:

@@ -24,6 +24,12 @@ PROJECT_ROOT = Path(__file__).resolve().parents[4]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
+# Ensure pyarrow is available for Parquet
+try:
+    import pyarrow
+except ImportError:
+    pass
+
 logger = logging.getLogger(__name__)
 
 # ============================================================
@@ -37,6 +43,12 @@ def get_etl_config_path() -> Path:
     return PROJECT_ROOT / "data_pipelines" / "sources" / "sap" / "config" / "config_sap_labor.yaml"
 
 from shared_infrastructure.env_utils import load_yaml_with_env
+
+# Output Directory for Parquet
+A1_OUTPUT_DIR = Path(
+    r"C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\A1_ETL_Output"
+)
+
 
 def get_labor_hour_base_dir() -> Path:
     """Read base directory from ETL YAML config"""
@@ -252,6 +264,12 @@ def format_labor_hour(force_refresh: bool = False) -> bool:
                 
                 # 同时记录原始 ZIP 的处理状态，用于下次判断是否跳过
                 db.mark_file_processed("sap_labor_zip", target_zip_path)
+
+                # --- 3. Immediate Parquet Export ---
+                try:
+                    export_parquet_by_months(db, cleaned_df)
+                except Exception as pq_err:
+                    log_callback(f"[WARN] Parquet 导出失败 (不影响数据入库): {pq_err}")
                 
             except Exception as e:
                 log_callback(f"[WARN] 自动导入 SQL 失败 (您可以后续手动运行 ETL 脚本): {e}")
@@ -296,6 +314,66 @@ def format_labor_hour(force_refresh: bool = False) -> bool:
     except Exception as e:
         log_callback(f"[CRITICAL] 异常: {e}")
         return False
+
+def export_parquet_by_months(db, df: pd.DataFrame):
+    """
+    Export processed data to partitioned Parquet files (YYYY/sap_labor_hours_YYYYMM.parquet).
+    
+    Args:
+        db: SQL Manager instance
+        df: The DataFrame that was just processed (used to identify affected months)
+    """
+    if df.empty or 'PostingDate' not in df.columns:
+        return
+
+    # 1. Identify unique YYYY-MM from the DataFrame
+    # df['PostingDate'] should be 'YYYY-MM-DD'
+    try:
+        months = df['PostingDate'].dropna().astype(str).str[:7].unique()
+    except Exception:
+        return
+    
+    if len(months) == 0:
+        return
+
+    OUTPUT_BASE = A1_OUTPUT_DIR / "02_CURATED_PARTITIONED" / "sap_labor_hours"
+    logger.info(f"开始导出 Parquet (涉及月份: {len(months)} 个): {months}")
+
+    with db.get_connection() as conn:
+        for ym in months:
+            # ym format: YYYY-MM
+            if len(ym) != 7: continue 
+
+            try:
+                year = ym[:4]
+                file_ym_suffix = ym.replace('-', '') # YYYYMM
+                
+                # Directory: .../sap_labor_hours/2026/
+                target_dir = OUTPUT_BASE / year
+                target_dir.mkdir(parents=True, exist_ok=True)
+                
+                target_file = target_dir / f"sap_labor_hours_{file_ym_suffix}.parquet"
+                
+                # Query full data for this month from SQL (Partition Reconciliation)
+                sql = """
+                SELECT * 
+                FROM dbo.raw_sap_labor_hours 
+                WHERE CONVERT(char(7), TRY_CONVERT(date, [PostingDate]), 120) = ?
+                """
+                
+                # Use pandas read_sql
+                month_df = pd.read_sql_query(sql, conn, params=(ym,))
+                
+                if month_df.empty:
+                    logger.warning(f"  [Skip] No data found in DB for {ym}")
+                    continue
+                    
+                # Export
+                month_df.to_parquet(target_file, index=False)
+                logger.info(f"  [Export] {target_file.name} ({len(month_df)} rows)")
+
+            except Exception as e:
+                logger.error(f"  [Error] Failed to export {ym}: {e}")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="SAP Labor Hour Formatter")

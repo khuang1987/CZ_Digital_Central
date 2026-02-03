@@ -445,8 +445,8 @@ class SQLServerOnlyManager:
                             conn.commit()
                             rows_since_commit = 0
                         
-                        if rows_inserted % 10000 == 0:
-                            logging.info(f"Inserted {rows_inserted}/{len(df_insert)} rows...")
+                        if rows_inserted % 50000 == 0:
+                            logging.debug(f"Inserted {rows_inserted}/{len(df_insert)} rows...")
                     
                     except Exception as batch_error:
                         # Log error and try inserting rows one by one
@@ -733,12 +733,10 @@ class SQLServerOnlyManager:
 
             cursor.execute(
                 f"""
-                IF OBJECT_ID(?, 'U') IS NULL
-                BEGIN
-                    SELECT TOP 0 *
-                    INTO {schema}.[{staging_table_name}]
-                    FROM {schema}.[{table_name}] WHERE 1=0;
-                END
+                IF OBJECT_ID(?, 'U') IS NOT NULL DROP TABLE {schema}.[{staging_table_name}];
+                SELECT TOP 0 *
+                INTO {schema}.[{staging_table_name}]
+                FROM {schema}.[{table_name}] WHERE 1=0;
                 """,
                 (f"{schema}.{staging_table_name}",),
             )
@@ -802,10 +800,65 @@ class SQLServerOnlyManager:
                     has_next = False
                 if not has_next:
                     break
-
-            cursor.execute(f"TRUNCATE TABLE {schema}.[{staging_table_name}]")
-            conn.commit()
+            
             return inserted
+
+    def ensure_run_state_table(self):
+        """Ensure the etl_run_state table exists."""
+        with self.get_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute("""
+                IF OBJECT_ID('dbo.etl_run_state', 'U') IS NULL
+                BEGIN
+                    CREATE TABLE dbo.etl_run_state (
+                        component_name NVARCHAR(255) NOT NULL PRIMARY KEY,
+                        last_run_at DATETIME2 NULL,
+                        updated_at DATETIME2 NOT NULL DEFAULT GETDATE()
+                    );
+                END
+            """)
+            conn.commit()
+
+    def get_last_run_time(self, component_name: str) -> Optional[float]:
+        """Get last run timestamp (epoch) for a component."""
+        try:
+            self.ensure_run_state_table() # Ensure table exists before querying
+            with self.get_connection() as conn:
+                cursor = conn.cursor()
+                cursor.execute("""
+                    SELECT last_run_at FROM dbo.etl_run_state WHERE component_name = ?
+                """, (component_name,))
+                row = cursor.fetchone()
+                if row and row[0]:
+                    # Convert DATETIME2 to float epoch
+                    return row[0].timestamp()
+                return None
+        except Exception as e:
+            logging.error(f"Failed to get last run time for {component_name}: {e}")
+            return None
+
+    def update_run_state(self, component_name: str) -> None:
+        """Update the last run time for a component to now."""
+        try:
+            self.ensure_run_state_table()
+            with self.get_connection() as conn:
+                cursor = conn.cursor()
+                # Upsert logic
+                cursor.execute("""
+                    MERGE dbo.etl_run_state AS target
+                    USING (SELECT ? AS component_name) AS source
+                    ON (target.component_name = source.component_name)
+                    WHEN MATCHED THEN
+                        UPDATE SET last_run_at = GETDATE(), updated_at = GETDATE()
+                    WHEN NOT MATCHED THEN
+                        INSERT (component_name, last_run_at, updated_at)
+                        VALUES (source.component_name, GETDATE(), GETDATE());
+                """, (component_name,))
+                conn.commit()
+                logging.info(f"Updated run state for {component_name}")
+        except Exception as e:
+            logging.error(f"Failed to update run state for {component_name}: {e}")
+
 
     def log_etl_run(
         self,

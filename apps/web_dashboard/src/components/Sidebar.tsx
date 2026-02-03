@@ -2,7 +2,7 @@
 
 import React from 'react';
 import {
-    LayoutDashboard, Activity, Box, Calendar, Settings, ChevronLeft, ChevronRight, User, MoreVertical, Filter, RotateCcw, ShieldAlert
+    LayoutDashboard, Activity, Box, Calendar, Settings, ChevronLeft, ChevronRight, User, MoreVertical, Filter, RotateCcw, ShieldAlert, Database
 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -16,6 +16,7 @@ export default function Sidebar() {
 
     const navItems = [
         { icon: <LayoutDashboard size={18} />, label: "Dashboard", href: "/" },
+        { icon: <Database size={18} />, label: "Server", href: "/server" },
         { icon: <Activity size={18} />, label: "Production", href: "/production/labor-eh" },
         { icon: <ShieldAlert size={18} />, label: "EHS Safety", href: "/production/ehs" },
         { icon: <Box size={18} />, label: "Inventory", href: "/inventory", disabled: true },

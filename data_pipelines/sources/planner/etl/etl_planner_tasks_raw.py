@@ -21,6 +21,14 @@ project_root = str(PROJECT_ROOT)
 if project_root not in sys.path:
     sys.path.insert(0, project_root)
 
+# Try import pyarrow
+try:
+    import pyarrow
+except ImportError:
+    pass
+
+from shared_infrastructure.export_utils import export_partitioned_table
+
 from shared_infrastructure.utils.etl_utils import (
     setup_logging,
     load_config,
@@ -34,6 +42,11 @@ current_dir = os.path.dirname(os.path.abspath(__file__))
 CONFIG_PATH = os.path.join(current_dir, "..", "config", "config_planner_tasks.yaml")
 SCHEMA_PATH = os.path.join(current_dir, "..", "config", "init_schema_planner_tasks.sql")
 LABEL_CONFIG_PATH = os.path.join(current_dir, "..", "config", "label_cleaning.yaml")
+
+# Output Directory for Parquet
+A1_OUTPUT_DIR = Path(
+    r"C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\A1_ETL_Output"
+)
 
 # 设置日志 (使用工具函数或自定义)
 # 这里先加载配置以获取日志路径
@@ -109,6 +122,7 @@ def _ensure_planner_sqlserver_columns(conn) -> None:
         "LastSeenAt": "DATETIME2 NULL",
         "LastSeenSourceMtime": "NVARCHAR(64) NULL",
         "LastSeenSourceFile": "NVARCHAR(512) NULL",
+        "downloaded_at": "DATETIME2 NULL"
     }
 
     for col, col_def in required_task_cols.items():
@@ -152,7 +166,8 @@ def _create_temp_table_for_planner_tasks(cur, temp_name: str = "#PlannerTasks") 
             DeletedAt DATETIME2 NULL,
             LastSeenAt DATETIME2 NULL,
             LastSeenSourceMtime NVARCHAR(64) NULL,
-            LastSeenSourceFile NVARCHAR(MAX) NULL
+            LastSeenSourceFile NVARCHAR(MAX) NULL,
+            downloaded_at DATETIME2 NULL
         );
         """
     )
@@ -186,6 +201,7 @@ def _bulk_insert_temp_planner_tasks(cur, df: pd.DataFrame, temp_name: str = "#Pl
         "LastSeenAt",
         "LastSeenSourceMtime",
         "LastSeenSourceFile",
+        "downloaded_at",
     ]
     insert_cols = [c for c in insert_cols if c in df.columns]
     if not insert_cols:
@@ -270,21 +286,22 @@ def _merge_planner_tasks(cur, temp_name: str = "#PlannerTasks") -> None:
                 tgt.DeletedAt = src.DeletedAt,
                 tgt.LastSeenAt = src.LastSeenAt,
                 tgt.LastSeenSourceMtime = src.LastSeenSourceMtime,
-                tgt.LastSeenSourceFile = src.LastSeenSourceFile
+                tgt.LastSeenSourceFile = src.LastSeenSourceFile,
+                tgt.downloaded_at = src.downloaded_at
         WHEN NOT MATCHED BY TARGET THEN
             INSERT (
                 TaskId, TaskName, BucketName, Status, Priority, Assignees, CreatedBy,
                 CreatedDate, StartDate, DueDate, IsRecurring, IsLate,
                 CompletedDate, CompletedBy, CompletedChecklistItemCount, ChecklistItemCount,
                 Labels, Description, SourceFile, TeamName, ImportedAt,
-                IsDeleted, DeletedAt, LastSeenAt, LastSeenSourceMtime, LastSeenSourceFile
+                IsDeleted, DeletedAt, LastSeenAt, LastSeenSourceMtime, LastSeenSourceFile, downloaded_at
             )
             VALUES (
                 src.TaskId, src.TaskName, src.BucketName, src.Status, src.Priority, src.Assignees, src.CreatedBy,
                 src.CreatedDate, src.StartDate, src.DueDate, src.IsRecurring, src.IsLate,
                 src.CompletedDate, src.CompletedBy, src.CompletedChecklistItemCount, src.ChecklistItemCount,
                 src.Labels, src.Description, src.SourceFile, src.TeamName, src.ImportedAt,
-                src.IsDeleted, src.DeletedAt, src.LastSeenAt, src.LastSeenSourceMtime, src.LastSeenSourceFile
+                src.IsDeleted, src.DeletedAt, src.LastSeenAt, src.LastSeenSourceMtime, src.LastSeenSourceFile, src.downloaded_at
             );
         """
     )
@@ -450,7 +467,12 @@ def save_to_database(df: pd.DataFrame, table_name: str = "planner_tasks") -> Dic
         df_to_save['LastSeenSourceMtime'] = None
     df_to_save['LastSeenSourceFile'] = df_to_save['SourceFile'] if 'SourceFile' in df_to_save.columns else None
 
-    # Helper column: not persisted
+    # Map SourceFileMtime to downloaded_at for persistence
+    if 'SourceFileMtime' in df_to_save.columns:
+        df_to_save['downloaded_at'] = df_to_save['SourceFileMtime']
+        # Convert to datetime if it's not already (it should be)
+    
+    # Helper column: not persisted (Old logic dropped it, but now we used it for downloaded_at)
     if 'SourceFileMtime' in df_to_save.columns:
         df_to_save = df_to_save.drop(columns=['SourceFileMtime'])
     
@@ -667,9 +689,9 @@ def sync_planner_task_status():
                 update_query = """
                 UPDATE dbo.TriggerCaseRegistry 
                 SET Status = 'CLOSED',
-                    ClosedAt = ?,
-                    PlannerTaskId = ?,
-                    UpdatedAt = ?
+                ClosedAt = ?,
+                PlannerTaskId = ?,
+                UpdatedAt = ?
                 WHERE A3Id = ? AND Status = 'OPEN'
                 """
                 
@@ -692,6 +714,43 @@ def sync_planner_task_status():
             
     except Exception as e:
         logger.error(f"同步Planner任务状态失败: {e}")
+
+def get_existing_count(db: SQLServerOnlyManager):
+    return db.get_table_count('planner_tasks', schema='dbo')
+
+def export_parquet_by_months(db, df: pd.DataFrame):
+    """
+    Export processed data to partitioned Parquet files using shared utility.
+    """
+    if df.empty:
+        return
+
+    # Use 'CreatedDate' for partitioning
+    date_col = 'CreatedDate'
+    if date_col not in df.columns:
+        return
+
+    try:
+        months = df[date_col].dropna().astype(str).str[:7].unique().tolist()
+    except Exception:
+        return
+    
+    if not months:
+        return
+
+    logger.info(f"Delegate export to shared utility (months: {months})")
+    
+    with db.get_connection() as conn:
+        export_partitioned_table(
+            conn=conn,
+            dataset='planner_tasks',
+            table_name='dbo.planner_tasks',
+            date_col=date_col,
+            months=months,
+            output_dir=A1_OUTPUT_DIR,
+            reconcile=True, # Ensure checksums are checked
+            force=False
+        )
 
 def main(test_mode: bool = False, force: bool = False):
     logger.info("=" * 60)
@@ -735,6 +794,17 @@ def main(test_mode: bool = False, force: bool = False):
         logger.info(
             f"运行完成: read={len(df)}, inserted={stats['inserted']}, updated={stats['updated']}, skipped={stats['skipped']}"
         )
+        
+        # 9. Immediate Parquet Export
+        # Export affected months (based on df read from files)
+        # Even if files skipped (df empty/filtered), if force=True we might want to export?
+        # df_clean is used for logic.
+        if not df_clean.empty:
+            export_parquet_by_months(get_db_manager(), df_clean)
+        elif force:
+             # If force refresh, we might want to export *everything* or just check recent?
+             # For now, let's just log. To export all, we need a dummy DF with all months.
+             logger.info("Force 模式但没有新文件数据，暂时跳过立即导出 (等待全量编排)")
         
     except Exception as e:
         logger.exception(f"ETL 运行失败: {e}")

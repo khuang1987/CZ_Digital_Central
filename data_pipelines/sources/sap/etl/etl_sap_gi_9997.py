@@ -14,7 +14,22 @@ project_root_str = str(PROJECT_ROOT)
 if project_root_str not in sys.path:
     sys.path.insert(0, project_root_str)
 
+
+# Try import pyarrow
+try:
+    import pyarrow
+except ImportError:
+    pass
+
+from shared_infrastructure.export_utils import export_partitioned_table
+
 from shared_infrastructure.utils.db_sqlserver_only import SQLServerOnlyManager
+from shared_infrastructure.env_utils import load_yaml_with_env
+
+# Output Directory for Parquet
+A1_OUTPUT_DIR = Path(
+    r"C:\Users\huangk14\OneDrive - Medtronic PLC\CZ Production - 文档\General\POWER BI 数据源 V2\A1_ETL_Output"
+)
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
@@ -193,6 +208,12 @@ def clean_data(df: pd.DataFrame, *, source_file: str) -> pd.DataFrame:
             df[col] = df[col].astype('string').str.strip()
 
     df['source_file'] = os.path.basename(source_file)
+    
+    try:
+        mtime_ts = os.path.getmtime(source_file)
+        df['downloaded_at'] = datetime.fromtimestamp(mtime_ts)
+    except Exception:
+        df['downloaded_at'] = pd.NaT
 
     # Ensure audit timestamps exist for staging-table insert.
     # NOTE: merge_insert_by_hash creates staging table via SELECT INTO, which does not keep DEFAULT constraints.
@@ -240,6 +261,7 @@ def create_table(db: SQLServerOnlyManager, df_sample: pd.DataFrame) -> None:
                     PostingDate NVARCHAR(30) NULL,
                     source_file NVARCHAR(260) NULL,
                     record_hash NVARCHAR(64) NULL,
+                    downloaded_at DATETIME2 NULL,
                     created_at DATETIME2 NOT NULL DEFAULT GETDATE(),
                     updated_at DATETIME2 NOT NULL DEFAULT GETDATE()
                 );
@@ -271,6 +293,15 @@ def create_table(db: SQLServerOnlyManager, df_sample: pd.DataFrame) -> None:
             cur.execute(f"ALTER TABLE dbo.{TABLE_NAME} ADD [{col}] {sql_type};")
 
         conn.commit()
+
+        # Explicitly check for downloaded_at (schema evolution)
+        cur.execute(
+            "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA='dbo' AND TABLE_NAME=? AND COLUMN_NAME='downloaded_at'",
+            (TABLE_NAME,)
+        )
+        if not cur.fetchone():
+            cur.execute(f"ALTER TABLE dbo.{TABLE_NAME} ADD downloaded_at DATETIME2 NULL;")
+            conn.commit()
 
 
 def _table_row_count(db: SQLServerOnlyManager) -> int:
@@ -322,8 +353,44 @@ def import_file(db: SQLServerOnlyManager, *, file_path: str, sheet: Optional[str
         db.mark_file_processed(DATASET_NAME, file_path)
     except Exception:
         pass
+    
+    # NEW: Immediate Export
+    try:
+        if not df.empty:
+            export_parquet_by_months(db, df)
+    except Exception as e:
+        logger.warning(f"Immediate export failed: {e}")
 
     return int(inserted or 0)
+
+def export_parquet_by_months(db, df: pd.DataFrame):
+    """
+    Export processed data to partitioned Parquet files using shared utility.
+    """
+    if df.empty or 'PostingDate' not in df.columns:
+        return
+
+    try:
+        months = df['PostingDate'].dropna().astype(str).str[:7].unique().tolist()
+    except Exception:
+        return
+    
+    if not months:
+        return
+
+    logger.info(f"Delegate export to shared utility (months: {months})")
+    
+    with db.get_connection() as conn:
+        export_partitioned_table(
+            conn=conn,
+            dataset='sap_gi_9997',
+            table_name='dbo.raw_sap_gi_9997',
+            date_col='PostingDate',
+            months=months,
+            output_dir=A1_OUTPUT_DIR,
+            reconcile=True,
+            force=False
+        )
 
 
 def main(argv: Optional[List[str]] = None) -> int:
@@ -358,6 +425,22 @@ def main(argv: Optional[List[str]] = None) -> int:
     imported = import_file(db, file_path=args.file, sheet=args.sheet, rebuild=args.rebuild)
     elapsed = (datetime.now() - start).total_seconds()
     logger.info(f"Done: imported={imported}, elapsed={elapsed:.1f}s")
+    
+    # Immediate Export
+    try:
+        # Re-read raw data to get processed months? 
+        # Or simpler: if we just imported, query DB for months in the source file
+        # But wait, 'import_file' returns count. 'df' is local.
+        # We need to expose 'df' or passing it out.
+        # Ideally, we call export inside import_file or here if we have date range.
+        
+        # Simplest: Read source file locally again just to get months? No heavy.
+        # Better: run SQL query to get distinct months from table for 'today's import'?
+        # Or: modify import_file to return DataFrame or Date Range.
+        pass
+    except Exception:
+        pass
+
     return 0
 
 

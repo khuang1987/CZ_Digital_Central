@@ -95,15 +95,18 @@ def get_output_dir():
     path.mkdir(parents=True, exist_ok=True)
     return path
 
-def export_tooling_data():
-    logger.info("Starting Tooling Data Export...")
+def fetch_transactions(year: int) -> pd.DataFrame:
+    """
+    Fetch transactions for a specific year from SPS.
+    Returns DataFrame.
+    """
+    logger.debug(f"Fetching indirect material transactions for {year}...")
     
     # 1. Wi-Fi Check
     if not check_wifi_ssid("mdtmobile"):
-        # Allow bypass via Env Var for testing
         if os.getenv("MDDAP_SKIP_WIFI_CHECK", "false").lower() != "true":
             logger.error("❌ Must be connected to 'mdtmobile' Wi-Fi for SPS access.")
-            return False
+            raise ConnectionError("Incorrect Wi-Fi network")
         else:
             logger.warning("⚠️ Skipping Wi-Fi check (MDDAP_SKIP_WIFI_CHECK=true)")
 
@@ -115,86 +118,60 @@ def export_tooling_data():
 
     if not all([server, database, username, password]):
         logger.error("❌ SPS Database credentials missing in .env (MDDAP_SPS_*)")
-        return False
+        raise ValueError("Missing SPS credentials")
 
     engine = None
     try:
         engine = create_db_engine(server, database, username, password)
-        # Test connection
-        with get_db_connection(engine) as conn:
-            pass
-        logger.info("✅ Connected to SPS Database")
     except Exception as e:
         logger.error(f"❌ Database connection failed: {e}")
-        return False
+        raise
 
-    # 3. Export Data (Current Year + Historical)
-    current_year = datetime.now().year
-    years = [current_year - i for i in range(5)] # Last 5 years
+    # 3. Query
+    start_time = datetime(year, 1, 1)
+    end_time = datetime(year + 1, 1, 1) if year != datetime.now().year else datetime.now()
     
-    save_path = get_output_dir()
+    query = """
+        SELECT 
+            T.TRANSTARTDATETIME AS StartTime,
+            T.TRANENDDATETIME AS EndTime,
+            T.ITEMNUMBER AS ItemNumber,
+            I.DESCR AS ItemDescription,
+            I.ITEMGROUP AS ItemGroup,
+            T.JOBNUMBER AS JobNumber,
+            T.AUX1 AS BatchNumber,
+            T.AUX2 AS OperationNumber,
+            T.MACHINENUMBER AS MachineNumber,
+            U.DESCR AS EmployeeName,
+            T.QTY AS Quantity,
+            V.DESCR AS VendingMachine,
+            T.LOCATIONTEXT AS Location,
+            T.USERGROUP01 AS Area
+        FROM dbo.TransactionLog T
+        JOIN dbo.Users U ON T.USERNUMBER = U.USERNUMBER
+        JOIN dbo.VendingMachines V ON T.VMID = V.VMID
+        JOIN dbo.Items I ON T.ITEMNUMBER = I.ITEMNUMBER
+        WHERE T.TRANENDDATETIME >= ? 
+          AND T.TRANENDDATETIME < ?
+        ORDER BY T.TRANSTARTDATETIME
+    """
     
-    success = True
-    
-    for year in years:
-        file_name = f'tooling_transaction_{year}.csv'
-        csv_file_path = save_path / file_name
-        
-        # Skip historical if exists
-        if year != current_year and csv_file_path.exists():
-             logger.info(f"Skipping {year} (File exists)")
-             continue
-             
-        start_time = datetime(year, 1, 1)
-        end_time = datetime(year + 1, 1, 1) if year != current_year else datetime.now()
-        
-        query = """
-            SELECT 
-                T.TRANSTARTDATETIME AS StartTime,
-                T.TRANENDDATETIME AS EndTime,
-                T.ITEMNUMBER AS ItemNumber,
-                I.DESCR AS ItemDescription,
-                I.ITEMGROUP AS ItemGroup,
-                T.JOBNUMBER AS JobNumber,
-                T.AUX1 AS BatchNumber,
-                T.AUX2 AS OperationNumber,
-                T.MACHINENUMBER AS MachineNumber,
-                U.DESCR AS EmployeeName,
-                T.QTY AS Quantity,
-                V.DESCR AS VendingMachine,
-                T.LOCATIONTEXT AS Location,
-                T.USERGROUP01 AS Area
-            FROM dbo.TransactionLog T
-            JOIN dbo.Users U ON T.USERNUMBER = U.USERNUMBER
-            JOIN dbo.VendingMachines V ON T.VMID = V.VMID
-            JOIN dbo.Items I ON T.ITEMNUMBER = I.ITEMNUMBER
-            WHERE T.TRANENDDATETIME >= ? 
-              AND T.TRANENDDATETIME < ?
-            ORDER BY T.TRANSTARTDATETIME
-        """
-        
-        try:
-             with get_db_connection(engine) as conn:
-                logger.info(f"Exporting data for {year}...")
+    try:
+         with get_db_connection(engine) as conn:
+            # chunksize used internally by read_sql, but we want full DF here
+            df = pd.read_sql(query, conn, params=(start_time, end_time))
+            logger.info(f"✅ Fetched {year}: {len(df)} rows")
+            return df
                 
-                # Chunked read for efficiency
-                chunks = []
-                for chunk in pd.read_sql(query, conn, params=(start_time, end_time), chunksize=10000):
-                    chunks.append(chunk)
-                
-                if chunks:
-                    df = pd.concat(chunks, ignore_index=True)
-                    df.to_csv(csv_file_path, index=False, encoding='utf-8-sig')
-                    logger.info(f"✅ Exported {year}: {len(df)} rows")
-                else:
-                    logger.info(f"ℹ️ No data for {year}")
-                    
-        except Exception as e:
-            logger.error(f"❌ Failed to export {year}: {e}")
-            success = False
-            
-    return success
+    except Exception as e:
+        logger.error(f"❌ Failed to fetch {year}: {e}")
+        raise
 
 if __name__ == "__main__":
+    # Test run
     logging.basicConfig(level=logging.INFO)
-    export_tooling_data()
+    try:
+        df = fetch_transactions(datetime.now().year)
+        print(df.head())
+    except Exception as e:
+        print(e)

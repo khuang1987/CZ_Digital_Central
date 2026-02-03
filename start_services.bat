@@ -29,13 +29,13 @@ if defined VENV_DIR (
 )
 
 echo [2/2] (Skip) Dashboard Service has been migrated to Next.js.
-REM set "SCRIPT_DIR=%~dp0dashboard\"
-REM cd /d "%SCRIPT_DIR%"
-REM if defined VENV_DIR (
-REM     start "MDDAP Dashboard" cmd /c "..\%VENV_DIR%\Scripts\streamlit" run app.py"
-REM ) else (
-REM     start "MDDAP Dashboard" cmd /c "streamlit run app.py"
-REM )
+set "SCRIPT_DIR=%~dp0dashboard\"
+cd /d "%SCRIPT_DIR%"
+if defined VENV_DIR (
+    start "MDDAP Dashboard Legacy" cmd /c "..\tools\%VENV_DIR%\Scripts\streamlit" run app.py"
+) else (
+    start "MDDAP Dashboard Legacy" cmd /c "streamlit run app.py"
+)
 
 echo.
 echo ========================================================

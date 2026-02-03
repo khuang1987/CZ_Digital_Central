@@ -206,6 +206,17 @@ class CMESDataCollector:
     def _log(self, message: str):
         logger.info(message)
 
+    def _is_file_fresh(self, file_path: Path, max_age_seconds: int = 3600) -> bool:
+        """Check if file exists and is newer than max_age_seconds."""
+        if not file_path.exists():
+            return False
+        try:
+            mtime = file_path.stat().st_mtime
+            age = time.time() - mtime
+            return age < max_age_seconds
+        except Exception:
+            return False
+
     def collect(self, start_date: str = None, end_date: str = None, output_period: str = None) -> bool:
         skip_date_filter = self.config.get('skip_date_filter', False)
         report_name = self.config.get('name', '')
@@ -307,18 +318,21 @@ class CMESDataCollector:
                     
                     if not target_path.exists() or is_current:
                         if is_current:
-                             pass # self._log(f"[{report_name}] 🔄 检测到当前周期 ({period_str})，强制加入更新队列。")
+                             if self._is_file_fresh(target_path):
+                                 # Pass in log if desired, but here we just proceed to next file/skip
+                                 continue
+                             # pass # self._log(f"[{report_name}] 🔄 检测到当前周期 ({period_str})，强制加入更新队列。")
                         missing_periods.append((*period_info, period_str, period_type))
                     # else:
                     #    self._log(f"[{report_name}] 文件已存在: {filename}")
                 
                 if not missing_periods:
                     period_type_name = "月度" if is_resource else "季度"
-                    self._log(f"✅ [{report_name}] 所有历史{period_type_name}数据已完整 ({len(periods_to_check)} 个周期)，无需下载。")
+                    self._log(f"✅ [{report_name}] 所有历史{period_type_name}数据已完整且新鲜 ({len(periods_to_check)} 个周期)，无需下载。")
                     return True
                     
                 period_type_name = "月" if is_resource else "个季度"
-                self._log(f"⚠️ [{report_name}] 发现 {len(missing_periods)} {period_type_name}数据缺失，准备补全: {[x[2] for x in missing_periods]}")
+                self._log(f"⚠️ [{report_name}] 发现 {len(missing_periods)} {period_type_name}数据缺失或需更新，准备补全: {[x[2] for x in missing_periods]}")
                 
                 # 初始化浏览器 (如果还没初始化)
                 if self.page:
@@ -409,6 +423,17 @@ class CMESDataCollector:
                 if output_period is None:
                     output_period = datetime.now().strftime("%Y%m%d")  # WIP format default
         
+        # Check freshness for single download
+        potential_filename = get_output_filename(
+            self.config['filename_format'],
+            self.config['name'],
+            period=output_period
+        )
+        potential_path = Path(self.config['target_folder']) / potential_filename
+        if self._is_file_fresh(potential_path):
+            self._log(f"[{report_name}] 文件已存在且在1小时内更新，跳过下载: {potential_filename}")
+            return True
+
         self._log(f"开始单次采集: {self.config['name']} ({output_period})")
         
         # ... (Reuse _perform_single_download logic or generic manager setup)

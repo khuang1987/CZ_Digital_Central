@@ -3,9 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "node show-ip.js && next dev -H 0.0.0.0",
+    "dev": "node -e \"const os=require('os'); const nets=os.networkInterfaces(); const results={}; for(const name of Object.keys(nets)){ for(const net of nets[name]){ if(net.family==='IPv4' && !net.internal){ console.log('\\n🚀 Dashboard Network: http://' + net.address + ':3000\\n'); } } }\" && next dev -H 0.0.0.0",
     "build": "next build",
-    "start": "node show-ip.js && next start -H 0.0.0.0",
+    "start": "node -e \"const os=require('os'); const nets=os.networkInterfaces(); const results={}; for(const name of Object.keys(nets)){ for(const net of nets[name]){ if(net.family==='IPv4' && !net.internal){ console.log('\\n🚀 Dashboard Network: http://' + net.address + ':3000\\n'); } } }\" && next start -H 0.0.0.0",
     "lint": "next lint"
   },
   "dependencies": {

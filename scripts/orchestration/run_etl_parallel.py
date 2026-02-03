@@ -73,7 +73,7 @@ STAGES = [
             {"name": "Planner Tasks",         "script": "data_pipelines/sources/planner/etl/etl_planner_tasks_raw.py"},
             {"name": "Calendar Dim",          "script": "data_pipelines/sources/dimension/etl/etl_calendar.py"},
             {"name": "Operation Mapping",     "script": "data_pipelines/sources/dimension/etl/etl_operation_mapping.py"},
-            {"name": "SAP Labor Hours",       "script": "data_pipelines/sources/sap/etl/etl_sap_labor_hours.py", "args": ["--ypp"]},
+            # {"name": "SAP Labor Hours",       "script": "data_pipelines/sources/sap/etl/etl_sap_labor_hours.py", "args": ["--ypp"]},
             {"name": "SAP 9997 GI",           "script": "data_pipelines/sources/sap/etl/etl_sap_gi_9997.py"},
         ]
     },
@@ -337,24 +337,23 @@ def run_stage(stage: Dict[str, Any], pool: concurrent.futures.ProcessPoolExecuto
         # Determine if we should print the log block
         was_streamed = result.get('streamed', False)
         
-        if not was_streamed:
-            # Print buffered logs (Existing behavior for non-streamed tasks)
-            logging.info("")
-            logging.info(f"==================================================================")
-            logging.info(f"LOGS for TASK: {result['name']}")
-            logging.info(f"==================================================================")
-            if result.get('output'):
-                for line in result['output'].splitlines():
-                    logging.info(f"  {line}")
-            else:
-                logging.info("  (No output captured)")
-            logging.info(f"==================================================================")
-            logging.info("")
+        # Always print buffered logs to file/console for record keeping
+        # (Even if streamed, we want them in the log file)
+        logging.info("")
+        logging.info(f"==================================================================")
+        logging.info(f"LOGS for TASK: {result['name']}")
+        logging.info(f"==================================================================")
+        if result.get('output'):
+            for line in result['output'].splitlines():
+                if was_streamed:
+                     # Add a subtle prefix so we know it was visually streamed
+                     logging.info(f"  [STREAMED] {line}")
+                else:
+                     logging.info(f"  {line}")
         else:
-            # For streamed tasks, just print a small marker since logs are already visible
-            logging.info("")
-            logging.info(f">>> Task Completed: {result['name']} (Output above)")
-            logging.info("")
+            logging.info("  (No output captured)")
+        logging.info(f"==================================================================")
+        logging.info("")
 
         if not result['success']:
             failed = True
