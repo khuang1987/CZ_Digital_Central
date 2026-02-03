@@ -3,7 +3,7 @@ import { ChevronDown, Search } from 'lucide-react';
 
 interface FilterDropdownProps {
     title: string;
-    options: string[];
+    options: (string | { label: string; value: string })[];
     selected: string[];
     onChange: (selected: string[]) => void;
     placeholder?: string;
@@ -25,15 +25,17 @@ export default function FilterDropdown({ title, options, selected, onChange, pla
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, []);
 
-    const filteredOptions = options.filter(opt =>
-        opt && opt.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+    const filteredOptions = options.filter(opt => {
+        const label = typeof opt === 'string' ? opt : opt.label;
+        const val = typeof opt === 'string' ? opt : opt.value;
+        return (label + ' ' + val).toLowerCase().includes(searchTerm.toLowerCase());
+    });
 
-    const toggleOption = (opt: string) => {
-        if (selected.includes(opt)) {
-            onChange(selected.filter(s => s !== opt));
+    const toggleOption = (val: string) => {
+        if (selected.includes(val)) {
+            onChange(selected.filter(s => s !== val));
         } else {
-            onChange([...selected, opt]);
+            onChange([...selected, val]);
         }
     };
 
@@ -76,7 +78,10 @@ export default function FilterDropdown({ title, options, selected, onChange, pla
                     </div>
                     <div className="overflow-y-auto p-1.5 space-y-0.5 flex-1">
                         <button
-                            onClick={() => onChange(selected.length === options.length ? [] : [...options])}
+                            onClick={() => {
+                                const allValues = options.map(o => typeof o === 'string' ? o : o.value);
+                                onChange(selected.length === allValues.length ? [] : allValues);
+                            }}
                             className="w-full flex items-center gap-2 px-2 py-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors text-left"
                         >
                             <div className={`w-3.5 h-3.5 rounded border-2 flex items-center justify-center transition-colors ${selected.length === options.length && options.length > 0
@@ -89,23 +94,27 @@ export default function FilterDropdown({ title, options, selected, onChange, pla
                         </button>
                         <div className="h-px bg-slate-100 dark:bg-slate-800 my-1 mx-2" />
                         {filteredOptions.length > 0 ? (
-                            filteredOptions.map(opt => (
-                                <button
-                                    key={opt}
-                                    onClick={() => toggleOption(opt)}
-                                    className="w-full flex items-center gap-2 px-2 py-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors text-left group/item"
-                                >
-                                    <div className={`w-3.5 h-3.5 rounded border-2 flex items-center justify-center transition-colors ${selected.includes(opt)
-                                        ? 'bg-medtronic border-medtronic text-white'
-                                        : 'border-slate-300 dark:border-slate-600 group-hover/item:border-medtronic/50'
-                                        }`}>
-                                        {selected.includes(opt) && <span className="text-[8px]">✓</span>}
-                                    </div>
-                                    <span className={`text-xs ${selected.includes(opt) ? 'font-bold text-slate-800 dark:text-slate-100' : 'font-medium text-slate-600 dark:text-slate-400'}`}>
-                                        {opt}
-                                    </span>
-                                </button>
-                            ))
+                            filteredOptions.map((opt, i) => {
+                                const label = typeof opt === 'string' ? opt : opt.label;
+                                const val = typeof opt === 'string' ? opt : opt.value;
+                                return (
+                                    <button
+                                        key={typeof opt === 'string' ? opt : `${opt.value}-${i}`}
+                                        onClick={() => toggleOption(val)}
+                                        className="w-full flex items-center gap-2 px-2 py-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors text-left group/item"
+                                    >
+                                        <div className={`w-3.5 h-3.5 rounded border-2 flex items-center justify-center transition-colors ${selected.includes(val)
+                                            ? 'bg-medtronic border-medtronic text-white'
+                                            : 'border-slate-300 dark:border-slate-600 group-hover/item:border-medtronic/50'
+                                            }`}>
+                                            {selected.includes(val) && <span className="text-[8px]">✓</span>}
+                                        </div>
+                                        <span className={`text-xs ${selected.includes(val) ? 'font-bold text-slate-800 dark:text-slate-100' : 'font-medium text-slate-600 dark:text-slate-400'}`}>
+                                            {label}
+                                        </span>
+                                    </button>
+                                );
+                            })
                         ) : (
                             <div className="px-2 py-4 text-center text-xs text-slate-400 italic">
                                 {options.length === 0 ? emptyText : 'No matches'}

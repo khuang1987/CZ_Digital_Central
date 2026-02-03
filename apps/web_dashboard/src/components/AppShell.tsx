@@ -2,10 +2,10 @@
 
 import React, { useState, useEffect } from 'react';
 import Sidebar from '@/components/Sidebar';
-import { Search, Moon, Sun, Bell, ExternalLink, Activity, Zap, BarChart, Package, ShieldCheck, Maximize } from 'lucide-react';
+import { Search, Moon, Sun, Bell, ExternalLink, Activity, Zap, BarChart, Package, ShieldCheck, Maximize, Database } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
-import { useUI } from '@/context/UIContext';
+// import { useUI } from '@/context/UIContext';
 
 export default function AppShell({ children }: { children: React.ReactNode }) {
     const [theme, setTheme] = useState<'light' | 'dark'>('light');
@@ -34,6 +34,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
     const toggleTheme = () => setTheme(prev => prev === 'light' ? 'dark' : 'light');
 
     const isProduction = pathname.startsWith('/production');
+    const isServer = pathname.startsWith('/server');
 
     const getPageTitle = () => {
         if (pathname === '/') return 'Executive Dashboard';
@@ -45,6 +46,12 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
                 <span className="text-xl font-black tracking-tight text-slate-900 dark:text-white">EHS Safety Center</span>
             </div>
         );
+        if (isServer) return (
+            <div className="flex items-center gap-2">
+                <Database className="text-medtronic" size={24} />
+                <span className="text-xl font-black tracking-tight text-slate-900 dark:text-white">Server Control Center</span>
+            </div>
+        );
         if (isProduction) return 'Production Management';
         return 'Medtronic Digital Central';
     };
@@ -54,6 +61,11 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
         { label: '调试换型 (Changeover)', href: '/production/changeover', icon: <Zap size={14} /> },
         { label: 'OEE 看板', href: '/production/oee', icon: <BarChart size={14} />, disabled: true },
         { label: '物料查询', href: '/production/material', icon: <Package size={14} />, disabled: true },
+    ];
+
+    const serverTabs = [
+        { label: 'Health Monitor', href: '/server', icon: <Activity size={14} /> },
+        { label: 'Batch Validation', href: '/server/validation', icon: <ShieldCheck size={14} /> },
     ];
 
     return (
@@ -133,10 +145,33 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
                             })}
                         </nav>
                     )}
+
+                    {isServer && (
+                        <nav className="h-8 flex items-center gap-5 -mb-[1px]">
+                            {serverTabs.map((tab) => {
+                                const active = pathname === tab.href;
+                                return (
+                                    <Link
+                                        key={tab.label}
+                                        href={tab.href}
+                                        className={`flex items-center gap-2 h-full text-[11px] font-black transition-all border-b-2 relative ${active
+                                            ? 'border-medtronic text-medtronic'
+                                            : 'border-transparent text-slate-800 dark:text-slate-400 hover:text-medtronic dark:hover:text-slate-200'
+                                            } cursor-pointer`}
+                                    >
+                                        {tab.icon}
+                                        <span>{tab.label}</span>
+                                    </Link>
+                                );
+                            })}
+                        </nav>
+                    )}
                 </header>
 
-                <div className="flex-1 overflow-hidden relative">
-                    {children}
+                <div className="flex-1 overflow-y-auto min-w-0 bg-slate-50 dark:bg-transparent">
+                    <div className="p-6 max-w-[1600px] mx-auto min-h-screen space-y-6">
+                        {children}
+                    </div>
                 </div>
             </main>
         </div>

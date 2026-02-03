@@ -17,6 +17,7 @@ export default function Sidebar() {
     const navItems = [
         { icon: <LayoutDashboard size={18} />, label: "Dashboard", href: "/" },
         { icon: <Database size={18} />, label: "Server", href: "/server" },
+        { icon: <ShieldAlert size={18} />, label: "Batch Validation", href: "/server/validation" },
         { icon: <Activity size={18} />, label: "Production", href: "/production/labor-eh" },
         { icon: <ShieldAlert size={18} />, label: "EHS Safety", href: "/production/ehs" },
         { icon: <Box size={18} />, label: "Inventory", href: "/inventory", disabled: true },

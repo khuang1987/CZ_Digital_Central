@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Check, X, AlertTriangle, MessageSquare, ShieldCheck } from 'lucide-react';
+import { Check, AlertTriangle, MessageSquare, ShieldCheck } from 'lucide-react';
 
 export type DailyStatus = 'Safe' | 'Incident' | 'Holiday' | null;
 
@@ -18,7 +18,7 @@ export default function GreenCross({ year, month, data, onUpdate }: GreenCrossPr
     // Normalize today to avoid time comparison issues
     today.setHours(0, 0, 0, 0);
 
-    const isCurrentMonth = today.getFullYear() === year && (today.getMonth() + 1) === month;
+    // const isCurrentMonth = today.getFullYear() === year && (today.getMonth() + 1) === month; // Unused
     // const currentDay = today.getDate(); // Unused
 
     const [selectedDay, setSelectedDay] = useState<number | null>(null);
