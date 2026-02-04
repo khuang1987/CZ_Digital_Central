@@ -90,7 +90,29 @@ def etl_indirect_material_transactions(headless: bool = True):
     ensure_table(db)
     
     current_year = datetime.now().year
-    years = [current_year - i for i in range(5)] # Last 5 years
+    # --- OPTIMIZATION: Incremental Download Strategy ---
+    start_year = current_year - 4 # Default: Last 5 years if empty
+    
+    try:
+        with db.get_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute(f"SELECT MAX(EndTime) FROM dbo.{TABLE_NAME}")
+            row = cursor.fetchone()
+            if row and row[0]:
+                last_date = row[0]
+                # If we have data, start from the year of the last data
+                # We also include the previous year just in case of late adjustments/sync issues
+                # Logic: max(last_data_year, current_year - 1)
+                # Why current_year - 1? Because sometimes late data for previous year arrives in Jan/Feb.
+                db_year = last_date.year
+                start_year = max(db_year, current_year - 1)
+                logger.info(f"Incremental Strategy: Found data up to {last_date}. Starting download from {start_year}.")
+            else:
+                logger.info("Incremental Strategy: No existing data found. Starting full 5-year download.")
+    except Exception as e:
+        logger.warning(f"Failed to determine max date: {e}. Falling back to full download.")
+
+    years = range(start_year, current_year + 1)
     
     # Track months for export
     affected_months = set()

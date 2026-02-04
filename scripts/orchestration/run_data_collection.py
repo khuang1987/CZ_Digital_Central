@@ -28,9 +28,15 @@ except ImportError:
     pass
 
 # Setup logging
+# Setup logging
+log_format = '%(asctime)s - %(levelname)s - %(message)s'
+if os.getenv("MDDAP_ORCHESTRATOR_RUN"):
+    # Orchestrator handles timestamping, so we use a concise format
+    log_format = '%(levelname)s - %(message)s'
+
 logging.basicConfig(
     level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(message)s',
+    format=log_format,
     handlers=[logging.StreamHandler()]
 )
 logger = logging.getLogger("DataCollectionPipeline")

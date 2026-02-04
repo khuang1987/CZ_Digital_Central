@@ -528,7 +528,7 @@ class PlaywrightManager:
 
         
         start_time = time.time()
-        timeout = 60
+        timeout = 100
         
         try:
             while time.time() < start_time + timeout:

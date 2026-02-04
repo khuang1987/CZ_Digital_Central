@@ -43,7 +43,7 @@ def cleanup_logs(keep_days: int = 7):
         print(f"Cleaned up {deleted_count} log files older than {keep_days} days.")
 
 # Perform cleanup on startup
-cleanup_logs(keep_days=7)
+cleanup_logs(keep_days=5)
 
 # Generate single log filename for this run
 TIMESTAMP = datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -56,11 +56,14 @@ STAGES = [
     {
         "name": "0. Data Collection",
         "tasks": [
-            # Runs unified downloader for Planner, CMES/MES, and Labor Formatting
-            # Warning: Browsers are heavy, running in parallel might be risky if resources are low, 
-            # but orchestrator runs stages sequentially so it's fine.
-            # Within this stage, we only have one task 'Data Collection (All)' to keep it simple.
-            {"name": "Data Collection (All)", "script": "scripts/orchestration/run_data_collection.py", "args": ["all"], "max_retries": 2},
+            # Group A: Production Scheduling & Labor
+            {"name": "Collection: Planner",   "script": "scripts/orchestration/run_data_collection.py", "args": ["planner", "--no-headless"], "max_retries": 2},
+            {"name": "Collection: SAP Labor", "script": "scripts/orchestration/run_data_collection.py", "args": ["labor"],   "max_retries": 2},
+
+            # Group B: Manufacturing Execution & Logistics
+            {"name": "Collection: CMES",      "script": "scripts/orchestration/run_data_collection.py", "args": ["cmes", "--no-headless"],    "max_retries": 2},
+            {"name": "Collection: Indirect",  "script": "scripts/orchestration/run_data_collection.py", "args": ["indirect_material", "--no-headless"], "max_retries": 2},
+            {"name": "Collection: SAP 9997",  "script": "scripts/orchestration/run_data_collection.py", "args": ["sap9997"], "max_retries": 2},
         ]
     },
     {
@@ -198,8 +201,8 @@ def run_task(task: Dict[str, Any]) -> Dict[str, Any]:
         log_buffer = []
 
         def log(msg):
-            timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-            full_msg = f"[{timestamp}] [{name}] {msg}"
+            # timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S') # Redundant with logging formatter
+            full_msg = f"[{name}] {msg}"
             log_buffer.append(full_msg)
             if stream_output:
                 print(full_msg)
@@ -228,6 +231,7 @@ def run_task(task: Dict[str, Any]) -> Dict[str, Any]:
         env["PYTHONPATH"] = f"{PROJECT_ROOT}{os.pathsep}{current_pythonpath}"
         env["PYTHONUTF8"] = "1"
         env["PYTHONIOENCODING"] = "utf-8"
+        env["MDDAP_ORCHESTRATOR_RUN"] = "true"
 
         try:
             # Run and capture output

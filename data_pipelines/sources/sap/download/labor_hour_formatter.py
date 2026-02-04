@@ -253,9 +253,47 @@ def format_labor_hour(force_refresh: bool = False) -> bool:
                 
                 # 调用 ETL 脚本里的清洗和导入逻辑
                 cleaned_df = clean_data(target_df)
+
+                # --- OPTIMIZATION: Hash-Diff to process only new data ---
+                final_df_to_process = cleaned_df
                 
-                # 执行导入
-                imported = import_data(db, cleaned_df)
+                if not cleaned_df.empty and 'record_hash' in cleaned_df.columns:
+                    try:
+                        # Get unique hashes from current dataframe
+                        current_hashes = cleaned_df['record_hash'].unique().tolist()
+                        
+                        # Fetch existing hashes from DB
+                        existing_hashes = db.get_existing_hashes(
+                            table_name='raw_sap_labor_hours',
+                            hash_column='record_hash',
+                            hashes=current_hashes
+                        )
+                        
+                        # Filter for new rows only
+                        new_rows_df = cleaned_df[~cleaned_df['record_hash'].isin(existing_hashes)].copy()
+                        
+                        if new_rows_df.empty:
+                            log_callback("[INFO] Opt: No new data hashes found. Skipping SQL Insert and Parquet Update.")
+                            # Mark as processed so we don't scan again immediately
+                            db.mark_file_processed("sap_labor_hours", output_file)
+                            db.mark_file_processed("sap_labor_zip", target_zip_path)
+                            
+                            # Cleanup intermediate file
+                            try: os.remove(input_file) 
+                            except: pass
+                            
+                            # Skip Duplicate export logic entirely
+                            return True
+                            
+                        log_callback(f"[INFO] Opt: Found {len(new_rows_df)} new records (out of {len(cleaned_df)} source records).")
+                        final_df_to_process = new_rows_df
+                        
+                    except Exception as opt_e:
+                        log_callback(f"[WARN] Optimization check failed: {opt_e}. Falling back to full processing.")
+                        final_df_to_process = cleaned_df
+                
+                # 执行导入 (Only New Rows)
+                imported = import_data(db, final_df_to_process)
                 
                 log_callback(f"[INFO] SQL 导入完成: 新增 {imported} 条记录")
                 
@@ -265,9 +303,9 @@ def format_labor_hour(force_refresh: bool = False) -> bool:
                 # 同时记录原始 ZIP 的处理状态，用于下次判断是否跳过
                 db.mark_file_processed("sap_labor_zip", target_zip_path)
 
-                # --- 3. Immediate Parquet Export ---
+                # --- 3. Immediate Parquet Export (Only affected months) ---
                 try:
-                    export_parquet_by_months(db, cleaned_df)
+                    export_parquet_by_months(db, final_df_to_process)
                 except Exception as pq_err:
                     log_callback(f"[WARN] Parquet 导出失败 (不影响数据入库): {pq_err}")
                 
