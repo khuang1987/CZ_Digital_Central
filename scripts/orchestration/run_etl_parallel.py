@@ -467,6 +467,8 @@ def main():
     import argparse
     parser = argparse.ArgumentParser(description="MDDAP ETL Orchestrator")
     parser.add_argument("--only-collection", action="store_true", help="Only run Stage 0 (Data Collection), skip SQL/DB stages.")
+    parser.add_argument("--stage", type=str, help="Run only specific stages by index or name (e.g., '0' or '1,2').")
+    parser.add_argument("--task-filter", type=str, help="Filter tasks by name keyword (comma separated).")
     args = parser.parse_args()
 
     setup_logging()
@@ -490,10 +492,44 @@ def main():
     # Use ProcessPoolExecutor
     with concurrent.futures.ProcessPoolExecutor(max_workers=5) as pool:
         for stage in STAGES:
-            # Skip non-collection stages if requested
+            # Skip stages if requested via --only-collection or --stage
             if args.only_collection and not stage["name"].startswith("0."):
                 logging.info(f"--- Skipping Stage: {stage['name']} (Collection-only mode) ---")
                 continue
+            
+            if args.stage:
+                requested_stages = [s.strip().lower() for s in args.stage.split(",")]
+                stage_index = str(STAGES.index(stage))
+                stage_name_lower = stage["name"].lower()
+                
+                # Check if current stage is in the requested list (by index or partial name)
+                is_requested = False
+                for rs in requested_stages:
+                    if rs == stage_index or rs in stage_name_lower:
+                        is_requested = True
+                        break
+                
+                if not is_requested:
+                    logging.info(f"--- Skipping Stage: {stage['name']} (Not in requested list) ---")
+                    continue
+
+            # Task filtering
+            current_tasks = stage["tasks"]
+            if args.task_filter:
+                filters = [f.strip().lower() for f in args.task_filter.split(",")]
+                filtered_tasks = []
+                for t in current_tasks:
+                    task_name_lower = t["name"].lower()
+                    if any(f in task_name_lower for f in filters):
+                        filtered_tasks.append(t)
+                
+                if not filtered_tasks:
+                    logging.info(f"--- Skipping Stage: {stage['name']} (No tasks match filter '{args.task_filter}') ---")
+                    continue
+                
+                # Create a copy of the stage with only filtered tasks
+                stage = stage.copy()
+                stage["tasks"] = filtered_tasks
 
             success, stage_res = run_stage(stage, pool)
             all_results.extend(stage_res)

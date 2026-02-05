@@ -14,8 +14,9 @@ export async function GET() {
         return NextResponse.json({
             stages: {
                 ingestion: { tasks: {} },
-                cleaning: {},
+                cleaning: { tasks: {} },
                 output: { tasks: {} },
+                reports: { tasks: {} },
             },
         });
     }

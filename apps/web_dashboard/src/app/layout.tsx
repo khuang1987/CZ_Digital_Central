@@ -20,6 +20,7 @@ export const metadata: Metadata = {
 
 import AppShell from "@/components/AppShell";
 import { UIProvider } from "@/context/UIContext";
+import { AuthProvider } from "@/context/AuthContext";
 
 export default function RootLayout({
   children,
@@ -31,11 +32,13 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <UIProvider>
-          <AppShell>
-            {children}
-          </AppShell>
-        </UIProvider>
+        <AuthProvider>
+          <UIProvider>
+            <AppShell>
+              {children}
+            </AppShell>
+          </UIProvider>
+        </AuthProvider>
       </body>
     </html>
   );

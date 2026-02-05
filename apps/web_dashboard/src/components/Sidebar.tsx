@@ -7,6 +7,8 @@ import {
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useUI } from '@/context/UIContext';
+import { useAuth } from '@/context/AuthContext';
+import { LogOut } from 'lucide-react';
 
 // Define NavItem type for recursion
 type NavItemType = {
@@ -19,6 +21,7 @@ type NavItemType = {
 
 export default function Sidebar() {
     const pathname = usePathname();
+    const { user, logout } = useAuth();
     const { isSidebarCollapsed, toggleSidebar, isFilterOpen, toggleFilter, resetFilters, hasFilters, setSidebarCollapsed } = useUI();
 
     // State to track expanded menus (by label)
@@ -37,15 +40,15 @@ export default function Sidebar() {
 
     // Flattened NavItems (Level 1 Only)
     const navItems: { icon: React.ReactNode; label: string; href: string; disabled?: boolean }[] = [
-        { icon: <LayoutDashboard size={18} />, label: "仪表盘 (Dashboard)", href: "/" },
-        { icon: <ShieldAlert size={18} />, label: "安全 (EHS)", href: "/ehs" },
-        { icon: <FileCheck size={18} />, label: "质量 (Quality)", href: "/certification/belts" },
-        { icon: <Truck size={18} />, label: "交付 (Delivery)", href: "/delivery/batch-records" },
-        { icon: <Zap size={18} />, label: "效率 (Efficiency)", href: "/efficiency/oee" },
-        { icon: <Factory size={18} />, label: "生产 (Production)", href: "/production/labor-eh" },
-        { icon: <Box size={18} />, label: "供应链 (Supply Chain)", href: "/inventory" },
-        { icon: <DraftingCompass size={18} />, label: "工程 (Engineering)", href: "/engineering" },
-        { icon: <Settings size={18} />, label: "设置 (Setting)", href: "/settings" },
+        { icon: <LayoutDashboard size={18} />, label: "仪表盘", href: "/" },
+        { icon: <ShieldAlert size={18} />, label: "安全", href: "/ehs" },
+        { icon: <FileCheck size={18} />, label: "质量", href: "/certification/belts" },
+        { icon: <Truck size={18} />, label: "交付", href: "/delivery/batch-records" },
+        { icon: <Zap size={18} />, label: "效率", href: "/efficiency/oee" },
+        { icon: <Factory size={18} />, label: "生产", href: "/production/labor-eh" },
+        { icon: <Box size={18} />, label: "供应链", href: "/inventory" },
+        { icon: <DraftingCompass size={18} />, label: "工程", href: "/engineering" },
+        { icon: <Settings size={18} />, label: "设置", href: "/settings" },
     ];
 
     const isActive = (href: string) => {
@@ -65,8 +68,8 @@ export default function Sidebar() {
             className={`${isSidebarCollapsed ? 'w-20' : 'w-64'} border-r border-slate-200 dark:border-slate-800/50 flex flex-col py-6 px-4 backdrop-blur-md z-20 transition-all duration-300 relative shrink-0 bg-white/80 dark:bg-slate-950/90`}
         >
             <div className={`flex items-center gap-3 px-2 mb-10 overflow-hidden whitespace-nowrap`}>
-                <div className="w-8 h-8 rounded-lg bg-medtronic flex items-center justify-center text-white shrink-0 shadow-lg shadow-blue-500/20">
-                    <Activity size={20} />
+                <div className="w-8 h-8 rounded-lg bg-white flex items-center justify-center p-1 shrink-0 shadow-lg shadow-black/5">
+                    <img src="/art-symbol-rgb-full-color.svg" alt="Medtronic" className="w-full h-full object-contain" />
                 </div>
                 {!isSidebarCollapsed && (
                     <div className="animate-in fade-in slide-in-from-left-2 duration-300">
@@ -123,17 +126,32 @@ export default function Sidebar() {
                 )}
             </div>
 
-            <div className={`p-4 flex items-center gap-3 rounded-2xl hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors cursor-pointer ${isSidebarCollapsed ? 'justify-center p-2' : ''}`}>
-                <div className="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 flex items-center justify-center text-slate-600 dark:text-slate-400 shrink-0">
+            <div className={`p-4 flex items-center gap-3 rounded-2xl hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors group/user ${isSidebarCollapsed ? 'justify-center p-2' : ''}`}>
+                <div className="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 flex items-center justify-center text-slate-600 dark:text-slate-400 shrink-0 relative overflow-hidden">
                     <User size={20} />
+                    {user?.role === 'admin' && (
+                        <div className="absolute inset-x-0 bottom-0 h-1 bg-blue-500" title="Admin User" />
+                    )}
                 </div>
                 {!isSidebarCollapsed && (
                     <div className="flex-1 truncate animate-in fade-in slide-in-from-left-2 duration-300">
-                        <p className="text-xs font-bold truncate text-slate-700 dark:text-slate-200">Project Admin</p>
-                        <p className="text-[10px] text-slate-500">CZ Ops Center</p>
+                        <p className="text-xs font-bold truncate text-slate-700 dark:text-slate-200">
+                            {user?.username || 'Guest'}
+                        </p>
+                        <p className="text-[10px] text-slate-500 uppercase tracking-widest font-black">
+                            {user?.role === 'admin' ? 'Administrator' : 'Standard User'}
+                        </p>
                     </div>
                 )}
-                {!isSidebarCollapsed && <MoreVertical size={14} className="text-slate-400" />}
+                {!isSidebarCollapsed && (
+                    <button
+                        onClick={() => logout()}
+                        className="p-1.5 hover:bg-red-500/10 hover:text-red-500 rounded-lg text-slate-400 transition-all active:scale-90"
+                        title="Log Out"
+                    >
+                        <LogOut size={14} />
+                    </button>
+                )}
             </div>
         </aside>
     );

@@ -3,8 +3,12 @@
 import React, { useState, useEffect } from 'react';
 import Sidebar from '@/components/Sidebar';
 import { usePathname } from 'next/navigation';
+import { useAuth } from '@/context/AuthContext';
+import Login from '@/components/Login';
+import { Loader2 } from 'lucide-react';
 
 export default function AppShell({ children }: { children: React.ReactNode }) {
+    const { user, isLoading } = useAuth();
     const [theme, setTheme] = useState<'light' | 'dark'>('light');
     const pathname = usePathname();
 
@@ -28,6 +32,18 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
     }, [theme]);
 
     const toggleTheme = () => setTheme(prev => prev === 'light' ? 'dark' : 'light');
+
+    if (isLoading) {
+        return (
+            <div className="flex items-center justify-center h-screen bg-[#002554]">
+                <Loader2 size={48} className="animate-spin text-blue-400" />
+            </div>
+        );
+    }
+
+    if (!user) {
+        return <Login />;
+    }
 
     return (
         <div className="flex bg-[var(--background)] h-screen w-full overflow-hidden transition-colors duration-300">
