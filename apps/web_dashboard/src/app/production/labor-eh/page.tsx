@@ -4,9 +4,11 @@ import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import {
     Calendar, RefreshCw, BarChart3, Clock, Table as TableIcon, Loader2,
     AlertCircle, ArrowRight, TrendingUp, TrendingDown, Factory, Activity, Download, ChevronLeft, ChevronRight,
-    ChevronDown, ChevronUp, ChevronsDown, ChevronsUp
+    ChevronDown, ChevronUp, ChevronsDown, ChevronsUp, Zap, Package, ShieldCheck
 } from 'lucide-react';
 import { useUI } from '@/context/UIContext';
+import StandardPageLayout, { PageTab } from '@/components/StandardPageLayout';
+import { UnifiedDatePicker } from '@/components/ui/UnifiedDatePicker';
 
 // --- Types ---
 interface CalendarData {
@@ -265,7 +267,15 @@ function FilterDropdown({ title, options, selected, onChange, placeholder = "Sel
 }
 
 // --- Main Component ---
-export default function LaborEhPage() {
+export default function LaborEhPage({ theme, toggleTheme }: { theme?: 'light' | 'dark', toggleTheme?: () => void }) {
+    const productionTabs: PageTab[] = [
+        { label: '工时分析 (Labor EH)', href: '/production/labor-eh', icon: <Activity size={14} />, active: true },
+        { label: '调试换型 (Changeover)', href: '/production/changeover', icon: <Zap size={14} /> },
+        { label: '排程 (Schedule)', href: '/production/schedule', icon: <Calendar size={14} /> },
+        { label: 'OEE 看板', href: '/production/oee', icon: <BarChart3 size={14} />, disabled: true },
+        { label: '物料查询', href: '/production/material', icon: <Package size={14} />, disabled: true },
+    ];
+
     // --- Refs ---
     const diagnosticRef = useRef<HTMLDivElement>(null);
 
@@ -307,7 +317,7 @@ export default function LaborEhPage() {
     const [data, setData] = useState<LaborData | null>(null);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
-    const { isFilterOpen, setResetHandler } = useUI();
+    const { setResetHandler } = useUI();
 
     const handleResetFilters = useCallback(() => {
         setSelectedAreas([]);
@@ -730,253 +740,265 @@ export default function LaborEhPage() {
         };
     };
 
-    return (
-        <div className="flex w-full h-full overflow-hidden bg-slate-50 dark:bg-transparent">
-            {/* Sidebar Filters */}
-            <aside className={`${isFilterOpen ? 'w-72 opacity-100' : 'w-0 opacity-0 overflow-hidden'} border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 flex flex-col transition-all duration-300 shrink-0 shadow-sm z-20`}>
-                <div className="p-6 space-y-6 w-72 flex flex-col h-full overflow-hidden">
-                    {/* 1. Time Granularity */}
-                    <section>
-                        <h3 className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-4 flex items-center gap-2">
-                            时间粒度 (Granularity)
-                        </h3>
-                        <div className="flex flex-wrap gap-2">
-                            {['week', 'month', 'year', 'custom'].map(g => (
-                                <button
-                                    key={g}
-                                    onClick={() => setGranularity(g as any)}
-                                    className={`flex-1 py-2 px-2 rounded-lg text-[10px] font-black uppercase tracking-tighter transition-all ${granularity === g
-                                        ? 'bg-medtronic text-white shadow-lg'
-                                        : 'bg-slate-50 dark:bg-slate-800 text-slate-500'}`}
-                                >
-                                    {g === 'week' ? '按周' : g === 'month' ? '按月' : g === 'year' ? '按年' : '自由'}
-                                </button>
-                            ))}
-                        </div>
-                    </section>
-
-                    {/* 2. Time Selection (Moved Up) */}
-                    <section>
-                        <h3 className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-4 flex items-center gap-2">
-                            <Calendar size={12} /> 时间选择
-                        </h3>
-                        <div className="space-y-4">
-                            {granularity !== 'custom' && (
-                                <div className="flex items-center bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl group transition-all hover:border-medtronic/30">
-                                    <button onClick={() => handleYearNavigate(1)} className="p-3 text-slate-700 dark:text-slate-300 hover:text-medtronic transition-colors border-r border-slate-200/50 dark:border-slate-700"><ChevronLeft size={14} /></button>
-                                    <div className="flex-1 relative">
-                                        <select value={selectedYear} onChange={(e) => setSelectedYear(e.target.value)} className="w-full bg-transparent text-slate-800 dark:text-slate-200 px-4 py-2 text-xs font-bold outline-none appearance-none cursor-pointer">
-                                            {calendar?.years?.map(y => <option key={y} value={y}>{y}</option>)}
-                                        </select>
-                                        <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-slate-300 dark:text-slate-600"><ChevronRight size={10} className="rotate-90" /></div>
-                                    </div>
-                                    <button onClick={() => handleYearNavigate(-1)} className="p-3 text-slate-700 dark:text-slate-300 hover:text-medtronic transition-colors border-l border-slate-200/50 dark:border-slate-700"><ChevronRight size={14} /></button>
-                                </div>
-                            )}
-
-                            {(granularity === 'month' || granularity === 'week') && (
-                                <div className="flex items-center bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl group transition-all hover:border-medtronic/30">
-                                    <button onClick={() => handleMonthNavigate(-1)} className="p-3 text-slate-700 dark:text-slate-300 hover:text-medtronic transition-colors border-r border-slate-200/50 dark:border-slate-700"><ChevronLeft size={14} /></button>
-                                    <div className="flex-1 relative">
-                                        <select value={selectedMonth} onChange={(e) => handleMonthChange(e.target.value)} className="w-full bg-transparent text-slate-800 dark:text-slate-200 px-4 py-2 text-xs font-bold outline-none appearance-none cursor-pointer">
-                                            <option value="" disabled>选择月份</option>
-                                            {calendar?.months?.[selectedYear]?.map(m => <option key={m} value={m}>{m}</option>)}
-                                        </select>
-                                        <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-slate-300 dark:text-slate-600"><ChevronRight size={10} className="rotate-90" /></div>
-                                    </div>
-                                    <button onClick={() => handleMonthNavigate(1)} className="p-3 text-slate-700 dark:text-slate-300 hover:text-medtronic transition-colors border-l border-slate-200/50 dark:border-slate-700"><ChevronRight size={14} /></button>
-                                </div>
-                            )}
-
-                            {granularity === 'week' && (
-                                <div className="grid grid-cols-5 gap-1.5 mt-2">
-                                    {calendar?.weeks?.[selectedMonth]?.map(w => (
-                                        <button
-                                            key={w}
-                                            onClick={() => toggleWeek(w)}
-                                            className={`py-2 rounded-lg text-[10px] font-black transition-all ${selectedWeeks.includes(w)
-                                                ? 'bg-medtronic text-white shadow-md'
-                                                : 'bg-slate-50 dark:bg-slate-800 text-slate-400 hover:bg-slate-100 hover:text-slate-600'}`}
-                                        >
-                                            W{w}
-                                        </button>
-                                    ))}
-                                </div>
-                            )}
-
-                            {granularity === 'custom' && (
-                                <div className="space-y-3">
-                                    <input type="date" value={customRange.start} onChange={(e) => setCustomRange(p => ({ ...p, start: e.target.value }))} className="w-full bg-slate-50 dark:bg-slate-800 border-none rounded-xl px-4 py-3 text-sm font-black outline-none focus:ring-2 focus:ring-medtronic" />
-                                    <input type="date" value={customRange.end} onChange={(e) => setCustomRange(p => ({ ...p, end: e.target.value }))} className="w-full bg-slate-50 dark:bg-slate-800 border-none rounded-xl px-4 py-3 text-sm font-black outline-none focus:ring-2 focus:ring-medtronic" />
-                                </div>
-                            )}
-                        </div>
-                    </section>
-
-                    <div className="h-px bg-slate-200 dark:bg-slate-800 mx-2" />
-
-                    {/* 3. Factory Selection */}
-                    <section>
-                        <h3 className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-4 flex items-center gap-2">
-                            <Factory size={12} /> 工厂选择
-                        </h3>
-                        <div className="flex gap-2">
-                            {['1303', '9997'].map(p => (
-                                <button
-                                    key={p}
-                                    onClick={() => handlePlantChange(p)}
-                                    className={`flex-1 py-2 px-3 rounded-xl text-xs font-bold transition-all ${selectedPlant === p
-                                        ? 'bg-medtronic text-white shadow-lg shadow-blue-500/20'
-                                        : 'bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700'}`}
-                                >
-                                    {p === '1303' ? '常州 1303' : '康辉 9997'}
-                                </button>
-                            ))}
-                        </div>
-                    </section>
-
-                    {/* 4. Product Line (Scheduler) Dropdown - Using Display Names */}
-                    {(() => {
-                        // Use cached schedulers for instant display, fallback to current data
-                        const rawSchedulers = schedulerCache[selectedPlant] || data?.filterOptions?.schedulers || [];
-                        const displayOptions = getSchedulerDisplayOptions(selectedPlant, rawSchedulers);
-                        return (
-                            <section className="mb-3">
-                                <h4 className="text-[10px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">产品线 (Product Line)</h4>
-                                <div className="flex flex-wrap gap-1.5">
-                                    {displayOptions.length === 0 ? (
-                                        <span className="text-xs text-slate-400 italic">无可用产品线</span>
-                                    ) : displayOptions.map(opt => (
-                                        <button
-                                            key={opt.key}
-                                            onClick={(e) => {
-                                                const isMulti = e.ctrlKey || e.metaKey;
-                                                const groupRawValues = SCHEDULER_GROUPS[opt.key]?.rawValues || [opt.key];
-                                                const wasSelected = selectedSchedulers.some(s => groupRawValues.includes(s));
-
-                                                if (isMulti) {
-                                                    // Multi-select behavior (Toggle)
-                                                    if (wasSelected) {
-                                                        const toRemove = new Set(groupRawValues);
-                                                        setSelectedSchedulers(prev => prev.filter(s => !toRemove.has(s)));
-                                                    } else {
-                                                        setSelectedSchedulers(prev => [...prev, ...groupRawValues.filter(v => !prev.includes(v))]);
-                                                    }
-                                                } else {
-                                                    // Single-select behavior
-                                                    if (wasSelected) {
-                                                        // If currently selected, check if it's the ONLY selection
-                                                        const isOnlySelected = selectedSchedulers.length === groupRawValues.length && groupRawValues.every(v => selectedSchedulers.includes(v));
-                                                        if (isOnlySelected) {
-                                                            setSelectedSchedulers([]); // Toggle off if it was the only one
-                                                        } else {
-                                                            setSelectedSchedulers(groupRawValues); // Select only this one (clearing others)
-                                                        }
-                                                    } else {
-                                                        setSelectedSchedulers(groupRawValues); // Select only this one
-                                                    }
-                                                }
-                                            }}
-                                            className={`px-2 py-1 text-[10px] rounded-md border transition-all font-medium ${selectedSchedulers.some(s => SCHEDULER_GROUPS[opt.key]?.rawValues.includes(s) || s === opt.key)
-                                                ? 'bg-medtronic text-white border-medtronic shadow-sm'
-                                                : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:border-medtronic hover:text-medtronic'
-                                                }`}
-                                        >
-                                            {opt.displayName}
-                                        </button>
-                                    ))}
-                                </div>
-                            </section>
-                        );
-                    })()}
-
-                    {/* 5. Area Dropdown */}
-                    <FilterDropdown
-                        title="区域选择 (Area)"
-                        options={data?.filterOptions?.areas || []}
-                        selected={selectedAreas}
-                        onChange={handleAreaChange}
-                        placeholder="选择区域..."
-                        emptyText="无可用区域"
-                    />
-
-                    {/* 6. Process Dropdown */}
-                    <FilterDropdown
-                        title="工序选择 (Operation)"
-                        options={data?.filterOptions?.operations || []}
-                        selected={selectedProcesses}
-                        onChange={setSelectedProcesses}
-                        placeholder="选择工序..."
-                        emptyText="无可用工序"
-                    />
-
-                    <div className="flex-1" />
-
-                    <div className="flex-1" />
+    const filters = (
+        <div className="space-y-6">
+            {/* 1. Time Granularity */}
+            <section>
+                <h3 className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-4 flex items-center gap-2">
+                    时间粒度 (Granularity)
+                </h3>
+                <div className="flex flex-wrap gap-2">
+                    {['week', 'month', 'year', 'custom'].map(g => (
+                        <button
+                            key={g}
+                            onClick={() => setGranularity(g as any)}
+                            className={`flex-1 py-2 px-2 rounded-lg text-[10px] font-black uppercase tracking-tighter transition-all ${granularity === g
+                                ? 'bg-medtronic text-white shadow-lg'
+                                : 'bg-slate-50 dark:bg-slate-800 text-slate-500'}`}
+                        >
+                            {g === 'week' ? '按周' : g === 'month' ? '按月' : g === 'year' ? '按年' : '自由'}
+                        </button>
+                    ))}
                 </div>
-            </aside>
+            </section>
 
-            {/* Main Content (Scrollable Area) */}
-            <div className="flex-1 overflow-y-auto min-w-0 bg-white dark:bg-slate-900 rounded-r-2xl border-l border-slate-100 dark:border-slate-800">
-                <div className="p-8 space-y-8 min-h-full">
-
-                    {/* KPI Tiles */}
-                    {(() => {
-                        // Targets are only available at Plant Level. If filtering, hide targets/variance to avoid confusion.
-                        const hasFilters = selectedAreas.length > 0 || selectedProcesses.length > 0 || selectedSchedulers.length > 0;
-                        const showTargets = !hasFilters;
-
-                        return (
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                                <KpiTile
-                                    title="Average Hours"
-                                    value={data?.summary?.actualAvgEH || 0}
-                                    target={showTargets ? data?.summary?.targetAvgEH : undefined}
-                                    ratio={showTargets && data?.summary && data.summary.targetAvgEH > 0 ? (data.summary.actualAvgEH / data.summary.targetAvgEH) * 100 : undefined}
-                                    diff={showTargets && data ? data.summary.actualAvgEH - data.summary.targetAvgEH : undefined}
-                                    unit="H"
-                                    color="blue"
-                                    icon={<Clock size={24} />}
-                                />
-                                <KpiTile
-                                    title="Days Progress"
-                                    value={data?.summary?.actualDays || 0}
-                                    target={data?.summary?.targetDays}
-                                    ratio={data?.summary && data.summary.targetDays > 0 ? (data.summary.actualDays / data.summary.targetDays) * 100 : undefined}
-                                    diff={data ? data.summary.actualDays - data.summary.targetDays : undefined}
-                                    unit="D"
-                                    color="emerald"
-                                    showStatusColor={false} // Neutral for Days Progress
-                                    icon={<Calendar size={24} />}
-                                />
-                                <KpiTile
-                                    title="Period Total EH"
-                                    value={data?.summary?.actualEH || 0}
-                                    target={showTargets ? data?.summary?.targetEH : undefined}
-                                    ratio={showTargets && data?.summary && data.summary.targetEH > 0 ? (data.summary.actualEH / data.summary.targetEH) * 100 : undefined}
-                                    // Total Diff = Actual - Target
-                                    diff={showTargets && data?.summary ? data.summary.actualEH - data.summary.targetEH : undefined}
-                                    unit="H"
-                                    color="amber"
-                                    icon={<Activity size={24} />}
-                                />
-                                <KpiTile
-                                    title="YTD Actual EH"
-                                    value={data?.summary?.ytdActualEH || 0}
-                                    target={showTargets ? data?.summary?.ytdTargetEH : undefined}
-                                    ratio={showTargets && data?.summary && data.summary.ytdTargetEH > 0 ? (data.summary.ytdActualEH / data.summary.ytdTargetEH) * 100 : undefined}
-                                    // YTD Diff = Actual - (AnnualTarget / 300 * ActualDays) APPROXIMATION
-                                    diff={showTargets && data?.summary ? data.summary.ytdActualEH - ((data.summary.ytdTargetEH / 300) * data.summary.actualDays) : undefined}
-                                    unit="H"
-                                    color="violet"
-                                    icon={<Factory size={24} />}
-                                />
+            {/* 2. Time Selection */}
+            <section>
+                <h3 className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-4 flex items-center gap-2">
+                    <Calendar size={12} /> 时间选择
+                </h3>
+                <div className="space-y-4">
+                    {granularity !== 'custom' && (
+                        <div className="flex items-center bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl group transition-all hover:border-medtronic/30">
+                            <button onClick={() => handleYearNavigate(1)} className="p-3 text-slate-700 dark:text-slate-300 hover:text-medtronic transition-colors border-r border-slate-200/50 dark:border-slate-700"><ChevronLeft size={14} /></button>
+                            <div className="flex-1 relative">
+                                <select value={selectedYear} onChange={(e) => setSelectedYear(e.target.value)} className="w-full bg-transparent text-slate-800 dark:text-slate-200 px-4 py-2 text-xs font-bold outline-none appearance-none cursor-pointer">
+                                    {calendar?.years?.map(y => <option key={y} value={y}>{y}</option>)}
+                                </select>
+                                <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-slate-300 dark:text-slate-600"><ChevronRight size={10} className="rotate-90" /></div>
                             </div>
-                        );
-                    })()}
+                            <button onClick={() => handleYearNavigate(-1)} className="p-3 text-slate-700 dark:text-slate-300 hover:text-medtronic transition-colors border-l border-slate-200/50 dark:border-slate-700"><ChevronRight size={14} /></button>
+                        </div>
+                    )}
 
+                    {(granularity === 'month' || granularity === 'week') && (
+                        <div className="flex items-center bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl group transition-all hover:border-medtronic/30">
+                            <button onClick={() => handleMonthNavigate(-1)} className="p-3 text-slate-700 dark:text-slate-300 hover:text-medtronic transition-colors border-r border-slate-200/50 dark:border-slate-700"><ChevronLeft size={14} /></button>
+                            <div className="flex-1 relative">
+                                <select value={selectedMonth} onChange={(e) => handleMonthChange(e.target.value)} className="w-full bg-transparent text-slate-800 dark:text-slate-200 px-4 py-2 text-xs font-bold outline-none appearance-none cursor-pointer">
+                                    <option value="" disabled>选择月份</option>
+                                    {calendar?.months?.[selectedYear]?.map(m => <option key={m} value={m}>{m}</option>)}
+                                </select>
+                                <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-slate-300 dark:text-slate-600"><ChevronRight size={10} className="rotate-90" /></div>
+                            </div>
+                            <button onClick={() => handleMonthNavigate(1)} className="p-3 text-slate-700 dark:text-slate-300 hover:text-medtronic transition-colors border-l border-slate-200/50 dark:border-slate-700"><ChevronRight size={14} /></button>
+                        </div>
+                    )}
+
+                    {granularity === 'week' && (
+                        <div className="grid grid-cols-5 gap-1.5 mt-2">
+                            {calendar?.weeks?.[selectedMonth]?.map(w => (
+                                <button
+                                    key={w}
+                                    onClick={() => toggleWeek(w)}
+                                    className={`py-2 rounded-lg text-[10px] font-black transition-all ${selectedWeeks.includes(w)
+                                        ? 'bg-medtronic text-white shadow-md'
+                                        : 'bg-slate-50 dark:bg-slate-800 text-slate-400 hover:bg-slate-100 hover:text-slate-600'}`}
+                                >
+                                    W{w}
+                                </button>
+                            ))}
+                        </div>
+                    )}
+
+                    {granularity === 'custom' && (
+                        <div className="space-y-3">
+                            <UnifiedDatePicker
+                                label="Start Date"
+                                value={customRange.start}
+                                onChange={(e) => setCustomRange(p => ({ ...p, start: e.target.value }))}
+                            />
+                            <UnifiedDatePicker
+                                label="End Date"
+                                value={customRange.end}
+                                onChange={(e) => setCustomRange(p => ({ ...p, end: e.target.value }))}
+                            />
+                        </div>
+                    )}
+                </div>
+            </section>
+
+            <div className="h-px bg-slate-200 dark:bg-slate-800 mx-2" />
+
+            {/* 3. Factory Selection */}
+            <section>
+                <h3 className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-4 flex items-center gap-2">
+                    <Factory size={12} /> 工厂选择
+                </h3>
+                <div className="flex gap-2">
+                    {['1303', '9997'].map(p => (
+                        <button
+                            key={p}
+                            onClick={() => handlePlantChange(p)}
+                            className={`flex-1 py-2 px-3 rounded-xl text-xs font-bold transition-all ${selectedPlant === p
+                                ? 'bg-medtronic text-white shadow-lg shadow-blue-500/20'
+                                : 'bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700'}`}
+                        >
+                            {p === '1303' ? '常州 1303' : '康辉 9997'}
+                        </button>
+                    ))}
+                </div>
+            </section>
+
+            {/* 4. Product Line (Scheduler) Dropdown */}
+            {(() => {
+                const rawSchedulers = schedulerCache[selectedPlant] || data?.filterOptions?.schedulers || [];
+                const displayOptions = getSchedulerDisplayOptions(selectedPlant, rawSchedulers);
+                return (
+                    <section className="mb-3">
+                        <h4 className="text-[10px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">产品线 (Product Line)</h4>
+                        <div className="flex flex-wrap gap-1.5">
+                            {displayOptions.length === 0 ? (
+                                <span className="text-xs text-slate-400 italic">无可用产品线</span>
+                            ) : displayOptions.map(opt => (
+                                <button
+                                    key={opt.key}
+                                    onClick={(e) => {
+                                        const isMulti = e.ctrlKey || e.metaKey;
+                                        const groupRawValues = SCHEDULER_GROUPS[opt.key]?.rawValues || [opt.key];
+                                        const wasSelected = selectedSchedulers.some(s => groupRawValues.includes(s));
+                                        if (isMulti) {
+                                            if (wasSelected) {
+                                                const toRemove = new Set(groupRawValues);
+                                                setSelectedSchedulers(prev => prev.filter(s => !toRemove.has(s)));
+                                            } else {
+                                                setSelectedSchedulers(prev => [...prev, ...groupRawValues.filter(v => !prev.includes(v))]);
+                                            }
+                                        } else {
+                                            if (wasSelected) {
+                                                const isOnlySelected = selectedSchedulers.length === groupRawValues.length && groupRawValues.every(v => selectedSchedulers.includes(v));
+                                                if (isOnlySelected) setSelectedSchedulers([]);
+                                                else setSelectedSchedulers(groupRawValues);
+                                            } else {
+                                                setSelectedSchedulers(groupRawValues);
+                                            }
+                                        }
+                                    }}
+                                    className={`px-2 py-1 text-[10px] rounded-md border transition-all font-medium ${selectedSchedulers.some(s => SCHEDULER_GROUPS[opt.key]?.rawValues.includes(s) || s === opt.key)
+                                        ? 'bg-medtronic text-white border-medtronic shadow-sm'
+                                        : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:border-medtronic hover:text-medtronic'
+                                        }`}
+                                >
+                                    {opt.displayName}
+                                </button>
+                            ))}
+                        </div>
+                    </section>
+                );
+            })()}
+
+            {/* 5. Area Dropdown */}
+            <FilterDropdown
+                title="区域选择 (Area)"
+                options={data?.filterOptions?.areas || []}
+                selected={selectedAreas}
+                onChange={handleAreaChange}
+                placeholder="选择区域..."
+                emptyText="无可用区域"
+            />
+
+            {/* 6. Process Dropdown */}
+            <FilterDropdown
+                title="工序选择 (Operation)"
+                options={data?.filterOptions?.operations || []}
+                selected={selectedProcesses}
+                onChange={setSelectedProcesses}
+                placeholder="选择工序..."
+                emptyText="无可用工序"
+            />
+        </div>
+    );
+
+    return (
+        <StandardPageLayout
+            theme={theme}
+            toggleTheme={toggleTheme}
+            title="Labor Efficiency"
+            description="Track workforce productivity and labor utilization rates."
+            icon={<Activity size={24} />}
+            tabs={productionTabs}
+            filters={filters}
+        >
+            {/* Match EHS structure: Outer wrapper + separated KPI section + responsive main block */}
+            <div className="flex-1 flex flex-col gap-4 max-w-[1700px] mx-auto w-full min-h-0">
+                {isLoading && (
+                    <div className="absolute inset-0 flex items-center justify-center bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm z-50 rounded-2xl transition-all duration-500">
+                        <div className="flex flex-col items-center gap-4">
+                            <Loader2 className="animate-spin text-amber-500" size={40} />
+                            <p className="text-sm font-bold text-slate-500 animate-pulse">正在从 MES/v_metrics 计算工时效率...</p>
+                        </div>
+                    </div>
+                )}
+
+                {/* KPI Tiles - Separated as shrink-0 section */}
+                {(() => {
+                    // Targets are only available at Plant Level. If filtering, hide targets/variance to avoid confusion.
+                    const hasFilters = selectedAreas.length > 0 || selectedProcesses.length > 0 || selectedSchedulers.length > 0;
+                    const showTargets = !hasFilters;
+
+                    return (
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 shrink-0">
+                            <KpiTile
+                                title="Average Hours"
+                                value={data?.summary?.actualAvgEH || 0}
+                                target={showTargets ? data?.summary?.targetAvgEH : undefined}
+                                ratio={showTargets && data?.summary && data.summary.targetAvgEH > 0 ? (data.summary.actualAvgEH / data.summary.targetAvgEH) * 100 : undefined}
+                                diff={showTargets && data ? data.summary.actualAvgEH - data.summary.targetAvgEH : undefined}
+                                unit="H"
+                                color="blue"
+                                icon={<Clock size={24} />}
+                            />
+                            <KpiTile
+                                title="Days Progress"
+                                value={data?.summary?.actualDays || 0}
+                                target={data?.summary?.targetDays}
+                                ratio={data?.summary && data.summary.targetDays > 0 ? (data.summary.actualDays / data.summary.targetDays) * 100 : undefined}
+                                diff={data ? data.summary.actualDays - data.summary.targetDays : undefined}
+                                unit="D"
+                                color="emerald"
+                                showStatusColor={false} // Neutral for Days Progress
+                                icon={<Calendar size={24} />}
+                            />
+                            <KpiTile
+                                title="Period Total EH"
+                                value={data?.summary?.actualEH || 0}
+                                target={showTargets ? data?.summary?.targetEH : undefined}
+                                ratio={showTargets && data?.summary && data.summary.targetEH > 0 ? (data.summary.actualEH / data.summary.targetEH) * 100 : undefined}
+                                // Total Diff = Actual - Target
+                                diff={showTargets && data?.summary ? data.summary.actualEH - data.summary.targetEH : undefined}
+                                unit="H"
+                                color="amber"
+                                icon={<Activity size={24} />}
+                            />
+                            <KpiTile
+                                title="YTD Actual EH"
+                                value={data?.summary?.ytdActualEH || 0}
+                                target={showTargets ? data?.summary?.ytdTargetEH : undefined}
+                                ratio={showTargets && data?.summary && data.summary.ytdTargetEH > 0 ? (data.summary.ytdActualEH / data.summary.ytdTargetEH) * 100 : undefined}
+                                // YTD Diff = Actual - (AnnualTarget / 300 * ActualDays) APPROXIMATION
+                                diff={showTargets && data?.summary ? data.summary.ytdActualEH - ((data.summary.ytdTargetEH / 300) * data.summary.actualDays) : undefined}
+                                unit="H"
+                                color="violet"
+                                icon={<Factory size={24} />}
+                            />
+                        </div>
+                    );
+                })()}
+
+                {/* Main Dashboard Block - Trend Chart + Diagnostics with responsive height */}
+                <div className="flex-1 flex flex-col gap-4 min-h-[600px] lg:min-h-[calc(100vh-280px)]">
                     {/* Main Trend Chart - Compressed to Half Height */}
-                    <div className="ios-widget bg-white dark:bg-slate-900 p-6 flex flex-col shadow-xl shadow-slate-200/50 dark:shadow-none border border-slate-200/50 dark:border-slate-800">
+                    <div className="ios-widget bg-white dark:bg-slate-900 p-6 flex flex-col shadow-xl shadow-slate-200/50 dark:shadow-none border border-slate-200/50 dark:border-slate-800 shrink-0">
                         <div className="flex justify-between items-center mb-6">
                             <div>
                                 <h3 className="text-sm font-black text-slate-800 dark:text-slate-100 uppercase tracking-widest">Daily & Trend EH Analysis</h3>
@@ -1070,10 +1092,10 @@ export default function LaborEhPage() {
                         </div>
 
                         {/* Diagnostic Analysis - Area Distribution & Anomaly Analysis */}
-                        <div className="mt-4 pt-4 border-t border-slate-200/50 dark:border-slate-800 flex-1 overflow-hidden min-h-0">
+                        <div className="flex-1 overflow-hidden min-h-0">
                             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 h-full">
                                 {/* Area/Operation Distribution Table */}
-                                <div className="bg-slate-50 dark:bg-slate-900/50 p-5 rounded-2xl flex flex-col h-[500px]">
+                                <div className="bg-slate-50 dark:bg-slate-900/50 p-5 rounded-2xl flex flex-col h-[500px] lg:h-full overflow-hidden">
                                     <div className="flex justify-between items-center mb-4 shrink-0">
                                         <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest">区域工序分布 (Area Distribution)</h3>
                                         <button
@@ -1195,7 +1217,7 @@ export default function LaborEhPage() {
 
 
                                 {/* Heatmap: Last 15 Days Operation Output */}
-                                <div className="bg-slate-50 dark:bg-slate-900/50 p-5 rounded-2xl lg:col-span-1 flex flex-col h-[500px]">
+                                <div className="bg-slate-50 dark:bg-slate-900/50 p-5 rounded-2xl lg:col-span-1 flex flex-col h-[500px] lg:h-full overflow-hidden">
                                     {/* Header */}
                                     <div className="flex items-center justify-between mb-4 shrink-0">
                                         <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest">
@@ -1404,84 +1426,86 @@ export default function LaborEhPage() {
 
                         </div>
                     </div>
-
-
-
-                    <div className="min-h-full p-8 bg-slate-50 dark:bg-transparent border-t border-slate-200 dark:border-slate-800">
-                        <section className="ios-widget bg-white dark:bg-slate-900 p-8 shadow-2xl shadow-slate-200/50 dark:shadow-none border-none h-[calc(100vh-200px)] flex flex-col">
-                            <div className="flex justify-between items-center mb-6 shrink-0">
-                                <div>
-                                    <h2 className="text-xl font-black text-slate-900 dark:text-white flex items-center gap-3">
-                                        <TableIcon className="text-medtronic" /> Operational Record Explorer
-                                    </h2>
-                                    <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-1">流水明细追踪 ({activeData?.details?.length || 0} Records)</p>
-                                </div>
-                                <div className="flex gap-3">
-                                    <button
-                                        onClick={handleExportCSV}
-                                        className="px-4 py-2 rounded-xl bg-emerald-50 text-emerald-600 text-[10px] font-black tracking-widest uppercase hover:bg-emerald-100 transition-all flex items-center gap-2 border border-emerald-100"
-                                    >
-                                        Export CSV
-                                    </button>
-                                    <button className="px-4 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 text-[10px] font-bold text-slate-600 hover:bg-slate-100 transition-all flex items-center gap-2 border border-slate-200">
-                                        <RefreshCw size={14} /> Refresh
-                                    </button>
-                                </div>
-                            </div>
-
-                            <div className="overflow-auto rounded-2xl border border-slate-100 dark:border-slate-800 flex-1 relative">
-                                <table className="w-full text-left border-separate border-spacing-0">
-                                    <thead className="bg-slate-50 dark:bg-slate-800/50 sticky top-0 z-10 shadow-sm">
-                                        <tr>
-                                            {['#', 'Batch No', 'Product', 'Op No', 'Op Name', 'Qty', 'EH', 'Plant', 'Area', 'Prod Line'].map((th, i) => (
-                                                <th key={th} className={`px-4 py-3 text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 ${i === 0 ? 'rounded-tl-2xl' : ''}`}>{th}</th>
-                                            ))}
-                                        </tr>
-                                    </thead>
-                                    <tbody className="text-xs font-bold text-slate-700 dark:text-slate-300 divide-y divide-slate-100 dark:divide-slate-800">
-                                        {records.map((row: any, i: number) => (
-                                            <tr key={i} className="hover:bg-blue-50/50 dark:hover:bg-blue-900/10 transition-colors group">
-                                                <td className="px-4 py-3 text-slate-400 text-[10px] font-mono">{(i + 1) + ((page - 1) * 50)}</td>
-                                                <td className="px-4 py-3 border-r border-slate-50 dark:border-slate-800/50 font-mono text-xs text-medtronic font-bold" title={`Order: ${row.OrderNumber}\nDate: ${new Date(row.PostingDate).toLocaleDateString()}`}>
-                                                    {row.BatchNumber || row.OrderNumber}
-                                                </td>
-                                                <td className="px-4 py-3 font-bold">{row.Material}</td>
-                                                <td className="px-4 py-3 font-mono text-xs text-slate-500">{row.Operation || '-'}</td>
-                                                <td className="px-4 py-3 text-slate-500 truncate max-w-[150px]" title={row.rawOpDesc || row.operationDesc}>{row.operationDesc || row.rawOpDesc || '-'}</td>
-                                                <td className="px-4 py-3 text-right font-mono text-slate-600">{row.ActualQuantity ? Math.round(row.ActualQuantity) : '-'}</td>
-                                                <td className="px-4 py-3 text-right font-black text-medtronic">{Math.round(Number(row.actualEH))}h</td>
-                                                <td className="px-4 py-3 text-slate-400 text-[10px]">{row.Plant}</td>
-                                                <td className="px-4 py-3 text-slate-400 text-[10px] truncate max-w-[80px]" title={row.area}>{row.area || '-'}</td>
-                                                <td className="px-4 py-3 text-slate-400 text-[10px] truncate max-w-[80px]" title={row.productLine}>{row.productLine || '-'}</td>
-                                            </tr>
-                                        ))}
-                                        {(!records || records.length === 0) && !isRecordsLoading && (
-                                            <tr>
-                                                <td colSpan={10} className="px-6 py-20 text-center text-slate-400 italic">No detailed records found for this period.</td>
-                                            </tr>
-                                        )}
-                                        {/* Load More Trigger */}
-                                        {hasMore && (
-                                            <tr>
-                                                <td colSpan={10} className="p-4 text-center">
-                                                    <button
-                                                        onClick={handleLoadMore}
-                                                        disabled={isRecordsLoading}
-                                                        className="px-6 py-2 bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 hover:bg-medtronic hover:text-white rounded-full text-xs font-bold transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 mx-auto"
-                                                    >
-                                                        {isRecordsLoading ? <Loader2 size={14} className="animate-spin" /> : <ChevronDown size={14} />}
-                                                        {isRecordsLoading ? 'Loading more...' : 'Load More Records'}
-                                                    </button>
-                                                </td>
-                                            </tr>
-                                        )}
-                                    </tbody>
-
-                                </table>
-                            </div>
-                        </section>
-                    </div>
                 </div>
+                {/* End Main Dashboard Block */}
+            </div>
+
+            {/* Spacer to push content down and separate from the table (Matches EHS layout) */}
+            <div className="h-4 shrink-0" />
+
+            <div className="min-h-full p-8 bg-slate-50 dark:bg-transparent border-t border-slate-200 dark:border-slate-800">
+                <section className="ios-widget bg-white dark:bg-slate-900 p-8 shadow-2xl shadow-slate-200/50 dark:shadow-none border-none h-[calc(100vh-200px)] flex flex-col">
+                    <div className="flex justify-between items-center mb-6 shrink-0">
+                        <div>
+                            <h2 className="text-xl font-black text-slate-900 dark:text-white flex items-center gap-3">
+                                <TableIcon className="text-medtronic" /> Operational Record Explorer
+                            </h2>
+                            <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-1">流水明细追踪 ({activeData?.details?.length || 0} Records)</p>
+                        </div>
+                        <div className="flex gap-3">
+                            <button
+                                onClick={handleExportCSV}
+                                className="px-4 py-2 rounded-xl bg-emerald-50 text-emerald-600 text-[10px] font-black tracking-widest uppercase hover:bg-emerald-100 transition-all flex items-center gap-2 border border-emerald-100"
+                            >
+                                Export CSV
+                            </button>
+                            <button className="px-4 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 text-[10px] font-bold text-slate-600 hover:bg-slate-100 transition-all flex items-center gap-2 border border-slate-200">
+                                <RefreshCw size={14} /> Refresh
+                            </button>
+                        </div>
+                    </div>
+
+                    <div className="overflow-auto rounded-2xl border border-slate-100 dark:border-slate-800 flex-1 relative">
+                        <table className="w-full text-left border-separate border-spacing-0">
+                            <thead className="bg-slate-50 dark:bg-slate-800/50 sticky top-0 z-10 shadow-sm">
+                                <tr>
+                                    {['#', 'Batch No', 'Product', 'Op No', 'Op Name', 'Qty', 'EH', 'Plant', 'Area', 'Prod Line'].map((th, i) => (
+                                        <th key={th} className={`px-4 py-3 text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 ${i === 0 ? 'rounded-tl-2xl' : ''}`}>{th}</th>
+                                    ))}
+                                </tr>
+                            </thead>
+                            <tbody className="text-xs font-bold text-slate-700 dark:text-slate-300 divide-y divide-slate-100 dark:divide-slate-800">
+                                {records.map((row: any, i: number) => (
+                                    <tr key={i} className="hover:bg-blue-50/50 dark:hover:bg-blue-900/10 transition-colors group">
+                                        <td className="px-4 py-3 text-slate-400 text-[10px] font-mono">{(i + 1) + ((page - 1) * 50)}</td>
+                                        <td className="px-4 py-3 border-r border-slate-50 dark:border-slate-800/50 font-mono text-xs text-medtronic font-bold" title={`Order: ${row.OrderNumber}\nDate: ${new Date(row.PostingDate).toLocaleDateString()}`}>
+                                            {row.BatchNumber || row.OrderNumber}
+                                        </td>
+                                        <td className="px-4 py-3 font-bold">{row.Material}</td>
+                                        <td className="px-4 py-3 font-mono text-xs text-slate-500">{row.Operation || '-'}</td>
+                                        <td className="px-4 py-3 text-slate-500 truncate max-w-[150px]" title={row.rawOpDesc || row.operationDesc}>{row.operationDesc || row.rawOpDesc || '-'}</td>
+                                        <td className="px-4 py-3 text-right font-mono text-slate-600">{row.ActualQuantity ? Math.round(row.ActualQuantity) : '-'}</td>
+                                        <td className="px-4 py-3 text-right font-black text-medtronic">{Math.round(Number(row.actualEH))}h</td>
+                                        <td className="px-4 py-3 text-slate-400 text-[10px]">{row.Plant}</td>
+                                        <td className="px-4 py-3 text-slate-400 text-[10px] truncate max-w-[80px]" title={row.area}>{row.area || '-'}</td>
+                                        <td className="px-4 py-3 text-slate-400 text-[10px] truncate max-w-[80px]" title={row.productLine}>{row.productLine || '-'}</td>
+                                    </tr>
+                                ))}
+                                {(!records || records.length === 0) && !isRecordsLoading && (
+                                    <tr>
+                                        <td colSpan={10} className="px-6 py-20 text-center text-slate-400 italic">No detailed records found for this period.</td>
+                                    </tr>
+                                )}
+                                {/* Load More Trigger */}
+                                {hasMore && (
+                                    <tr>
+                                        <td colSpan={10} className="p-4 text-center">
+                                            <button
+                                                onClick={handleLoadMore}
+                                                disabled={isRecordsLoading}
+                                                className="px-6 py-2 bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 hover:bg-medtronic hover:text-white rounded-full text-xs font-bold transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 mx-auto"
+                                            >
+                                                {isRecordsLoading ? <Loader2 size={14} className="animate-spin" /> : <ChevronDown size={14} />}
+                                                {isRecordsLoading ? 'Loading more...' : 'Load More Records'}
+                                            </button>
+                                        </td>
+                                    </tr>
+                                )}
+                            </tbody>
+
+                        </table>
+                    </div>
+                </section>
             </div>
 
             {/* Error Overlay */}
@@ -1507,7 +1531,7 @@ export default function LaborEhPage() {
                     </div>
                 </div>
             )}
-        </div>
+        </StandardPageLayout>
     );
 }
 

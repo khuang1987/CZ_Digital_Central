@@ -1,137 +1,281 @@
 'use client';
 
 import React from 'react';
-import {
-  ChevronUp, ChevronDown, Activity, AlertTriangle, Calendar
-} from 'lucide-react';
+import { LayoutDashboard, Activity, AlertTriangle, Calendar, FileCheck, Truck, Zap, Box, ArrowRight, TrendingUp, TrendingDown, Users, ShieldCheck, Factory } from 'lucide-react';
+import StandardPageLayout from '@/components/StandardPageLayout';
+import Link from 'next/link';
 
-export default function Home() {
+export default function Home({ theme, toggleTheme }: { theme?: 'light' | 'dark', toggleTheme?: () => void }) {
+
   return (
-    <div className="p-8 overflow-y-auto w-full h-full max-w-[1920px] mx-auto space-y-6">
-      {/* KPI Grid */}
-      <section className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6">
-        <KpiWidget title="Yield (Last 30 Days)" value="98.5%" trend="+1.2%" status="success" />
-        <KpiWidget title="WIP (Work in Progress)" value="1,250 Units" trend="0% change" status="neutral" />
-        <KpiWidget title="OEE (Overall Efficiency)" value="87.2%" trend="+2.5%" status="success" />
-        <KpiWidget title="Planned downtime" value="4.2h" trend="-0.5h" status="warning" />
-      </section>
+    <StandardPageLayout
+      theme={theme}
+      toggleTheme={toggleTheme}
+      title="Plant Overview (SQDCP)"
+      description="Medtronic CZ Digital Factory - Real-time Operational Status"
+      icon={<Factory size={24} />}
+    >
+      <div className="flex flex-col gap-6 h-[calc(100vh-280px)] min-h-[600px]">
 
-      {/* Middle Section: Main Trend + Alerts */}
-      <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 h-auto xl:h-[400px]">
-        <article className="xl:col-span-2 ios-widget p-6 flex flex-col min-w-0">
-          <div className="flex justify-between items-center mb-6">
-            <div>
-              <h3 className="font-bold text-sm">Production Trends (Daily Output)</h3>
-              <p className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">ROLLING 30-DAY PERFORMANCE</p>
+        {/* 1. Factory Status Banner */}
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 shrink-0">
+          <div className="lg:col-span-3 p-5 bg-gradient-to-r from-slate-900 to-slate-800 text-white rounded-2xl shadow-sm flex items-center justify-between relative overflow-hidden group">
+            <div className="absolute top-0 right-0 p-8 opacity-10 transform translate-x-4 -translate-y-4 group-hover:scale-105 transition-transform">
+              <Factory size={120} />
             </div>
-            <div className="flex gap-2">
-              <select className="bg-slate-100 dark:bg-slate-800 px-3 py-1 rounded-lg text-[10px] font-bold outline-none border-none cursor-pointer">
-                <option>Last 30 Days</option>
-                <option>Year to Date</option>
-              </select>
+            <div className="z-10">
+              <div className="flex items-center gap-2 mb-1">
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                </span>
+                <h2 className="text-xs font-bold text-emerald-400 uppercase tracking-widest">Plant Status: Nominal</h2>
+              </div>
+              <h1 className="text-2xl font-black tracking-tight mb-2">Shift A - Production Running</h1>
+              <p className="text-sm text-slate-400 font-medium">Headcount: 142 / 145 (98%) • Next Changeover: 14:00 (Line 3)</p>
+            </div>
+            <div className="z-10 flex gap-8 pr-8">
+              <div className="text-right">
+                <div className="text-xs text-slate-400 font-bold uppercase">Safe Days</div>
+                <div className="text-3xl font-black text-emerald-400">842</div>
+              </div>
+              <div className="text-right border-l border-slate-700 pl-8">
+                <div className="text-xs text-slate-400 font-bold uppercase">Shift Output</div>
+                <div className="text-3xl font-black text-white">1,250</div>
+              </div>
             </div>
           </div>
-          <div className="flex-1 min-h-[250px] bg-slate-50 dark:bg-slate-900/50 rounded-2xl border border-dashed border-[var(--border)] flex items-center justify-center relative group overflow-hidden">
-            <div className="text-slate-400 group-hover:text-medtronic transition-colors flex flex-col items-center gap-2">
-              <Activity size={32} />
-              <span className="text-xs font-medium">Rendering Real-time Production Graph...</span>
-            </div>
-          </div>
-        </article>
 
-        <aside className="ios-widget p-6 flex flex-col min-w-0">
-          <h3 className="font-bold text-sm mb-4">Recent Alerts</h3>
-          <div className="space-y-4 flex-1 overflow-y-auto pr-1 max-h-[300px] xl:max-h-full">
-            <AlertItem type="critical" time="09:45 AM" msg="Machine 4 Overheating" lab="1303-CZM" />
-            <AlertItem type="warning" time="11:30 AM" msg="Material Shortage Line 2" lab="9997-CKH" />
-            <AlertItem type="info" time="12:15 PM" msg="System Maintenance Scheduled" lab="General" />
-            <AlertItem type="warning" time="01:20 PM" msg="SFC Sync Delay > 5min" lab="Infra" />
-          </div>
-          <button className="mt-4 w-full py-2 bg-slate-100 dark:bg-slate-800 rounded-xl text-[10px] font-bold hover:bg-slate-200 dark:hover:bg-slate-700 transition-all shrink-0">
-            View All Notifications
-          </button>
-        </aside>
-      </div>
-
-      {/* Bottom Grid: Facility Status + Tasks */}
-      <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 h-auto xl:h-[300px]">
-        <div className="ios-widget p-6 min-w-0 flex flex-col">
-          <div className="flex justify-between items-center mb-6">
-            <h3 className="font-bold text-sm">Facility Status</h3>
-            <div className="flex gap-4 text-[10px] font-bold uppercase tracking-wider overflow-hidden">
-              <span className="flex items-center gap-1.5 text-emerald-500 shrink-0"><div className="w-2 h-2 rounded-full bg-emerald-500" /> Active</span>
-              <span className="flex items-center gap-1.5 text-amber-500 shrink-0"><div className="w-2 h-2 rounded-full bg-amber-500" /> Maintenance</span>
-              <span className="flex items-center gap-1.5 text-red-500 shrink-0"><div className="w-2 h-2 rounded-full bg-red-400" /> Down</span>
+          <div className="p-5 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col justify-center">
+            <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">Overall Plant Health (OEE)</h3>
+            <div className="flex items-baseline gap-2 mb-2">
+              <span className="text-4xl font-black text-slate-800 dark:text-white">87.2%</span>
+              <span className="text-xs font-bold text-emerald-500 flex items-center gap-1">
+                <TrendingUp size={12} /> +2.4%
+              </span>
             </div>
-          </div>
-          <div className="flex-1 grid grid-cols-10 gap-2 overflow-hidden min-h-[150px]">
-            {Array.from({ length: 40 }).map((_, i) => (
-              <div key={i} className={`rounded-md ${i % 7 === 0 ? 'bg-amber-400/20 border border-amber-400/30' : i % 13 === 0 ? 'bg-red-400/20 border border-red-400/30' : 'bg-emerald-400/10 border border-emerald-400/20'} cursor-pointer hover:scale-110 transition-transform`} />
-            ))}
+            <div className="w-full bg-slate-100 dark:bg-slate-800 rounded-full h-1.5 overflow-hidden">
+              <div className="bg-gradient-to-r from-blue-500 to-cyan-400 h-full w-[87.2%]" />
+            </div>
+            <div className="flex justify-between mt-2 text-[10px] font-bold text-slate-400">
+              <span>Target: 85%</span>
+              <span>World Class: 92%</span>
+            </div>
           </div>
         </div>
 
-        <div className="ios-widget p-6 min-w-0 flex flex-col">
-          <div className="flex justify-between items-center mb-6">
-            <h3 className="font-bold text-sm">Scheduled Tasks</h3>
-            <button className="text-[10px] font-bold text-medtronic hover:underline">Full Calendar</button>
-          </div>
-          <div className="space-y-3 flex-1 overflow-y-auto pr-1 max-h-[200px] xl:max-h-full">
-            <TaskItem date="Tomorrow" task="Annual SAP Routing Audit" />
-            <TaskItem date="Feb 3" task="CZM Machine M-102 Calibration" />
-            <TaskItem date="Feb 5" task="Quarterly Quality Review" />
-          </div>
+        {/* 2. SQDCP Bento Grid */}
+        <div className="flex-1 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6 min-h-0">
+
+          {/* S - Safety */}
+          <Link href="/ehs" className="group flex flex-col bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm hover:border-emerald-500/50 hover:shadow-lg hover:shadow-emerald-500/10 transition-all overflow-hidden relative">
+            <div className="absolute top-0 right-0 p-3 opacity-[0.03] group-hover:opacity-[0.07] transition-opacity">
+              <ShieldCheck size={100} />
+            </div>
+            <div className="p-5 border-b border-slate-100 dark:border-slate-800">
+              <div className="flex items-center gap-2 mb-2">
+                <div className="p-1.5 bg-emerald-100 dark:bg-emerald-900/30 rounded text-emerald-600 dark:text-emerald-400">
+                  <AlertTriangle size={16} />
+                </div>
+                <h3 className="font-black text-slate-700 dark:text-white">SAFETY</h3>
+              </div>
+              <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Zero Harm Target</div>
+            </div>
+            <div className="flex-1 p-5 flex flex-col justify-between">
+              <div>
+                <div className="flex justify-between items-end mb-1">
+                  <span className="text-xs font-bold text-slate-500">TRIR (YTD)</span>
+                  <span className="text-xl font-black text-slate-800 dark:text-white">0.12</span>
+                </div>
+                <div className="w-full bg-slate-100 dark:bg-slate-800 h-1 mb-4 rounded-full">
+                  <div className="bg-emerald-500 h-full w-[12%]" />
+                </div>
+                <div className="space-y-2">
+                  <div className="flex justify-between text-xs">
+                    <span className="text-slate-500 font-medium">First Aid</span>
+                    <span className="font-bold text-slate-700 dark:text-slate-300">2</span>
+                  </div>
+                  <div className="flex justify-between text-xs">
+                    <span className="text-slate-500 font-medium">Near Miss</span>
+                    <span className="font-bold text-slate-700 dark:text-slate-300">14</span>
+                  </div>
+                </div>
+              </div>
+              <div className="mt-4 pt-3 border-t border-dashed border-slate-100 dark:border-slate-800 flex items-center justify-between text-[10px] font-bold text-emerald-500 uppercase tracking-wider group-hover:text-emerald-600 transition-colors">
+                <span>View Dashboard</span>
+                <ArrowRight size={12} />
+              </div>
+            </div>
+          </Link>
+
+          {/* Q - Quality */}
+          <Link href="/certification/belts" className="group flex flex-col bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm hover:border-blue-500/50 hover:shadow-lg hover:shadow-blue-500/10 transition-all overflow-hidden relative">
+            <div className="absolute top-0 right-0 p-3 opacity-[0.03] group-hover:opacity-[0.07] transition-opacity">
+              <FileCheck size={100} />
+            </div>
+            <div className="p-5 border-b border-slate-100 dark:border-slate-800">
+              <div className="flex items-center gap-2 mb-2">
+                <div className="p-1.5 bg-blue-100 dark:bg-blue-900/30 rounded text-blue-600 dark:text-blue-400">
+                  <FileCheck size={16} />
+                </div>
+                <h3 className="font-black text-slate-700 dark:text-white">QUALITY</h3>
+              </div>
+              <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">First Pass Yield</div>
+            </div>
+            <div className="flex-1 p-5 flex flex-col justify-between">
+              <div>
+                <div className="flex justify-between items-end mb-1">
+                  <span className="text-xs font-bold text-slate-500">FPY (Rolling)</span>
+                  <span className="text-xl font-black text-slate-800 dark:text-white">98.5%</span>
+                </div>
+                {/* Simulated Sparkline */}
+                <div className="flex items-end gap-0.5 h-6 mb-4 opacity-50">
+                  {[40, 60, 55, 70, 65, 80, 75, 90, 85, 95].map((h, i) => (
+                    <div key={i} className="flex-1 bg-blue-500 rounded-t-sm" style={{ height: `${h}%` }} />
+                  ))}
+                </div>
+                <div className="space-y-2">
+                  <div className="flex justify-between text-xs">
+                    <span className="text-slate-500 font-medium">Scrap Cost</span>
+                    <span className="font-bold text-red-500">$420</span>
+                  </div>
+                  <div className="flex justify-between text-xs">
+                    <span className="text-slate-500 font-medium">NCMRs (Open)</span>
+                    <span className="font-bold text-amber-500">3</span>
+                  </div>
+                </div>
+              </div>
+              <div className="mt-4 pt-3 border-t border-dashed border-slate-100 dark:border-slate-800 flex items-center justify-between text-[10px] font-bold text-blue-500 uppercase tracking-wider group-hover:text-blue-600 transition-colors">
+                <span>Metric Details</span>
+                <ArrowRight size={12} />
+              </div>
+            </div>
+          </Link>
+
+          {/* D - Delivery */}
+          <Link href="/delivery/batch-records" className="group flex flex-col bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm hover:border-indigo-500/50 hover:shadow-lg hover:shadow-indigo-500/10 transition-all overflow-hidden relative">
+            <div className="absolute top-0 right-0 p-3 opacity-[0.03] group-hover:opacity-[0.07] transition-opacity">
+              <Truck size={100} />
+            </div>
+            <div className="p-5 border-b border-slate-100 dark:border-slate-800">
+              <div className="flex items-center gap-2 mb-2">
+                <div className="p-1.5 bg-indigo-100 dark:bg-indigo-900/30 rounded text-indigo-600 dark:text-indigo-400">
+                  <Truck size={16} />
+                </div>
+                <h3 className="font-black text-slate-700 dark:text-white">DELIVERY</h3>
+              </div>
+              <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Schedule Attainment</div>
+            </div>
+            <div className="flex-1 p-5 flex flex-col justify-between">
+              <div>
+                <div className="flex justify-between items-end mb-1">
+                  <span className="text-xs font-bold text-slate-500">OTP (Weekly)</span>
+                  <span className="text-xl font-black text-amber-500">94.2%</span>
+                </div>
+                <div className="w-full bg-slate-100 dark:bg-slate-800 h-1 mb-4 rounded-full overflow-hidden">
+                  <div className="bg-amber-500 h-full w-[94.2%]" />
+                </div>
+                <div className="space-y-2">
+                  <div className="flex justify-between text-xs">
+                    <span className="text-slate-500 font-medium">Batch Release</span>
+                    <span className="font-bold text-slate-700 dark:text-slate-300">Avg 4.2h</span>
+                  </div>
+                  <div className="flex justify-between text-xs">
+                    <span className="text-slate-500 font-medium">Backlog</span>
+                    <span className="font-bold text-slate-700 dark:text-slate-300">120 Units</span>
+                  </div>
+                </div>
+              </div>
+              <div className="mt-4 pt-3 border-t border-dashed border-slate-100 dark:border-slate-800 flex items-center justify-between text-[10px] font-bold text-indigo-500 uppercase tracking-wider group-hover:text-indigo-600 transition-colors">
+                <span>View Logistics</span>
+                <ArrowRight size={12} />
+              </div>
+            </div>
+          </Link>
+
+          {/* C - Cost / Inventory */}
+          <Link href="/inventory" className="group flex flex-col bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm hover:border-purple-500/50 hover:shadow-lg hover:shadow-purple-500/10 transition-all overflow-hidden relative">
+            <div className="absolute top-0 right-0 p-3 opacity-[0.03] group-hover:opacity-[0.07] transition-opacity">
+              <Box size={100} />
+            </div>
+            <div className="p-5 border-b border-slate-100 dark:border-slate-800">
+              <div className="flex items-center gap-2 mb-2">
+                <div className="p-1.5 bg-purple-100 dark:bg-purple-900/30 rounded text-purple-600 dark:text-purple-400">
+                  <Box size={16} />
+                </div>
+                <h3 className="font-black text-slate-700 dark:text-white">COST / INV</h3>
+              </div>
+              <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Inventory Health</div>
+            </div>
+            <div className="flex-1 p-5 flex flex-col justify-between">
+              <div>
+                <div className="flex justify-between items-end mb-1">
+                  <span className="text-xs font-bold text-slate-500">WIP Value</span>
+                  <span className="text-xl font-black text-slate-800 dark:text-white">$1.2M</span>
+                </div>
+                <div className="flex items-center gap-1 text-[10px] font-bold text-emerald-500 mb-4">
+                  <TrendingDown size={10} /> -4.5% vs Last Month
+                </div>
+                <div className="space-y-2">
+                  <div className="flex justify-between text-xs">
+                    <span className="text-slate-500 font-medium">Turns (Annual)</span>
+                    <span className="font-bold text-slate-700 dark:text-slate-300">12.4</span>
+                  </div>
+                  <div className="flex justify-between text-xs">
+                    <span className="text-slate-500 font-medium">Crit. Shortages</span>
+                    <span className="font-bold text-emerald-500">0</span>
+                  </div>
+                </div>
+              </div>
+              <div className="mt-4 pt-3 border-t border-dashed border-slate-100 dark:border-slate-800 flex items-center justify-between text-[10px] font-bold text-purple-500 uppercase tracking-wider group-hover:text-purple-600 transition-colors">
+                <span>View Inventory</span>
+                <ArrowRight size={12} />
+              </div>
+            </div>
+          </Link>
+
+          {/* P - People / Production */}
+          <Link href="/production/labor-eh" className="group flex flex-col bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm hover:border-cyan-500/50 hover:shadow-lg hover:shadow-cyan-500/10 transition-all overflow-hidden relative">
+            <div className="absolute top-0 right-0 p-3 opacity-[0.03] group-hover:opacity-[0.07] transition-opacity">
+              <Users size={100} />
+            </div>
+            <div className="p-5 border-b border-slate-100 dark:border-slate-800">
+              <div className="flex items-center gap-2 mb-2">
+                <div className="p-1.5 bg-cyan-100 dark:bg-cyan-900/30 rounded text-cyan-600 dark:text-cyan-400">
+                  <Users size={16} />
+                </div>
+                <h3 className="font-black text-slate-700 dark:text-white">PEOPLE</h3>
+              </div>
+              <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Efficiency & Labor</div>
+            </div>
+            <div className="flex-1 p-5 flex flex-col justify-between">
+              <div>
+                <div className="flex justify-between items-end mb-1">
+                  <span className="text-xs font-bold text-slate-500">Eff / EH</span>
+                  <span className="text-xl font-black text-slate-800 dark:text-white">102%</span>
+                </div>
+                <div className="w-full bg-slate-100 dark:bg-slate-800 h-1 mb-4 rounded-full overflow-hidden">
+                  <div className="bg-cyan-500 h-full w-[100%]" />
+                </div>
+                <div className="space-y-2">
+                  <div className="flex justify-between text-xs">
+                    <span className="text-slate-500 font-medium">Headcount</span>
+                    <span className="font-bold text-slate-700 dark:text-slate-300">142</span>
+                  </div>
+                  <div className="flex justify-between text-xs">
+                    <span className="text-slate-500 font-medium">Training</span>
+                    <span className="font-bold text-slate-700 dark:text-slate-300">99.2%</span>
+                  </div>
+                </div>
+              </div>
+              <div className="mt-4 pt-3 border-t border-dashed border-slate-100 dark:border-slate-800 flex items-center justify-between text-[10px] font-bold text-cyan-500 uppercase tracking-wider group-hover:text-cyan-600 transition-colors">
+                <span>Labor Details</span>
+                <ArrowRight size={12} />
+              </div>
+            </div>
+          </Link>
         </div>
       </div>
-    </div>
+    </StandardPageLayout>
   );
-}
-
-// Reusable parts within this page (or move to components if shared)
-function KpiWidget({ title, value, trend, status }: { title: string, value: string, trend: string, status: 'success' | 'warning' | 'neutral' }) {
-  return (
-    <div className="ios-widget p-6 group hover:translate-y-[-2px] hover:shadow-lg transition-all cursor-pointer">
-      <h3 className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">{title}</h3>
-      <div className="flex items-baseline gap-2 mb-2">
-        <span className="text-2xl font-black tracking-tight truncate">{value}</span>
-      </div>
-      <div className={`flex items-center gap-1 text-[10px] font-bold ${status === 'success' ? 'text-emerald-500' : status === 'warning' ? 'text-amber-500' : 'text-slate-400'
-        }`}>
-        {status === 'success' ? <ChevronUp size={12} /> : status === 'warning' ? <ChevronDown size={12} /> : null}
-        <span className="truncate">{trend}</span>
-      </div>
-    </div>
-  );
-}
-
-function AlertItem({ type, time, msg, lab }: { type: 'critical' | 'warning' | 'info', time: string, msg: string, lab: string }) {
-  const color = type === 'critical' ? 'text-red-500 bg-red-500/10' : type === 'warning' ? 'text-amber-500 bg-amber-500/10' : 'text-blue-500 bg-blue-500/10';
-  return (
-    <div className="flex gap-3 animate-in slide-in-from-right duration-300 overflow-hidden">
-      <div className={`w-8 h-8 rounded-xl ${color} flex items-center justify-center shrink-0`}>
-        <AlertTriangle size={16} />
-      </div>
-      <div className="flex-1 min-w-0">
-        <div className="flex justify-between items-start">
-          <p className="text-[11px] font-bold truncate leading-tight uppercase">{msg}</p>
-          <span className="text-[9px] text-slate-400 font-medium shrink-0 ml-2">{time}</span>
-        </div>
-        <p className="text-[10px] text-slate-500 font-medium">{lab}</p>
-      </div>
-    </div>
-  );
-}
-
-function TaskItem({ date, task }: { date: string, task: string }) {
-  return (
-    <div className="flex items-center gap-4 group cursor-pointer p-2 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-xl transition-all overflow-hidden">
-      <div className="w-10 h-10 rounded-2xl bg-slate-100 dark:bg-slate-900 border border-[var(--border)] flex flex-col items-center justify-center text-medtronic shrink-0 transition-colors group-hover:bg-medtronic group-hover:text-white">
-        <Calendar size={18} />
-      </div>
-      <div className="flex-1 min-w-0">
-        <p className="text-xs font-bold truncate leading-tight">{task}</p>
-        <p className="text-[10px] text-slate-500 font-medium">{date}</p>
-      </div>
-    </div>
-  )
 }

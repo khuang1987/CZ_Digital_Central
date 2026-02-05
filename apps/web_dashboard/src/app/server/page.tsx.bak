@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState, useMemo } from 'react';
-import { Database, HardDrive, List, Activity, RefreshCw, BarChart3, PieChart, FileText, Wrench, Settings } from 'lucide-react';
+import { Database, HardDrive, List, Activity, RefreshCw, BarChart3, PieChart, FileText, Wrench } from 'lucide-react';
 import {
     BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell, Legend
 } from 'recharts';
@@ -29,10 +29,9 @@ export default function ServerPage() {
     const [error, setError] = useState<string | null>(null);
 
     const tabs: PageTab[] = [
-        { label: '常规 (General)', href: '/settings', icon: <Settings size={14} /> },
-        { label: '服务器 (Server)', href: '/server', icon: <Database size={14} />, active: true },
-        { label: '用户 (Users)', href: '/settings/users', icon: <List size={14} />, disabled: true },
-        { label: '权限 (Permissions)', href: '/settings/permissions', icon: <Activity size={14} />, disabled: true },
+        { label: '服务器状态 (Status)', href: '/server', icon: <Activity size={14} />, active: true },
+        { label: '服务器日志 (Logs)', href: '/server/logs', icon: <FileText size={14} /> },
+        { label: '服务器维护 (Maintenance)', href: '/server/maintenance', icon: <Wrench size={14} /> },
     ];
 
     const fetchStats = async () => {
@@ -81,12 +80,7 @@ export default function ServerPage() {
     }, [stats]);
 
     return (
-        <StandardPageLayout
-            title="System Status"
-            description="Monitor server health and database metrics."
-            icon={<Database size={24} />}
-            tabs={tabs}
-        >
+        <StandardPageLayout title="工程 (Engineering)" tabs={tabs}>
             <div className="space-y-8 animate-in fade-in duration-500">
                 {error && (
                     <div className="flex flex-col items-center justify-center h-[60vh] text-red-500 gap-4">

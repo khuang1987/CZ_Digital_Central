@@ -71,6 +71,25 @@ export async function GET(req: NextRequest) {
         `;
 
         // ==========================================
+        // QUERY I: HAZARD TASKS LIST (Full List for Analysis)
+        // ==========================================
+        const hazardTasksQuery = `
+            SELECT 
+                t.TaskId, 
+                t.TaskName as title, 
+                t.CreatedDate as date, 
+                t.Status as status, 
+                t.Labels as classification, 
+                t.TeamName as area,
+                t.Priority as priority
+            FROM planner_tasks t
+            WHERE (t.BucketName = N'安全' OR t.BucketName = N'Safe' OR t.BucketName = N'Safety')
+            AND t.CreatedDate BETWEEN @start AND @end 
+            AND ISNULL(t.IsDeleted, 0) = 0
+            ORDER BY t.CreatedDate DESC
+        `;
+
+        // ==========================================
         // QUERY B: INCIDENT COUNT
         // ==========================================
         const incidentCountQuery = `
@@ -109,6 +128,12 @@ export async function GET(req: NextRequest) {
             .input('area', sql.NVarChar, area || '')
             .query(heatmapQuery);
 
+        const pHazardTasks = pool.request()
+            .input('start', sql.Date, startDate)
+            .input('end', sql.Date, endDate)
+            .input('area', sql.NVarChar, area || '')
+            .query(hazardTasksQuery);
+
         const pCountIncidents = pool.request()
             .input('keyword', sql.NVarChar, '%急救%')
             .input('start', sql.Date, startDate)
@@ -141,14 +166,15 @@ export async function GET(req: NextRequest) {
             .query(safeDaysQuery);
 
 
-        const [incidentsRes, heatmapRes, countIncidentsRes, countHazardsRes, safeDaysRes] = await Promise.all([
-            pIncidents, pHeatmap, pCountIncidents, pCountHazards, pSafeDays
+        const [incidentsRes, heatmapRes, countIncidentsRes, countHazardsRes, safeDaysRes, hazardTasksRes] = await Promise.all([
+            pIncidents, pHeatmap, pCountIncidents, pCountHazards, pSafeDays, pHazardTasks
         ]);
 
         console.log('[EHS API] Incidents Found:', incidentsRes.recordset.length);
 
         return NextResponse.json({
             incidents: incidentsRes.recordset,
+            hazardTasks: hazardTasksRes.recordset,
             hazardHeatmap: heatmapRes.recordset,
             stats: {
                 incidents: countIncidentsRes.recordset[0]?.count || 0,
