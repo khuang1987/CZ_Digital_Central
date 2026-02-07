@@ -21,15 +21,30 @@ def _manual_load_dotenv(env_path: Path):
     except Exception:
         pass
 
-import getpass
-PROJECT_ROOT = Path(__file__).resolve().parents[1]
+# Standard Project Paths
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
 
-# Prioritize .env_<USERNAME> (e.g. .env_czxmfg) or fall back to .env
+# Standard Project Paths
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+
+# Prioritize .env_<MACHINENAME> (e.g. .env_CZ-SERVER-01) 
+# then .env_<USERNAME> (e.g. .env_czxmfg) 
+# or fall back to .env
+import socket
+import getpass
+machine_name = socket.gethostname()
 username = getpass.getuser()
+
+ENV_FILE_MACHINE = PROJECT_ROOT / f".env_{machine_name}"
 ENV_FILE_USER = PROJECT_ROOT / f".env_{username}"
 ENV_FILE_DEFAULT = PROJECT_ROOT / ".env"
 
-ENV_FILE = ENV_FILE_USER if ENV_FILE_USER.exists() else ENV_FILE_DEFAULT
+if ENV_FILE_MACHINE.exists():
+    ENV_FILE = ENV_FILE_MACHINE
+elif ENV_FILE_USER.exists():
+    ENV_FILE = ENV_FILE_USER
+else:
+    ENV_FILE = ENV_FILE_DEFAULT
 
 try:
     from dotenv import load_dotenv

@@ -1,13 +1,16 @@
 {
-    "folders": [
-        {
-            "path": "."
-        },
-        {
-            "path": "../../../CZ Production - 文档/General/POWER BI 数据源 V2/A1_ETL_Output"
-        }
-    ],
-    "settings": {
-        "powershell.cwd": "CZ_Digital_Central"
-    }
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"path": "../../Users/huangk14/OneDrive - Medtronic PLC/Huangkai Files/C_code/server_packages"
+		},
+		{
+			"path": "../../Users/huangk14/OneDrive - Medtronic PLC/CZ Production - 文档/General/POWER BI 数据源 V2/A1_ETL_Output"
+		}
+	],
+	"settings": {
+		"powershell.cwd": "CZ_Digital_Central"
+	}
 }

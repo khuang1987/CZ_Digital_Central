@@ -8,6 +8,7 @@ interface ExecutionStatus {
     endTime?: string;
     status: 'success' | 'running' | 'failed' | 'skipped';
     exitCode?: number;
+    pid?: number;
     error?: string;
     logFile?: string;
 }
@@ -42,6 +43,7 @@ export default function Page() {
     const [logContent, setLogContent] = useState<string>('');
     const [logPollingActive, setLogPollingActive] = useState(false);
     const [countdown, setCountdown] = useState<number | null>(null);
+    const [sqlInfo, setSqlInfo] = useState<{ status: 'online' | 'offline'; server?: string; database?: string; error?: string } | null>(null);
 
     // Auth State
     const [isUnlocked, setIsUnlocked] = useState(false);
@@ -65,7 +67,11 @@ export default function Page() {
         setIsCheckingSession(false);
 
         fetchStatus();
-        const interval = setInterval(fetchStatus, 5000); // Poll every 5 seconds
+        fetchSqlStatus();
+        const interval = setInterval(() => {
+            fetchStatus();
+            fetchSqlStatus();
+        }, 5000); // Poll every 5 seconds
         return () => clearInterval(interval);
     }, []);
 
@@ -132,6 +138,17 @@ export default function Page() {
             }
         } catch (error) {
             console.error('Failed to fetch pipeline status:', error);
+        }
+    }
+
+    async function fetchSqlStatus() {
+        try {
+            const res = await fetch('/api/server/check-connection');
+            const data = await res.json();
+            setSqlInfo(data);
+        } catch (error) {
+            console.error('Failed to fetch SQL status:', error);
+            setSqlInfo({ status: 'offline', error: 'Connection failed' });
         }
     }
 
@@ -205,6 +222,48 @@ export default function Page() {
         }
     }
 
+    async function terminateTask(stage: string, task?: string) {
+        const key = task ? `${stage}-${task}` : stage;
+        if (!confirm(`确定要强制停止任务 ${labelMap[key] || key} 吗？\n这将结束所有相关后台进程（包括浏览器窗口）。`)) return;
+
+        setLoading(true);
+        try {
+            const res = await fetch('/api/pipeline/terminate', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ stage, task }),
+            });
+            const data = await res.json();
+            if (data.success) {
+                await fetchStatus();
+                if (activeLog?.taskKey === (task === 'stage' || !task ? `${stage}-stage` : key)) {
+                    setLogPollingActive(false);
+                }
+            } else {
+                alert(`停止失败: ${data.error}`);
+            }
+        } catch (error) {
+            console.error('Termination error:', error);
+            alert('操作失败，请重试');
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    const labelMap: Record<string, string> = {
+        'full': '全流水线',
+        'ingestion-planner': 'Planner 采集',
+        'ingestion-cmes': 'CMES 采集',
+        'ingestion-labor': '工时采集',
+        'cleaning-sfc': 'SFC 清洗',
+        'cleaning-mes': 'MES 清洗',
+        'cleaning-sap': 'SAP 清洗',
+        'cleaning-others': '基础资料清洗',
+        'output-parquet': 'Parquet 导出',
+        'output-validation': '数据校验',
+        'reports-powerbi': 'PBI 刷新',
+    };
+
     function formatTime(timestamp?: string) {
         if (!timestamp) return '未运行';
         const date = new Date(timestamp);
@@ -272,24 +331,40 @@ export default function Page() {
     const TaskButton = ({ stage, task, label, isExecuting }: { stage: string; task: string; label: string; isExecuting: boolean }) => {
         const stageData = status?.stages?.[stage as keyof typeof status.stages];
         const taskStatus = (stageData as any)?.tasks?.[task];
+        const isActuallyRunning = taskStatus?.status === 'running';
+
         return (
             <div
                 onClick={() => !loading && executeTask(stage, task)}
-                className={`group relative flex flex-col items-start px-4 py-3 bg-white dark:bg-slate-900 border rounded-xl transition-all duration-300 ${isExecuting
+                className={`group relative flex flex-col items-start px-4 py-3 bg-white dark:bg-slate-900 border rounded-xl transition-all duration-300 ${isExecuting || isActuallyRunning
                     ? 'border-blue-500 shadow-lg shadow-blue-500/10'
                     : 'border-slate-200 dark:border-slate-800 hover:border-blue-500/50 hover:shadow-md cursor-pointer'
                     }`}
             >
                 <div className="flex items-center justify-between w-full mb-2">
                     <span className="text-[11px] font-black text-slate-800 dark:text-slate-100 uppercase tracking-widest">{label}</span>
-                    {isExecuting ? (
-                        <div className="flex items-center gap-2">
-                            <span className="text-[9px] font-bold text-blue-500 animate-pulse">EXECUTING</span>
-                            <Loader2 size={12} className="animate-spin text-blue-500" />
-                        </div>
-                    ) : (
-                        getStatusBadge(taskStatus)
-                    )}
+                    <div className="flex items-center gap-2">
+                        {isActuallyRunning && (
+                            <button
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    terminateTask(stage, task);
+                                }}
+                                className="p-1 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded transition-colors"
+                                title="强制停止任务"
+                            >
+                                <XCircle size={12} />
+                            </button>
+                        )}
+                        {isActuallyRunning || isExecuting ? (
+                            <div className="flex items-center gap-1.5">
+                                <span className="text-[9px] font-bold text-blue-500 animate-pulse">RUNNING</span>
+                                <Loader2 size={12} className="animate-spin text-blue-500" />
+                            </div>
+                        ) : (
+                            getStatusBadge(taskStatus)
+                        )}
+                    </div>
                 </div>
 
                 <div className="flex items-center justify-between w-full h-5">
@@ -297,6 +372,7 @@ export default function Page() {
                         <div className="flex items-center gap-1 text-[10px] text-slate-400 font-bold">
                             <Clock size={10} />
                             {formatTime(taskStatus.startTime)}
+                            {taskStatus.pid && <span className="text-[9px] opacity-40 ml-1">PID: {taskStatus.pid}</span>}
                         </div>
                     ) : (
                         <div className="text-[10px] text-slate-300 dark:text-slate-700 font-bold uppercase tracking-widest italic">
@@ -304,16 +380,16 @@ export default function Page() {
                         </div>
                     )}
 
-                    {!isExecuting && taskStatus?.logFile && (
+                    {(isActuallyRunning || taskStatus?.logFile) && (
                         <button
                             onClick={(e) => {
                                 e.stopPropagation();
-                                setActiveLog({ file: taskStatus.logFile!, title: `Latest Log: ${label}`, taskKey: `${stage}-${task}` });
-                                setLogPollingActive(false);
+                                setActiveLog({ file: taskStatus?.logFile || '', title: `Logs: ${label}`, taskKey: `${stage}-${task}` });
+                                setLogPollingActive(isActuallyRunning);
                                 setCountdown(null);
                             }}
                             className="flex items-center gap-1 text-[9px] font-black text-slate-400 hover:text-blue-500 transition-colors uppercase tracking-widest"
-                            title="View Latest Log"
+                            title="View Logs"
                         >
                             <FileBox size={10} />
                             LOG
@@ -654,6 +730,38 @@ export default function Page() {
 
                                             {/* Decorative background pulse */}
                                             <div className="absolute -right-4 -bottom-4 w-16 h-16 bg-emerald-500/5 rounded-full blur-2xl group-hover:bg-emerald-500/10 transition-colors" />
+                                        </div>
+
+                                        {/* SQL Connectivity Card */}
+                                        <div className={`flex flex-col items-start px-4 py-3 bg-white dark:bg-slate-900 border rounded-xl relative overflow-hidden group transition-all duration-300 ${sqlInfo?.status === 'offline' ? 'border-red-500/50 shadow-lg shadow-red-500/5' : 'border-slate-200 dark:border-slate-800'}`}>
+                                            <div className="flex items-center justify-between w-full mb-2">
+                                                <span className="text-[11px] font-black text-slate-800 dark:text-slate-100 uppercase tracking-widest">SQL Server</span>
+                                                {sqlInfo?.status === 'online' ? (
+                                                    <div className="flex items-center gap-1.5 px-2 py-0.5 bg-emerald-500/10 rounded-md">
+                                                        <div className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                                                        <span className="text-[9px] font-black text-emerald-600 uppercase tracking-widest">Online</span>
+                                                    </div>
+                                                ) : (
+                                                    <div className="flex items-center gap-1.5 px-2 py-0.5 bg-red-500/10 rounded-md">
+                                                        <div className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
+                                                        <span className="text-[9px] font-black text-red-600 uppercase tracking-widest">Offline</span>
+                                                    </div>
+                                                )}
+                                            </div>
+
+                                            <div className="flex items-center justify-between w-full h-5 min-w-0">
+                                                <div className="flex items-center gap-1.5 text-[10px] text-slate-400 font-bold truncate">
+                                                    <Database size={10} className={sqlInfo?.status === 'online' ? "text-emerald-500" : "text-red-500"} />
+                                                    {sqlInfo?.status === 'online' ? (
+                                                        <span className="truncate">{sqlInfo.server} / {sqlInfo.database}</span>
+                                                    ) : (
+                                                        <span className="text-red-500 truncate">{sqlInfo?.error || 'Connection Failed'}</span>
+                                                    )}
+                                                </div>
+                                                {!sqlInfo && <Loader2 size={10} className="animate-spin text-slate-400" />}
+                                            </div>
+
+                                            <div className="absolute -right-4 -bottom-4 w-16 h-16 bg-blue-500/5 rounded-full blur-2xl group-hover:bg-blue-500/10 transition-colors" />
                                         </div>
                                     </div>
 

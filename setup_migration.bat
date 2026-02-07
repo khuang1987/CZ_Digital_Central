@@ -1,7 +1,7 @@
 @echo off
 color 0A
 echo ========================================================
-echo   MDDAP Migration Setup Helper
+echo   Changzhou Campus Digital Central Migration Setup Helper
 echo ========================================================
 echo.
 echo [1/3] Installing Web Dashboard Dependencies...

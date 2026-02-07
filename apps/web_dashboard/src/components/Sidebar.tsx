@@ -9,20 +9,20 @@ import { usePathname } from 'next/navigation';
 import { useUI } from '@/context/UIContext';
 import { useAuth } from '@/context/AuthContext';
 import { LogOut } from 'lucide-react';
+import { t } from '@/lib/translations';
 
 // Define NavItem type for recursion
-type NavItemType = {
-    icon?: React.ReactNode;
+interface NavItemDefinition {
+    icon: React.ReactNode;
     label: string;
-    href?: string;
+    href: string;
     disabled?: boolean;
-    children?: NavItemType[];
-};
+}
 
 export default function Sidebar() {
     const pathname = usePathname();
     const { user, logout } = useAuth();
-    const { isSidebarCollapsed, toggleSidebar, isFilterOpen, toggleFilter, resetFilters, hasFilters, setSidebarCollapsed } = useUI();
+    const { isSidebarCollapsed, toggleSidebar, isFilterOpen, toggleFilter, resetFilters, hasFilters, setSidebarCollapsed, language } = useUI();
 
     // State to track expanded menus (by label)
     const [expandedMenus, setExpandedMenus] = useState<Record<string, boolean>>({});
@@ -38,17 +38,18 @@ export default function Sidebar() {
         return () => clearTimeout(timer);
     }, [setSidebarCollapsed]);
 
-    // Flattened NavItems (Level 1 Only)
-    const navItems: { icon: React.ReactNode; label: string; href: string; disabled?: boolean }[] = [
-        { icon: <LayoutDashboard size={18} />, label: "仪表盘", href: "/" },
-        { icon: <ShieldAlert size={18} />, label: "安全", href: "/ehs" },
-        { icon: <FileCheck size={18} />, label: "质量", href: "/certification/belts" },
-        { icon: <Truck size={18} />, label: "交付", href: "/delivery/batch-records" },
-        { icon: <Zap size={18} />, label: "效率", href: "/efficiency/oee" },
-        { icon: <Factory size={18} />, label: "生产", href: "/production/labor-eh" },
-        { icon: <Box size={18} />, label: "供应链", href: "/inventory" },
-        { icon: <DraftingCompass size={18} />, label: "工程", href: "/engineering" },
-        { icon: <Settings size={18} />, label: "设置", href: "/settings" },
+    // NavItems with translation support
+    const navItems: NavItemDefinition[] = [
+        { icon: <LayoutDashboard size={18} />, label: t('dashboard', language), href: "/" },
+        { icon: <ShieldAlert size={18} />, label: t('safety', language), href: "/ehs" },
+        { icon: <FileCheck size={18} />, label: t('quality', language), href: "/quality" },
+        { icon: <Truck size={18} />, label: t('delivery', language), href: "/delivery/wip" },
+        { icon: <Zap size={18} />, label: t('efficiency', language), href: "/efficiency/oee" },
+        { icon: <Factory size={18} />, label: t('production', language), href: "/production/labor-eh" },
+        { icon: <Box size={18} />, label: t('supply_chain', language), href: "/inventory" },
+        { icon: <DraftingCompass size={18} />, label: t('engineering', language), href: "/engineering" },
+        { icon: <Settings size={18} />, label: t('settings', language), href: "/settings" },
+        { icon: <Database size={18} />, label: t('docs', language), href: "/docs" },
     ];
 
     const isActive = (href: string) => {

@@ -8,10 +8,10 @@ echo ===================================================
 echo.
 
 :: Start Backend API
-start "MDDAP Backend" cmd /k "cd apps\backend_api && .venv\Scripts\python main.py"
+start "CZ Digital Central Backend" cmd /k "cd apps\backend_api && .venv\Scripts\python main.py"
 
 :: Start Frontend Dashboard
-start "MDDAP Frontend" cmd /k "cd apps\web_dashboard && npm run dev"
+start "CZ Digital Central Frontend" cmd /k "cd apps\web_dashboard && npm run dev"
 
 echo ✨ Servers are starting...
 echo ---------------------------------------------------

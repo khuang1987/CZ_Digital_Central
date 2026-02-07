@@ -7,9 +7,10 @@ import { useUI } from '@/context/UIContext';
 interface FilterPanelProps {
     children: React.ReactNode;
     title?: string;
+    hideTitle?: boolean;
 }
 
-export default function FilterPanel({ children, title = 'Filters' }: FilterPanelProps) {
+export default function FilterPanel({ children, title = 'Filters', hideTitle = false }: FilterPanelProps) {
     const { isFilterOpen } = useUI();
     // isFilterOpen comes from Context, toggled by Sidebar
 
@@ -25,7 +26,7 @@ export default function FilterPanel({ children, title = 'Filters' }: FilterPanel
             >
                 <div className="flex-1 overflow-y-auto custom-scrollbar p-5 min-w-[280px]">
                     {/* Title */}
-                    {title && (
+                    {!hideTitle && title && (
                         <div className="mb-6 pb-4 border-b border-slate-100 dark:border-slate-900 flex items-center justify-between">
                             <h3 className="text-xs font-black uppercase tracking-widest text-slate-400 dark:text-slate-500">
                                 {title}

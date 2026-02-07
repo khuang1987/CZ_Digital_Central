@@ -1,9 +1,9 @@
 @echo off
-title MDDAP Services Launcher
+title CZ Digital Central Services Launcher
 color 0A
 
 echo ========================================================
-echo   MDDAP Integrated Platform Services
+echo   Changzhou Campus Digital Central Integrated Platform Services
 echo ========================================================
 echo.
 
@@ -23,18 +23,18 @@ if exist ".venv_%USERNAME%" (
 
 echo [1/2] Starting Documentation Service (Port 8000)...
 if defined VENV_DIR (
-    start "MDDAP Docs" cmd /c ""%VENV_DIR%\Scripts\mkdocs" serve -a 0.0.0.0:8000"
+    start "CZ Digital Central Docs" cmd /c ""%VENV_DIR%\Scripts\mkdocs" serve -a 0.0.0.0:8000"
 ) else (
-    start "MDDAP Docs" cmd /c "mkdocs serve -a 0.0.0.0:8000"
+    start "CZ Digital Central Docs" cmd /c "mkdocs serve -a 0.0.0.0:8000"
 )
 
 echo [2/2] (Skip) Dashboard Service has been migrated to Next.js.
 set "SCRIPT_DIR=%~dp0dashboard\"
 cd /d "%SCRIPT_DIR%"
 if defined VENV_DIR (
-    start "MDDAP Dashboard Legacy" cmd /c "..\tools\%VENV_DIR%\Scripts\streamlit" run app.py"
+    start "CZ Digital Central Dashboard Legacy" cmd /c "..\tools\%VENV_DIR%\Scripts\streamlit" run app.py"
 ) else (
-    start "MDDAP Dashboard Legacy" cmd /c "streamlit run app.py"
+    start "CZ Digital Central Dashboard Legacy" cmd /c "streamlit run app.py"
 )
 
 echo.
@@ -57,8 +57,8 @@ echo If your phone cannot connect, please check:
 echo 1. Phone and PC must be on the SAME Wi-Fi network.
 echo 2. Windows Firewall might be blocking ports 8000/8501.
 echo    To fix Firewall, run PowerShell as Administrator:
-echo    New-NetFirewallRule -DisplayName "MDDAP Docs" -Direction Inbound -LocalPort 8000 -Protocol TCP -Action Allow
-echo    New-NetFirewallRule -DisplayName "MDDAP Dash" -Direction Inbound -LocalPort 8501 -Protocol TCP -Action Allow
+echo    New-NetFirewallRule -DisplayName "CZ Digital Central Docs" -Direction Inbound -LocalPort 8000 -Protocol TCP -Action Allow
+echo    New-NetFirewallRule -DisplayName "CZ Digital Central Dash" -Direction Inbound -LocalPort 8501 -Protocol TCP -Action Allow
 echo.
 echo ========================================================
 echo Close this window to keep services running in background.

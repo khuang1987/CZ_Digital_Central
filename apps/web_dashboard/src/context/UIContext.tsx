@@ -15,6 +15,8 @@ interface UIContextType {
     setHasFilters: (has: boolean) => void;
     theme: 'light' | 'dark';
     toggleTheme: () => void;
+    language: 'en' | 'cn';
+    toggleLanguage: () => void;
 }
 
 const UIContext = createContext<UIContextType | undefined>(undefined);
@@ -27,6 +29,8 @@ export function UIProvider({ children }: { children: ReactNode }) {
 
     // Theme State
     const [theme, setTheme] = useState<'light' | 'dark'>('light');
+    // Language State
+    const [language, setLanguage] = useState<'en' | 'cn'>('en');
 
     useEffect(() => {
         const savedTheme = localStorage.getItem('theme') as 'light' | 'dark' | null;
@@ -37,6 +41,11 @@ export function UIProvider({ children }: { children: ReactNode }) {
         } else {
             document.documentElement.classList.add('light');
         }
+
+        const savedLang = localStorage.getItem('language') as 'en' | 'cn' | null;
+        if (savedLang) {
+            setLanguage(savedLang);
+        }
     }, []);
 
     const toggleTheme = () => {
@@ -46,6 +55,14 @@ export function UIProvider({ children }: { children: ReactNode }) {
             document.documentElement.classList.remove(prevTheme);
             document.documentElement.classList.add(newTheme);
             return newTheme;
+        });
+    };
+
+    const toggleLanguage = () => {
+        setLanguage((prevLang) => {
+            const newLang = prevLang === 'en' ? 'cn' : 'en';
+            localStorage.setItem('language', newLang);
+            return newLang;
         });
     };
 
@@ -91,7 +108,9 @@ export function UIProvider({ children }: { children: ReactNode }) {
             hasFilters,
             setHasFilters,
             theme,
-            toggleTheme
+            toggleTheme,
+            language,
+            toggleLanguage
         }}>
             {children}
         </UIContext.Provider>

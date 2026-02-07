@@ -190,6 +190,18 @@ export async function POST(request: NextRequest) {
             }
         );
 
+        // Initial Update with PID
+        const status = await loadStatus();
+        const initialStatus: ExecutionStatus = {
+            startTime,
+            status: 'running',
+            pid: child.pid,
+            logFile,
+        };
+
+        updateStatusInfo(status, stage, task, initialStatus);
+        await saveStatus(status);
+
         // Pipe output to log file
         const logStream = require('fs').createWriteStream(logPath);
         child.stdout?.pipe(logStream);
@@ -197,7 +209,7 @@ export async function POST(request: NextRequest) {
 
         child.on('close', async (code) => {
             const endTime = new Date().toISOString();
-            const status = await loadStatus();
+            const currentStatus = await loadStatus();
             const result: ExecutionStatus = {
                 startTime,
                 endTime,
@@ -206,27 +218,17 @@ export async function POST(request: NextRequest) {
                 logFile,
             };
 
-            updateStatusInfo(status, stage, task, result);
-            await saveStatus(status);
+            updateStatusInfo(currentStatus, stage, task, result);
+            await saveStatus(currentStatus);
         });
 
         child.unref();
-
-        // Initial Update
-        const status = await loadStatus();
-        const initialStatus: ExecutionStatus = {
-            startTime,
-            status: 'running',
-            logFile,
-        };
-
-        updateStatusInfo(status, stage, task, initialStatus);
-        await saveStatus(status);
 
         return NextResponse.json({
             success: true,
             message: `Started ${key}`,
             startTime,
+            pid: child.pid,
             logFile,
         });
     } catch (error) {

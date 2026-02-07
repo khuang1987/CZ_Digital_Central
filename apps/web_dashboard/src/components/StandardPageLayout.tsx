@@ -13,6 +13,7 @@ export interface PageTab {
     icon?: React.ReactNode;
     active?: boolean;
     disabled?: boolean;
+    onClick?: () => void;
 }
 
 interface StandardPageLayoutProps {
@@ -23,12 +24,13 @@ interface StandardPageLayoutProps {
     filters?: React.ReactNode;
     tabs?: PageTab[];
     actions?: React.ReactNode;
+    hideFilterTitle?: boolean;
     theme?: 'light' | 'dark';
     toggleTheme?: () => void;
     onReset?: () => void;
 }
 
-export default function StandardPageLayout({ title, description, icon, children, filters, tabs = [], actions, theme, toggleTheme, onReset }: StandardPageLayoutProps) {
+export default function StandardPageLayout({ title, description, icon, children, filters, tabs = [], actions, hideFilterTitle = false, theme, toggleTheme, onReset }: StandardPageLayoutProps) {
     const { setHasFilters, setResetHandler } = useUI();
 
     useEffect(() => {
@@ -79,6 +81,12 @@ export default function StandardPageLayout({ title, description, icon, children,
                             <Link
                                 key={tab.href}
                                 href={tab.disabled ? '#' : tab.href}
+                                onClick={(e) => {
+                                    if (tab.onClick) {
+                                        e.preventDefault();
+                                        tab.onClick();
+                                    }
+                                }}
                                 className={`
                                     relative flex items-center gap-2 px-4 py-3 text-xs font-bold transition-all border-b-[3px]
                                     ${tab.active
@@ -101,7 +109,7 @@ export default function StandardPageLayout({ title, description, icon, children,
 
                 {/* Adsorbed Filter Panel (Left) */}
                 {filters && (
-                    <FilterPanel title="Filters">
+                    <FilterPanel title="Filters" hideTitle={hideFilterTitle}>
                         {filters}
                     </FilterPanel>
                 )}
