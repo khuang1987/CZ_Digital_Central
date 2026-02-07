@@ -25,7 +25,7 @@ export default function DocFloatingActions() {
         <div className="fixed bottom-10 right-10 z-[100] animate-in slide-in-from-bottom-5 duration-700">
             <button
                 onClick={toggleAll}
-                className="flex items-center gap-3 px-8 py-4 rounded-full bg-slate-900/95 dark:bg-white/10 text-white dark:text-slate-100 shadow-2xl backdrop-blur-xl hover:bg-black dark:hover:bg-white/20 hover:scale-[1.05] active:scale-95 transition-all outline-none border border-white/10 dark:border-white/5 group"
+                className="flex items-center gap-4 px-8 py-4 rounded-2xl bg-[#004b87] text-white shadow-[0_15px_40px_rgba(0,37,84,0.25)] hover:bg-[#003a6a] hover:scale-[1.03] active:scale-95 transition-all outline-none border border-white/10 group relative"
             >
                 <div className="relative">
                     {isExpanded ? (
@@ -38,8 +38,8 @@ export default function DocFloatingActions() {
                     {isExpanded ? '全部收纳' : '全部展开'}
                 </span>
 
-                {/* Subtle indicator dot */}
-                <span className={`absolute -top-1 -right-1 w-3 h-3 rounded-full border-2 border-white shadow-sm ${isExpanded ? 'bg-green-400' : 'bg-orange-400'} transition-colors duration-500`} />
+                {/* Status indicator aligned with the new aesthetic */}
+                <div className={`absolute -top-1 -right-1 w-4 h-4 rounded-full border-2 border-white shadow-md ${isExpanded ? 'bg-emerald-400' : 'bg-orange-400'} transition-colors duration-500`} />
             </button>
         </div>
     );

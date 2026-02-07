@@ -14,6 +14,69 @@
 | **Layer 4: Meta** | 6 | 系统日志与数据质量指标 |
 | **Layer 5: Staging** | 7 | 底层转换中间存根 |
 
+#### 全球 ETL 数据流 (Data Pipeline Panorama)
+
+> [!NOTE]
+> 整个数据链路遵循 **Medtronic Enterprise Data Standard**，采用典型的三层分发架构，确保数据从生产终端到看板显示的实时性与一致性。
+
+```mermaid
+graph TD
+    subgraph "Source Systems (On-Premise)"
+        MES["C-MES (SQL Server)"]
+        SAP["SAP ECC (RFC/ODS)"]
+    end
+
+    subgraph "Staging Layer (ODS)"
+        ODS_MES["raw_mes_data"]
+        ODS_SAP["raw_sap_routing"]
+    end
+
+    subgraph "Warehouse Layer (DWD)"
+        DWD_WIP["dwd_delivery_wip"]
+        DWD_NC["dwd_quality_nc"]
+        DWD_SA["dwd_safety_sa"]
+    end
+
+    subgraph "Application Layer (Dashboard)"
+        WEB["Next.js Web Dashboard"]
+        API["REST API /v1/production"]
+    end
+
+    MES -->|SQL Agent / 15m| ODS_MES
+    SAP -->|Power Automate / Daily| ODS_SAP
+    ODS_MES -->|Stored Procedure| DWD_WIP
+    ODS_SAP -->|Joins| DWD_WIP
+    DWD_WIP --> API
+    DWD_NC --> API
+    API --> WEB
+```
+
+#### WIP 核心实体关联规则 (WIP Entity Relationship)
+
+```mermaid
+erDiagram
+    JOB ||--o{ OPERATION : contains
+    OPERATION ||--o{ WIP_RECORD : generates
+    JOB {
+        string order_id PK
+        string material_id
+        datetime plan_date
+    }
+    OPERATION {
+        string op_id PK
+        string order_id FK
+        string work_center
+        int sequence
+    }
+    WIP_RECORD {
+        string record_id PK
+        string op_id FK
+        int quantity
+        string status
+    }
+    WIP_RECORD ||--o{ NC_RECORD : "triggers(if scrap)"
+```
+
 ---
 
 ## 目录 (Table of Contents)
@@ -26,6 +89,7 @@
 ---
 
 ## 1. ODS 层 (原始数据表)
+
 ODS 层存储从各个业务系统（MES, SFC, SAP, Planner）直接抓取的原始快照。
 
 ### 1.1 WIP (在制品) 模块

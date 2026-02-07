@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useState, useEffect } from 'react';
 import { Moon, Sun, Bell, Maximize, Minimize, ExternalLink, Search, Globe } from 'lucide-react';
 import { useUI } from '@/context/UIContext';
